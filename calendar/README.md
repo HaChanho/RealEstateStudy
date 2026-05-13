@@ -137,6 +137,31 @@ GitHub Discussions 기반. setup 필요 — 아래 참고.
 2. `get_apt_price(lawd_cd, deal_ymd)` 로 시군구 월별 거래 조회 → 같은 단지·평형 필터
 3. 평균/거래 6건 정리 후 `naverData.source = "molit_public"`로 저장
 
+### 단지 매각 이력 (salesHistory)
+같은 단지의 과거 매각 사례를 누적해서 **단지 매각가율 패턴**을 시각화합니다 (디테일 패널에 표 표시).
+
+```js
+salesHistory: [
+  {
+    caseNo: "2025-572",                  // 사건번호 (간략)
+    dongHo: "302동 3층 301호",           // 동·층·호
+    area: 84.73,                          // 전용㎡
+    appraisal: 364000000,                 // 감정가
+    minPrice: 254800000,                  // 최저가 (선택)
+    soldPrice: 345000000,                 // 매각가
+    soldRate: 0.948,                      // 매각가율 (매각가/감정가)
+    kbRate: 0.958,                        // KB 매각가율 (선택)
+    saleDate: "2026-04-20",
+    outlier: false,                       // 평균에서 제외 여부
+    outlierReason: "..."                  // outlier=true일 때 사유 (다른 평형/신건/시장과열 등)
+  }
+]
+```
+
+- 정상치 사례만 평균 매각가율 계산 (outlier=true는 line-through로 회색 표시, hover 시 사유)
+- 매각가율 색상: ≤78% 녹색 / 78~88% 노랑 / ≥88% 빨강
+- 행크옥션 동일번지 매각 사례 또는 법원경매정보 매각통계에서 수집 권장
+
 ## Giscus 설정
 
 GitHub Discussions 기반 댓글 시스템. 사용자 1회 setup 필요 (1~2분).
@@ -192,3 +217,5 @@ window.GISCUS_CONFIG = {
 | 0.1.0 | 2026-05-13 | 초기 구성 (46건 raw + 5/13 v3 검증 데이터, v3.3 필터, 자동 별점) |
 | 0.2.0 | 2026-05-13 | 캘린더/리스트 탭, deeplink, D-Day 강조, chip 정보밀도, 네이버 부동산 섹션, Giscus 임베드 |
 | 0.2.1 | 2026-05-13 | `naverData.source` 필드 추가 (`naver` / `molit_public` / `user`). 탕정삼성트라팰리스(112215) AptInfo 공공 실거래 보강: 84.68㎡ 1층 ₩282M / 10층 ₩382M — KB ₩395M의 -28% 갭 확인 |
+| 0.2.2 | 2026-05-13 | 8개 사건에 `naverComplexNo` 추가 — 디테일 패널 "단지 페이지" 버튼 1클릭 점프 |
+| 0.3.0 | 2026-05-13 | `salesHistory` 필드 + UI 표 섹션 추가 (단지 매각 이력 누적). 탕정삼성트라팰리스 84㎡ 매각 사례 5건 평균 매각가율 89% 확인 → 112215 verdict hold → fail |

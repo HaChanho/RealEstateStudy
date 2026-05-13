@@ -203,6 +203,22 @@
   .naver-data .empty { color: var(--text-mute); font-size: 11px; font-style: italic; }
   .naver-updated { color: var(--text-mute); font-size: 10px; margin-top: 6px; text-align: right; }
 
+  /* Sales history table */
+  .sales-history-table { width: 100%; border-collapse: collapse; font-size: 11px; background: var(--surface-2); border-radius: 6px; overflow: hidden; }
+  .sales-history-table thead th { background: rgba(124,168,255,.1); color: var(--text-mute); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 6px; text-align: left; font-size: 10px; white-space: nowrap; }
+  .sales-history-table tbody td { padding: 6px 6px; border-top: 1px solid var(--border); color: var(--text); font-variant-numeric: tabular-nums; }
+  .sales-history-table tbody tr.outlier { opacity: 0.55; }
+  .sales-history-table tbody tr.outlier td { text-decoration: line-through; }
+  .sales-history-table .rate-low    { color: #6ee7b7; font-weight: 600; } /* <=78% */
+  .sales-history-table .rate-mid    { color: #fcd34d; font-weight: 600; } /* 78~88% */
+  .sales-history-table .rate-high   { color: #fca5a5; font-weight: 600; } /* >=88% */
+  .sales-history-summary { padding: 8px 10px; background: var(--surface-2); border-radius: 6px; margin-bottom: 6px; font-size: 12px; }
+  .sales-history-summary .label { color: var(--text-mute); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .sales-history-summary .value { font-size: 14px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+  .sales-history-summary .value.warn { color: #fca5a5; }
+  .sales-history-summary .value.ok   { color: #6ee7b7; }
+  .outlier-note { color: var(--text-mute); font-size: 10px; margin-top: 4px; font-style: italic; }
+
   .ext-link { color: var(--accent); text-decoration: none; font-size: 12px; word-break: break-all; }
   .ext-link:hover { text-decoration: underline; }
 
@@ -967,6 +983,63 @@
       naverSec.appendChild(empty);
     }
     inner.appendChild(naverSec);
+
+    // Sales history (단지 매각 이력)
+    if (Array.isArray(c.salesHistory) && c.salesHistory.length) {
+      const histSec = section('단지 매각 이력 (행크옥션)');
+      const valid = c.salesHistory.filter((s) => !s.outlier);
+      if (valid.length) {
+        const avgSoldRate = valid.reduce((a, s) => a + (s.soldRate || 0), 0) / valid.length;
+        const avgKbRate = valid.filter((s) => s.kbRate != null).reduce((a, s, _, arr) => a + s.kbRate / arr.length, 0);
+        const sum = el('div', { cls: 'sales-history-summary' });
+        sum.appendChild(el('span', { cls: 'label', text: `정상치 ${valid.length}건 평균 매각가율 (감정) ` }));
+        const rateCls = avgSoldRate <= 0.78 ? 'value ok' : avgSoldRate >= 0.88 ? 'value warn' : 'value';
+        sum.appendChild(el('span', { cls: rateCls, text: (avgSoldRate * 100).toFixed(1) + '%' }));
+        if (avgKbRate) {
+          sum.appendChild(el('span', { cls: 'label', text: ' · KB 평균 ' }));
+          sum.appendChild(el('span', { cls: 'value', text: (avgKbRate * 100).toFixed(1) + '%' }));
+        }
+        histSec.appendChild(sum);
+      }
+
+      const table = el('table', { cls: 'sales-history-table' });
+      const thead = el('thead');
+      const headRow = el('tr');
+      ['매각일', '동·층', '면적', '감정가', '매각가', '매각가율'].forEach((h) => headRow.appendChild(el('th', { text: h })));
+      thead.appendChild(headRow);
+      table.appendChild(thead);
+
+      const tbody = el('tbody');
+      const sortedHist = c.salesHistory.slice().sort((a, b) => (b.saleDate || '').localeCompare(a.saleDate || ''));
+      for (const s of sortedHist) {
+        const tr = el('tr');
+        if (s.outlier) {
+          tr.classList.add('outlier');
+          tr.title = s.outlierReason || '제외 (outlier)';
+        }
+        tr.appendChild(el('td', { text: s.saleDate || '—' }));
+        tr.appendChild(el('td', { text: s.dongHo || '—' }));
+        tr.appendChild(el('td', { text: s.area ? s.area.toFixed(2) + '㎡' : '—' }));
+        tr.appendChild(el('td', { text: s.appraisal ? fmtMoney(s.appraisal) : '—' }));
+        tr.appendChild(el('td', { text: s.soldPrice ? fmtMoney(s.soldPrice) : '—' }));
+        if (s.soldRate != null) {
+          const cls = s.soldRate <= 0.78 ? 'rate-low' : s.soldRate >= 0.88 ? 'rate-high' : 'rate-mid';
+          tr.appendChild(el('td', { cls, text: (s.soldRate * 100).toFixed(1) + '%' }));
+        } else {
+          tr.appendChild(el('td', { text: '—' }));
+        }
+        tbody.appendChild(tr);
+      }
+      table.appendChild(tbody);
+      histSec.appendChild(table);
+
+      const outliers = c.salesHistory.filter((s) => s.outlier);
+      if (outliers.length) {
+        const note = el('div', { cls: 'outlier-note', text: `※ ${outliers.length}건은 매각가율 평균에서 제외 (다른 평형·시장침체기·신건 등). 행 클릭/hover 시 사유 표시.` });
+        histSec.appendChild(note);
+      }
+      inner.appendChild(histSec);
+    }
 
     // Tags
     if (c.tags && c.tags.length) {
