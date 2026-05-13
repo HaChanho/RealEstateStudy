@@ -10,21 +10,25 @@
  * 4. 별점(`rating`)은 사람만 부여. AI는 후보 추천만
  */
 
-window.AUCTION_SCHEMA_VERSION = "0.2.0";
+window.AUCTION_SCHEMA_VERSION = "0.2.1";
 window.AUCTION_LAST_UPDATED = "2026-05-13";
 
 /**
- * v0.2.0 추가 필드 (모두 optional):
- *   naverComplexNo: number      // 네이버 부동산 단지 고유번호 (URL의 /complexes/{n})
- *   naverUrl:       string      // 네이버 단지 직접 URL (naverComplexNo 없을 때)
+ * v0.2.1 (2026-05-13): naverData에 source 필드 추가.
+ *   네이버 부동산이 Chrome MCP·WebFetch에서 보안 차단되어,
+ *   AptInfo MCP의 국토부 공공 실거래 데이터로 fallback 보강.
+ *
+ * 필드 (모두 optional):
+ *   naverComplexNo: number      // 네이버 부동산 단지 고유번호
+ *   naverUrl:       string      // 네이버 단지 직접 URL
+ *   aptInfoCode:    string      // 국토부 공동주택코드 (AptInfo MCP)
  *   naverData: {
- *     askingPrice:    { low, high, median, count },   // 현재 호가 범위 (원)
- *     recentTradeAvg: number,                          // 최근 3~6개월 실거래 평균 (원)
+ *     source:         string,                          // 데이터 출처 ("naver" | "molit_public" | "user")
+ *     askingPrice:    { low, high, median, count },   // 호가 (네이버만 가능)
+ *     recentTradeAvg: number,                          // 최근 실거래 평균 (원)
  *     recentTrades: [{ date: "YYYY-MM", price, area, floor }],
  *     updatedAt:      "YYYY-MM-DD"
  *   }
- *
- * naver* 필드가 없어도 캘린더는 단지명+지역 기반 검색 URL을 자동 생성.
  */
 
 window.AUCTION_CASES = [
@@ -32,7 +36,7 @@ window.AUCTION_CASES = [
   { id: "2024타경1971", caseNumber: "2024타경1971", court: "천안지원", saleDate: "2026-05-12", complex: "대림한들", dongHo: "208동", address: "천안 동남구 신부동", areaSqm: 98.44, appraisalPrice: 277000000, minimumPrice: 193900000, rounds: 1, region: "천안동남", regionPriority: 1, rightsStatus: "—", rightsRisk: "safe", saleRate: null, rating: null, verdict: "expired", verdictReason: "면적 초과(98.44㎡) + 매각기일 경과", tags: ["면적초과"], sourcingSession: "2026-05-12 v1", addedAt: "2026-05-12", updatedAt: "2026-05-12" },
   { id: "2024타경2899", caseNumber: "2024타경2899(중복108476)", court: "천안지원", saleDate: "2026-05-18", complex: "서해그랑블2차", dongHo: "201동", address: "아산 권곡동", areaSqm: 84.99, appraisalPrice: 224000000, minimumPrice: 156800000, rounds: 1, region: "아산", regionPriority: 3, rightsStatus: "권리 안전(A)", rightsRisk: "safe", saleRate: 0.893, saleRateNote: "3건 평균 90/90/88", rating: null, verdict: "fail", verdictReason: "단지 매각가율 89.3% > 78% 기준 초과", tags: ["아산", "매각가율초과"], sourcingSession: "2026-05-12 v1+v2", addedAt: "2026-05-12", updatedAt: "2026-05-12" },
   { id: "2024타경112185", caseNumber: "2024타경112185", court: "천안지원", saleDate: "2026-05-12", complex: "배방자이2북수마을", dongHo: "102동", address: "아산 배방읍", areaSqm: 84.78, appraisalPrice: 193000000, minimumPrice: 135100000, rounds: 6, region: "아산", regionPriority: 3, rightsStatus: "HUG 우선변제권만(대항력 포기) — 인수X", rightsRisk: "safe", saleRate: null, rating: null, verdict: "expired", verdictReason: "매각기일 경과(5/12)", tags: ["아산", "HUG", "유찰6회"], sourcingSession: "2026-05-12 v1", addedAt: "2026-05-12", updatedAt: "2026-05-12" },
-  { id: "2024타경112215", caseNumber: "2024타경112215", court: "천안지원", saleDate: "2026-05-19", complex: "탕정삼성트라팰리스", dongHo: "104동 401호", address: "아산 탕정면 명암리 809", areaSqm: 84.68, appraisalPrice: 383000000, minimumPrice: 268100000, kbPrice: 395000000, rounds: 7, region: "아산", regionPriority: 3, rightsStatus: "임차권등기 + HUG 대항력포기확약서(2025-09-10)", rightsRisk: "safe", saleRate: null, saleRateNote: "행크옥션 동일번지 매각 사례 없음 — 사용자 직접 확인 필요", rating: null, verdict: "hold", verdictReason: "단지 매각가율 미확인 (KB 갭 32%는 매력이나 7차 도달 = 응찰 적었음 = KB ₩395M 신뢰성 의심)", tags: ["아산", "HUG", "대단지", "임차권등기", "보류"], notes: "3,953세대 대단지, 2009년 준공. 사용자 매각가율 확인 후 통과/탈락 판정.", sourcingSession: "2026-05-12 v1 → 2026-05-13 검증", addedAt: "2026-05-12", updatedAt: "2026-05-13", hauctionUrl: "https://www.hauction.co.kr/search/auction?unique_year=2024&unique_number=112215", naverData: { askingPrice: null, recentTradeAvg: null, recentTrades: [], updatedAt: null, _note: "행크옥션·네이버 부동산 직접 조회 후 채우기 (84㎡ 호가/실거래 평균 핵심)" } },
+  { id: "2024타경112215", caseNumber: "2024타경112215", court: "천안지원", saleDate: "2026-05-19", complex: "탕정삼성트라팰리스", dongHo: "104동 401호", address: "아산 탕정면 명암리 809", areaSqm: 84.68, appraisalPrice: 383000000, minimumPrice: 268100000, kbPrice: 395000000, rounds: 7, region: "아산", regionPriority: 3, rightsStatus: "임차권등기 + HUG 대항력포기확약서(2025-09-10)", rightsRisk: "safe", saleRate: null, saleRateNote: "행크옥션 동일번지 매각 사례 없음. 실거래 ₩282M(1층)~₩382M(10층) 층별 격차 ₩100M → KB ₩395M은 고층 기준 추정", rating: null, verdict: "hold", verdictReason: "단지 매각가율 미확인. 그러나 국토부 실거래로 KB ₩395M의 -28% 갭(저층 기준) 확인 → 4층(401호) 추정가 약 ₩315M, 실거래 기준 마진 +₩47M로 매력 회복", tags: ["아산", "HUG", "대단지", "임차권등기", "보류", "층별가격격차큼"], notes: "3,953세대 대단지, 2009년 준공. 국토부 84.68㎡ 실거래: 2026-04 10층 ₩382M / 2026-03 1층 ₩282M. 평균 ₩332M(고저층 양극). 사건은 4층 = ₩315M 추정(저층 보수). 최저가 ₩268.1M 기준 실거래 마진 +₩47M = 충분히 매력. 매각가율만 확인되면 deep-dive 진입 강력 권장.", aptInfoCode: "A33672501", sourcingSession: "2026-05-12 v1 → 2026-05-13 검증 + 공공 실거래 보강", addedAt: "2026-05-12", updatedAt: "2026-05-13", hauctionUrl: "https://www.hauction.co.kr/search/auction?unique_year=2024&unique_number=112215", naverData: { source: "molit_public", askingPrice: null, recentTradeAvg: 332000000, recentTrades: [{ date: "2026-04", price: 382000000, area: 84.68, floor: 10 }, { date: "2026-03", price: 282000000, area: 84.68, floor: 1 }], updatedAt: "2026-05-13" } },
   { id: "2025타경624", caseNumber: "2025타경624", court: "천안지원", saleDate: "2026-05-19", complex: "모드니에", dongHo: "102동 1005호", address: "천안 동남구 병천면 병천리 240", areaSqm: 74.04, appraisalPrice: 157000000, minimumPrice: 157000000, kbPrice: 157500000, rounds: 0, region: "천안동남", regionPriority: 1, rightsStatus: "깔끔(소유자 점유)", rightsRisk: "safe", saleRate: null, rating: null, verdict: "fail", verdictReason: "신건 최저가 = KB. 마진 ₩0.5M (< ₩5M 미달)", tags: ["천안", "외곽", "병천", "마진부족"], sourcingSession: "2026-05-12 v1 → 2026-05-13 검증", addedAt: "2026-05-12", updatedAt: "2026-05-13" },
   { id: "2025타경797", caseNumber: "2025타경797", court: "천안지원", saleDate: "2026-05-19", complex: "극동늘푸른", dongHo: "113동", address: "천안 서북구 두정동", areaSqm: 84.90, appraisalPrice: 187000000, minimumPrice: 187000000, rounds: 0, region: "천안서북", regionPriority: 1, rightsStatus: "대항력 임차인(행크옥션 표시)", rightsRisk: "risky", saleRate: null, rating: null, verdict: "fail", verdictReason: "대항력 임차인 표시 — 인수 위험", tags: ["천안", "대항력임차인", "권리위험"], sourcingSession: "2026-05-12 v1+v2", addedAt: "2026-05-12", updatedAt: "2026-05-12" },
   { id: "2025타경801", caseNumber: "2025타경801", court: "천안지원", saleDate: "2026-05-19", complex: "테크노밸리이지더원9", dongHo: "905동", address: "아산 둔포면", areaSqm: 84.90, appraisalPrice: 348000000, minimumPrice: 348000000, rounds: 0, region: "아산", regionPriority: 3, rightsStatus: "—", rightsRisk: "safe", saleRate: null, rating: null, verdict: "fail", verdictReason: "가격 cap 초과(348M > 310M)", tags: ["아산", "이지더원", "가격초과"], sourcingSession: "2026-05-12 v1", addedAt: "2026-05-12", updatedAt: "2026-05-12" },

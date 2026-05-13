@@ -123,6 +123,20 @@ GitHub Discussions 기반. setup 필요 — 아래 참고.
 3. 그 숫자가 `naverComplexNo`
 4. `cases.js`의 해당 케이스에 추가
 
+### 데이터 출처 (`naverData.source`)
+| 값 | 의미 | 수집 방법 |
+|----|------|---------|
+| `naver` | 네이버 부동산 직접 (호가 + 실거래) | 사용자가 브라우저에서 직접 확인 후 입력 (Chrome MCP·WebFetch는 보안 차단됨) |
+| `molit_public` | 국토부 공공 실거래 | AptInfo MCP로 자동 수집 가능 (호가 없음, 실거래만) |
+| `user` | 사용자 입력 (혼합·요약) | 자유롭게 |
+
+**중요**: 호가(`askingPrice`)는 공공 데이터에서 얻을 수 없으므로 `molit_public`은 `askingPrice: null`이고 `recentTrades` 위주로 채워짐. 호가 확보는 사용자 직접 네이버 접속 필요.
+
+### AptInfo MCP로 실거래 보강 (반자동)
+1. 단지명을 AptInfo `get_apt_list`로 검색 → `apartmentCode` 확인 (cases.js의 `aptInfoCode`에 기록)
+2. `get_apt_price(lawd_cd, deal_ymd)` 로 시군구 월별 거래 조회 → 같은 단지·평형 필터
+3. 평균/거래 6건 정리 후 `naverData.source = "molit_public"`로 저장
+
 ## Giscus 설정
 
 GitHub Discussions 기반 댓글 시스템. 사용자 1회 setup 필요 (1~2분).
@@ -177,3 +191,4 @@ window.GISCUS_CONFIG = {
 |------|------|------|
 | 0.1.0 | 2026-05-13 | 초기 구성 (46건 raw + 5/13 v3 검증 데이터, v3.3 필터, 자동 별점) |
 | 0.2.0 | 2026-05-13 | 캘린더/리스트 탭, deeplink, D-Day 강조, chip 정보밀도, 네이버 부동산 섹션, Giscus 임베드 |
+| 0.2.1 | 2026-05-13 | `naverData.source` 필드 추가 (`naver` / `molit_public` / `user`). 탕정삼성트라팰리스(112215) AptInfo 공공 실거래 보강: 84.68㎡ 1층 ₩282M / 10층 ₩382M — KB ₩395M의 -28% 갭 확인 |

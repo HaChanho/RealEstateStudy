@@ -921,6 +921,13 @@
 
     if (c.naverData) {
       const nd = el('div', { cls: 'naver-data' });
+      if (c.naverData.source) {
+        const srcLabels = { naver: '🟢 네이버 부동산', molit_public: '📊 국토부 공공 실거래', user: '✋ 사용자 입력' };
+        const srcLabel = srcLabels[c.naverData.source] || c.naverData.source;
+        const srcRow = el('div', { cls: 'k', text: '출처: ' + srcLabel });
+        srcRow.style.marginBottom = '6px';
+        nd.appendChild(srcRow);
+      }
       if (c.naverData.askingPrice) {
         const ap = c.naverData.askingPrice;
         const row = el('div', { cls: 'row' });
