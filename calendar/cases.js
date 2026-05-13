@@ -10,7 +10,7 @@
  * 4. 별점(`rating`)은 사람만 부여. AI는 후보 추천만
  */
 
-window.AUCTION_SCHEMA_VERSION = "0.4.1";
+window.AUCTION_SCHEMA_VERSION = "0.5.0";
 window.AUCTION_LAST_UPDATED = "2026-05-13";
 
 /**
@@ -103,16 +103,16 @@ window.AUCTION_CASES = [
 ];
 
 /**
- * Giscus 댓글 시스템 설정
- * Mapping: pathname (캘린더 페이지 1개 댓글창)
- * Category: General (Discussions의 기본 카테고리)
+ * Giscus 댓글 시스템 설정 (v0.5.0+)
+ * - 각 사건마다 별도 discussion (data-mapping="specific", term=case.id)
+ * - 디테일 패널의 "💬 의견 펼치기" 토글 클릭 시점에만 lazy embed
+ * - Category: General
  */
 window.GISCUS_CONFIG = {
   repo: "HaChanho/RealEstateStudy",
   repoId: "R_kgDOSOya2w",
   category: "General",
   categoryId: "DIC_kwDOSOya284C88NV",
-  mapping: "pathname",
   theme: "noborder_dark"
 };
 

@@ -263,12 +263,17 @@
   .dot.fail    { background: var(--fail); }
   .dot.expired { background: var(--expired); }
 
-  /* Comments (Giscus) */
-  .comments-section { padding: 30px 20px 60px; border-top: 1px solid var(--border); background: var(--surface); }
-  .comments-section h2 { font-size: 16px; font-weight: 600; margin: 0 0 8px; }
-  .comments-section .comments-note { color: var(--text-mute); font-size: 12px; margin-bottom: 16px; }
-  .comments-section .giscus-placeholder { padding: 24px; background: var(--surface-2); border: 1px dashed var(--border); border-radius: 8px; text-align: center; color: var(--text-mute); font-size: 13px; }
-  .comments-section .giscus-placeholder code { background: var(--bg); padding: 1px 5px; border-radius: 3px; color: var(--accent); font-family: ui-monospace, monospace; font-size: 12px; }
+  /* Case-level comments (Giscus) — collapsible in detail panel */
+  .case-comments { border-top: 1px solid var(--border); margin-top: 18px; padding-top: 12px; }
+  .case-comments-toggle { display: flex; align-items: center; gap: 8px; width: 100%; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: border-color .15s; }
+  .case-comments-toggle:hover { border-color: var(--accent); }
+  .case-comments-toggle .caret { font-size: 10px; color: var(--text-mute); transition: transform .2s; margin-left: auto; }
+  .case-comments-toggle.open .caret { transform: rotate(90deg); }
+  .case-comments-body { display: none; margin-top: 10px; }
+  .case-comments-body.open { display: block; }
+  .case-comments-body .giscus, .case-comments-body .giscus-frame { max-width: 100%; }
+  .case-comments-loading { padding: 16px; text-align: center; color: var(--text-mute); font-size: 12px; font-style: italic; }
+  .case-comments-disabled { padding: 14px; background: var(--surface-2); border: 1px dashed var(--border); border-radius: 6px; color: var(--text-mute); font-size: 11px; text-align: center; }
 
   @media (max-width: 900px) {
     .detail-panel.open { width: 100%; position: fixed; top: 0; right: 0; bottom: 0; z-index: 20; }
@@ -378,17 +383,6 @@
     <div class="detail-inner" id="detail-inner"></div>
   </aside>
 </main>
-
-<section class="comments-section">
-  <h2>💬 댓글·피드백</h2>
-  <p class="comments-note">사건별 의견·분석 코멘트 환영. GitHub 계정으로 댓글 작성 (Giscus 기반).</p>
-  <div id="giscus-container">
-    <div class="giscus-placeholder">
-      Giscus 댓글이 활성화되지 않았습니다.<br />
-      <a href="https://github.com/HaChanho/RealEstateStudy/blob/main/calendar/README.md#giscus-setup" target="_blank" rel="noopener" style="color:var(--accent);">설정 가이드 보기</a>
-    </div>
-  </div>
-</section>
 
 <script src="cases.js"></script>
 <script>
@@ -1280,6 +1274,32 @@
     srcSec.appendChild(srcGrid);
     inner.appendChild(srcSec);
 
+    // 사건별 댓글 (Giscus, lazy)
+    {
+      const commentsSec = el('div', { cls: 'case-comments' });
+      if (!isGiscusConfigured()) {
+        const disabled = el('div', { cls: 'case-comments-disabled', text: '💬 댓글 미설정 — README의 Giscus 설정 가이드 참고' });
+        commentsSec.appendChild(disabled);
+      } else {
+        const toggle = el('button', { cls: 'case-comments-toggle', attrs: { type: 'button' } });
+        toggle.appendChild(document.createTextNode(`💬 이 사건 의견 (${c.caseNumber})`));
+        toggle.appendChild(el('span', { cls: 'caret', text: '▶' }));
+        const body = el('div', { cls: 'case-comments-body' });
+        let loaded = false;
+        toggle.addEventListener('click', () => {
+          const open = toggle.classList.toggle('open');
+          body.classList.toggle('open', open);
+          if (open && !loaded) {
+            embedGiscusInto(body, c.id);
+            loaded = true;
+          }
+        });
+        commentsSec.appendChild(toggle);
+        commentsSec.appendChild(body);
+      }
+      inner.appendChild(commentsSec);
+    }
+
     if (!opts || !opts.skipUrlSync) syncUrl();
     if (state.view === 'list') renderList();
     else renderCalendar();
@@ -1353,12 +1373,18 @@
     else closeDetail();
   });
 
-  // ===== Giscus (optional) =====
-  function initGiscus() {
+  // ===== Giscus (사건별 댓글, lazy load) =====
+  // 사건당 1개 discussion (data-mapping="specific" + data-term=caseId)
+  // 사용자가 "💬 의견 펼치기" 토글 클릭한 시점에만 embed
+  function isGiscusConfigured() {
     const cfg = window.GISCUS_CONFIG;
-    if (!cfg || !cfg.repo || !cfg.repoId || !cfg.categoryId) return; // setup 안 됐음 — placeholder 유지
-    const container = document.getElementById('giscus-container');
+    return !!(cfg && cfg.repo && cfg.repoId && cfg.categoryId);
+  }
+  function embedGiscusInto(container, caseId) {
+    const cfg = window.GISCUS_CONFIG;
     container.replaceChildren();
+    const loading = el('div', { cls: 'case-comments-loading', text: '댓글 불러오는 중…' });
+    container.appendChild(loading);
     const script = document.createElement('script');
     script.src = 'https://giscus.app/client.js';
     script.async = true;
@@ -1368,7 +1394,8 @@
       'data-repo-id': cfg.repoId,
       'data-category': cfg.category || 'General',
       'data-category-id': cfg.categoryId,
-      'data-mapping': cfg.mapping || 'pathname',
+      'data-mapping': 'specific',
+      'data-term': caseId,
       'data-strict': '0',
       'data-reactions-enabled': '1',
       'data-emit-metadata': '0',
@@ -1378,6 +1405,7 @@
       'data-loading': 'lazy',
     };
     for (const k of Object.keys(attrs)) script.setAttribute(k, attrs[k]);
+    // giscus iframe이 삽입되면 loading placeholder는 자연스럽게 가려짐 (placeholder는 컨테이너 첫 child)
     container.appendChild(script);
   }
 
@@ -1387,7 +1415,6 @@
   applyUrl();
   setView(state.view);
   if (state.selectedId) openDetail(state.selectedId, { skipUrlSync: true });
-  initGiscus();
 })();
 </script>
 </body>
