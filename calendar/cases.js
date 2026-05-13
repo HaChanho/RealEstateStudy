@@ -10,7 +10,7 @@
  * 4. 별점(`rating`)은 사람만 부여. AI는 후보 추천만
  */
 
-window.AUCTION_SCHEMA_VERSION = "0.3.0";
+window.AUCTION_SCHEMA_VERSION = "0.4.0";
 window.AUCTION_LAST_UPDATED = "2026-05-13";
 
 /**

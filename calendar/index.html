@@ -203,6 +203,41 @@
   .naver-data .empty { color: var(--text-mute); font-size: 11px; font-style: italic; }
   .naver-updated { color: var(--text-mute); font-size: 10px; margin-top: 6px; text-align: right; }
 
+  /* Bid scenario matrix */
+  .bid-scenarios { width: 100%; border-collapse: collapse; font-size: 11px; background: var(--surface-2); border-radius: 6px; overflow: hidden; }
+  .bid-scenarios thead th { background: rgba(124,168,255,.1); color: var(--text-mute); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 6px; text-align: right; font-size: 10px; white-space: nowrap; }
+  .bid-scenarios thead th:first-child { text-align: left; }
+  .bid-scenarios tbody td { padding: 6px 6px; border-top: 1px solid var(--border); color: var(--text); font-variant-numeric: tabular-nums; text-align: right; }
+  .bid-scenarios tbody td:first-child { text-align: left; color: var(--text-dim); }
+  .bid-scenarios .pos { color: #6ee7b7; font-weight: 600; }
+  .bid-scenarios .neg { color: #fca5a5; font-weight: 600; }
+  .bid-scenarios .small { color: var(--text-mute); font-size: 10px; font-weight: 400; }
+  .bid-assumptions { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 8px; font-size: 11px; color: var(--text-mute); }
+  .bid-assumptions .a-label { color: var(--text-dim); }
+  .bid-assumptions .a-value { color: var(--text); font-variant-numeric: tabular-nums; }
+  .bid-empty { padding: 10px 12px; background: var(--surface-2); border-radius: 6px; font-size: 11px; color: var(--text-mute); font-style: italic; }
+
+  /* Related cases (단지 응집) */
+  .related-cases { display: flex; flex-direction: column; gap: 4px; }
+  .related-row { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; padding: 6px 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 12px; transition: border-color .15s; }
+  .related-row:hover { border-color: var(--accent); }
+  .related-row .r-rating { width: 18px; height: 18px; border-radius: 50%; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+  .related-row .r-rating.r5 { background: #fcd34d; color: #422006; }
+  .related-row .r-rating.r4 { background: #84cc16; color: #1a2e05; }
+  .related-row .r-rating.r3 { background: #38bdf8; color: #082f49; }
+  .related-row .r-rating.r2 { background: #a78bfa; color: #2e1065; }
+  .related-row .r-rating.r1 { background: #4b5563; color: #e5e7eb; }
+  .related-row .r-rating.none { background: var(--surface-3); color: var(--text-mute); }
+  .related-row .r-main { display: flex; flex-direction: column; min-width: 0; }
+  .related-row .r-case { color: var(--text); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .related-row .r-meta { color: var(--text-mute); font-size: 10px; }
+  .related-row .r-verdict { font-size: 10px; padding: 1px 6px; border-radius: 999px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0; }
+  .related-row .r-verdict.pending { background: rgba(56,189,248,.2); color: #7dd3fc; }
+  .related-row .r-verdict.pass    { background: rgba(16,185,129,.2); color: #6ee7b7; }
+  .related-row .r-verdict.hold    { background: rgba(245,158,11,.2); color: #fcd34d; }
+  .related-row .r-verdict.fail    { background: rgba(107,114,128,.2); color: #d1d5db; }
+  .related-row .r-verdict.expired { background: rgba(75,85,99,.2); color: #9ca3af; }
+
   /* Sales history table */
   .sales-history-table { width: 100%; border-collapse: collapse; font-size: 11px; background: var(--surface-2); border-radius: 6px; overflow: hidden; }
   .sales-history-table thead th { background: rgba(124,168,255,.1); color: var(--text-mute); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 6px; text-align: left; font-size: 10px; white-space: nowrap; }
@@ -427,6 +462,27 @@
     return s;
   }
 
+  // ===== Auto-derive saleRate from salesHistory =====
+  // case.saleRate가 명시 안 됐을 때, salesHistory의 정상치(outlier=false) soldRate 평균 사용.
+  // 사건과 ±5㎡ 범위면 추가 가중치(같은 평형). 표본 ≥2건 필요.
+  function deriveSaleRate(c) {
+    if (c.saleRate != null) return { value: c.saleRate, source: c.saleRateNote || '명시값', confidence: 'high' };
+    if (!Array.isArray(c.salesHistory) || c.salesHistory.length === 0) return null;
+    const valid = c.salesHistory.filter((s) => !s.outlier && s.soldRate != null);
+    if (valid.length === 0) return null;
+    // 같은 평형(±5㎡) 우선
+    const sameArea = valid.filter((s) => s.area != null && c.areaSqm != null && Math.abs(s.area - c.areaSqm) <= 5);
+    const pool = sameArea.length >= 2 ? sameArea : valid;
+    const avg = pool.reduce((a, s) => a + s.soldRate, 0) / pool.length;
+    const confidence = pool.length >= 3 ? 'high' : (pool.length >= 2 ? 'mid' : 'low');
+    const source = sameArea.length >= 2 ? `같은 평형 ${pool.length}건` : `전체 ${pool.length}건`;
+    return { value: avg, source, confidence };
+  }
+  function effectiveSaleRate(c) {
+    const d = deriveSaleRate(c);
+    return d ? d.value : null;
+  }
+
   // ===== Auto rating (finance.md v3.3) =====
   function computeRating(c) {
     if (c.verdict === 'expired') return { rating: null, score: 0, breakdown: null, note: '매각기일 경과 — 평가 무의미' };
@@ -439,12 +495,19 @@
     }
     const b = {};
     let score = 0;
-    if (c.saleRate != null) {
-      if (c.saleRate <= 0.70) b.saleRate = 30;
-      else if (c.saleRate <= 0.78) b.saleRate = 25;
-      else if (c.saleRate <= 0.85) b.saleRate = 12;
-      else if (c.saleRate <= 0.90) b.saleRate = 5;
-      else b.saleRate = 0;
+    const derived = deriveSaleRate(c);
+    const sr = derived ? derived.value : null;
+    if (sr != null) {
+      let base;
+      if (sr <= 0.70) base = 30;
+      else if (sr <= 0.78) base = 25;
+      else if (sr <= 0.85) base = 12;
+      else if (sr <= 0.90) base = 5;
+      else base = 0;
+      // 자동 도출이면 신뢰도 페널티
+      if (derived && derived.confidence === 'low' && c.saleRate == null) base = Math.round(base * 0.7);
+      else if (derived && derived.confidence === 'mid' && c.saleRate == null) base = Math.round(base * 0.85);
+      b.saleRate = base;
     } else { b.saleRate = 15; }
     score += b.saleRate;
     const margin = (c.kbPrice && c.minimumPrice) ? c.kbPrice - c.minimumPrice : null;
@@ -890,9 +953,18 @@
     grid.appendChild(field('전용면적', fmtArea(c.areaSqm), { mono: true }));
     grid.appendChild(field('유찰 회차', c.rounds == null ? '—' : (c.rounds === 0 ? '신건' : c.rounds + '회'), { mono: true }));
     const saleRateNode = el('span');
-    saleRateNode.appendChild(document.createTextNode(c.saleRate != null ? fmtPct(c.saleRate) : '미확인'));
+    const derivedRate = deriveSaleRate(c);
+    if (derivedRate) {
+      saleRateNode.appendChild(document.createTextNode(fmtPct(derivedRate.value)));
+      if (c.saleRate == null) {
+        const tag = el('span', { cls: 'priority-tag', text: '자동 · ' + derivedRate.source });
+        saleRateNode.appendChild(tag);
+      }
+    } else {
+      saleRateNode.appendChild(document.createTextNode('미확인'));
+    }
     if (c.saleRateNote) saleRateNode.appendChild(el('div', { cls: 'small-note', text: c.saleRateNote }));
-    grid.appendChild(field('단지 매각가율', saleRateNode, { mono: true, muted: c.saleRate == null }));
+    grid.appendChild(field('단지 매각가율', saleRateNode, { mono: true, muted: !derivedRate }));
     const regionNode = el('span');
     regionNode.appendChild(document.createTextNode(c.region || '—'));
     if (c.regionPriority) regionNode.appendChild(el('span', { cls: 'priority-tag', text: `priority ${c.regionPriority}` }));
@@ -983,6 +1055,101 @@
       naverSec.appendChild(empty);
     }
     inner.appendChild(naverSec);
+
+    // Bid scenario matrix
+    {
+      const derivedRate = deriveSaleRate(c);
+      const baseRate = derivedRate ? derivedRate.value : null;
+      const tradeAvg = c.naverData && c.naverData.recentTradeAvg;
+      const askMid = c.naverData && c.naverData.askingPrice && c.naverData.askingPrice.low && c.naverData.askingPrice.high
+        ? (c.naverData.askingPrice.low + c.naverData.askingPrice.high) / 2 : null;
+      const COST = 30_000_000; // 명도·취득세·수리 가정 ₩30M
+
+      if (c.appraisalPrice && c.minimumPrice && (tradeAvg || askMid)) {
+        const sec = section('입찰가 시나리오 (자동)');
+        const assumptions = el('div', { cls: 'bid-assumptions' });
+        const rates = [];
+        if (baseRate != null) {
+          rates.push({ label: '낙관(-15%p)', val: Math.max(0.5, baseRate - 0.15) });
+          rates.push({ label: '평균', val: baseRate });
+          rates.push({ label: '보수(+5%p)', val: Math.min(1.1, baseRate + 0.05) });
+        } else {
+          rates.push({ label: '70% (최저가)', val: 0.70 });
+          rates.push({ label: '85%', val: 0.85 });
+          rates.push({ label: '95%', val: 0.95 });
+        }
+        // sells
+        const sells = [];
+        if (tradeAvg) sells.push({ label: '실거래 평균', val: tradeAvg });
+        if (askMid) sells.push({ label: '호가 중앙', val: askMid });
+
+        assumptions.appendChild(el('span', { cls: 'a-label', text: '감정가 ' }));
+        assumptions.appendChild(el('span', { cls: 'a-value', text: fmtMoney(c.appraisalPrice) }));
+        assumptions.appendChild(el('span', { cls: 'a-label', text: ' · 명도+취득+수리 ' }));
+        assumptions.appendChild(el('span', { cls: 'a-value', text: '-' + fmtMoney(COST) }));
+        if (derivedRate) {
+          assumptions.appendChild(el('span', { cls: 'a-label', text: ' · 기준 매각가율 ' }));
+          assumptions.appendChild(el('span', { cls: 'a-value', text: fmtPct(baseRate) + ' (' + derivedRate.source + ')' }));
+        }
+        sec.appendChild(assumptions);
+
+        const table = el('table', { cls: 'bid-scenarios' });
+        const thead = el('thead');
+        const headRow = el('tr');
+        headRow.appendChild(el('th', { text: '매각가율 / 매도 가정' }));
+        headRow.appendChild(el('th', { text: '입찰가' }));
+        for (const s of sells) headRow.appendChild(el('th', { text: s.label + ' 매도' }));
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+
+        const tbody = el('tbody');
+        for (const r of rates) {
+          const tr = el('tr');
+          const bid = c.appraisalPrice * r.val;
+          const labelTd = el('td');
+          labelTd.appendChild(document.createTextNode(r.label + ' '));
+          labelTd.appendChild(el('span', { cls: 'small', text: '(' + (r.val * 100).toFixed(0) + '%)' }));
+          tr.appendChild(labelTd);
+          tr.appendChild(el('td', { text: fmtMoney(bid) }));
+          for (const s of sells) {
+            const margin = s.val - COST - bid;
+            const td = el('td', { cls: margin >= 5_000_000 ? 'pos' : margin < 0 ? 'neg' : '' });
+            td.appendChild(document.createTextNode(fmtMoneySigned(margin)));
+            tr.appendChild(td);
+          }
+          tbody.appendChild(tr);
+        }
+        table.appendChild(tbody);
+        sec.appendChild(table);
+        inner.appendChild(sec);
+      }
+    }
+
+    // 단지 응집 — 같은 단지의 다른 사건
+    {
+      const sameComplex = CASES.filter((x) => x.id !== c.id && x.complex === c.complex);
+      if (sameComplex.length) {
+        const relSec = section(`같은 단지 다른 사건 (${sameComplex.length}건)`);
+        const list = el('div', { cls: 'related-cases' });
+        sameComplex.sort((a, b) => (b.saleDate || '').localeCompare(a.saleDate || ''));
+        for (const r of sameComplex) {
+          const row = el('div', { cls: 'related-row' });
+          row.title = `${r.caseNumber} · ${r.dongHo || ''} · ${r.saleDate}`;
+          const rating = effectiveRating(r);
+          row.appendChild(el('span', { cls: 'r-rating ' + (rating != null ? 'r' + rating : 'none'), text: rating != null ? rating + '' : '·' }));
+          const main = el('div', { cls: 'r-main' });
+          main.appendChild(el('span', { cls: 'r-case', text: r.caseNumber + (r.dongHo ? ' · ' + r.dongHo : '') }));
+          const metaText = [r.saleDate, r.areaSqm ? r.areaSqm.toFixed(1) + '㎡' : null, fmtMoney(r.minimumPrice)].filter(Boolean).join(' · ');
+          main.appendChild(el('span', { cls: 'r-meta', text: metaText }));
+          row.appendChild(main);
+          row.appendChild(el('span', { cls: 'r-verdict ' + r.verdict, text: r.verdict }));
+          row.addEventListener('click', () => openDetail(r.id));
+          list.appendChild(row);
+        }
+        relSec.appendChild(list);
+        inner.appendChild(relSec);
+      }
+    }
 
     // Sales history (단지 매각 이력)
     if (Array.isArray(c.salesHistory) && c.salesHistory.length) {
