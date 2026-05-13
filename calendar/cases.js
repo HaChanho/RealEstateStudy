@@ -103,6 +103,20 @@ window.AUCTION_CASES = [
 ];
 
 /**
+ * Giscus 댓글 시스템 설정
+ * Mapping: pathname (캘린더 페이지 1개 댓글창)
+ * Category: General (Discussions의 기본 카테고리)
+ */
+window.GISCUS_CONFIG = {
+  repo: "HaChanho/RealEstateStudy",
+  repoId: "R_kgDOSOya2w",
+  category: "General",
+  categoryId: "DIC_kwDOSOya284C88NV",
+  mapping: "pathname",
+  theme: "noborder_dark"
+};
+
+/**
  * Merge helper — 같은 id가 들어오면 필드 머지 (마지막 우선)
  */
 window.AUCTION_MERGE = function (cases, incoming) {
