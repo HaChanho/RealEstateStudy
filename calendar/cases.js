@@ -1,3 +1,19 @@
+/**
+ * 부동산 경매 케이스 데이터 — 누적 저장소
+ *
+ * 스키마: calendar/README.md 참고
+ *
+ * v0.6.0 (2026-05-15): 확장 윈도우 sourcing (충남·비조정수도권·충북) → 신규 51건
+ * v0.5.0 (2026-05-13): 사건별 댓글 (Giscus mapping=specific + term=caseId)
+ * v0.4.x (2026-05-13): salesHistory + 자동 saleRate 도출 + bid 시나리오 매트릭스
+ * v0.3.0 (2026-05-13): salesHistory 필드 추가 (단지 매각 이력)
+ * v0.2.x (2026-05-13): 캘린더/리스트 탭, deeplink, D-Day, naverData, Giscus
+ * v0.1.0 (2026-05-13): 초기 46건
+ */
+
+window.AUCTION_SCHEMA_VERSION = "0.6.0";
+window.AUCTION_LAST_UPDATED = "2026-05-15";
+
 window.AUCTION_CASES = [
   // ===== 5/12 v1 raw 천안지원 35건 =====
   { id: "2024타경1971", caseNumber: "2024타경1971", court: "천안지원", saleDate: "2026-05-12", complex: "대림한들", dongHo: "208동", address: "천안 동남구 신부동", areaSqm: 98.44, appraisalPrice: 277000000, minimumPrice: 193900000, rounds: 1, region: "천안동남", regionPriority: 1, rightsStatus: "—", rightsRisk: "safe", saleRate: null, rating: null, verdict: "expired", verdictReason: "면적 초과(98.44㎡) + 매각기일 경과", tags: ["면적초과"], sourcingSession: "2026-05-12 v1", addedAt: "2026-05-12", updatedAt: "2026-05-12" },
