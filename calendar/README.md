@@ -84,7 +84,7 @@ GitHub Discussions 기반. setup 필요 — 아래 참고.
 | `rightsRisk` | `safe`\|`moderate`\|`risky` | |
 | `saleRate` | 0~1? | 단지 매각가율 |
 | `saleRateNote` | string? | 근거 메모 |
-| `verdict` | enum | `pending`\|`pass`\|`hold`\|`fail`\|`expired` |
+| `verdict` | enum | `pending`\|`candidate`\|`pass`\|`hold`\|`fail`\|`expired` |
 | `verdictReason` | string | 판정 사유 |
 | `rating` | 1~5? | 사용자 부여 (없으면 자동 채점) |
 | `tags` | string[] | |
@@ -220,3 +220,4 @@ window.GISCUS_CONFIG = {
 | 0.2.2 | 2026-05-13 | 8개 사건에 `naverComplexNo` 추가 — 디테일 패널 "단지 페이지" 버튼 1클릭 점프 |
 | 0.3.0 | 2026-05-13 | `salesHistory` 필드 + UI 표 섹션 추가 (단지 매각 이력 누적). 탕정삼성트라팰리스 84㎡ 매각 사례 5건 평균 매각가율 89% 확인 → 112215 verdict hold → fail |
 | 0.4.0 | 2026-05-13 | (1) 자동 saleRate 도출 — salesHistory 정상치 평균을 채점에 자동 반영 (신뢰도 페널티 포함). (2) 입찰가 시나리오 매트릭스 — 매각가율 3종×매도 가정 2종 = 6 시나리오 자동 계산. (3) 단지 응집 뷰 — 같은 단지 다른 사건 클릭 1회 점프 |
+| 0.5.0 | 2026-05-17 | UX 개선 3종 + schema drift 해소. (1) **사건 chip 클릭 시 디테일 패널 자동 top 스크롤 + flash 애니메이션** — 동일 패널 내용 교체를 즉시 인지. (2) **날짜별 "+N건" expand 상태 유지** — `state.expandedDates` 도입으로 chip 클릭 재렌더에서도 펼침 보존, "− 접기" 토글 추가. (3) **판정 다중 토글 필터** — 기존 단일 `<select>` 폐기, 6 verdict (Pending·Candidate·Pass·Hold·Fail·Expired)별 chip 버튼으로 표시/숨김 토글, localStorage(`calendar.verdictHidden.v1`)로 선호도 영속화, **기본 Fail 숨김**. (4) `candidate` verdict 정식 등록 (#a78bfa 보라) — CSS·stats pill·verdict-badge·dot 일관 적용 |

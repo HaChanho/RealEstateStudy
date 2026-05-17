@@ -16,6 +16,7 @@
     --text-mute: #6b78ad;
     --accent: #7ca8ff;
     --pending: #38bdf8;
+    --candidate: #a78bfa;
     --pass: #10b981;
     --hold: #f59e0b;
     --fail: #6b7280;
@@ -52,6 +53,20 @@
   .filters .filter-group { display: flex; align-items: center; gap: 4px; }
   .filters .reset { margin-left: auto; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
   .filters .reset:hover { color: var(--text); border-color: var(--accent); }
+  /* Verdict multi-toggle chips (replaces single-select) */
+  .verdict-toggles { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+  .vtog { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); padding: 3px 9px; border-radius: 999px; cursor: pointer; font-size: 11px; font-weight: 600; user-select: none; transition: opacity .15s, border-color .15s, transform .1s; letter-spacing: 0.02em; }
+  .vtog:hover { transform: translateY(-1px); }
+  .vtog.hidden { opacity: 0.35; text-decoration: line-through; color: var(--text-mute); }
+  .vtog[data-verdict="pending"]   { border-color: rgba(56,189,248,.55); }
+  .vtog[data-verdict="candidate"] { border-color: rgba(167,139,250,.55); }
+  .vtog[data-verdict="pass"]      { border-color: rgba(16,185,129,.55); }
+  .vtog[data-verdict="hold"]      { border-color: rgba(245,158,11,.55); }
+  .vtog[data-verdict="fail"]      { border-color: rgba(107,114,128,.55); }
+  .vtog[data-verdict="expired"]   { border-color: rgba(75,85,99,.55); }
+  /* Collapse pill — appears when a day is expanded */
+  .more-count.collapse { color: var(--text-mute); }
+  .more-count.collapse:hover { color: var(--text); }
 
   main { display: flex; flex: 1; overflow: hidden; min-height: 0; }
   .view-wrap { flex: 1; overflow: auto; }
@@ -90,11 +105,12 @@
   .chip .chip-mini { display: flex; gap: 2px; align-items: center; }
   .chip .mini-bar { width: 22px; height: 4px; background: var(--surface-3); border-radius: 2px; overflow: hidden; }
   .chip .mini-bar-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #84cc16, #fcd34d); }
-  .chip.pending { background: rgba(56,189,248,.12); border-color: rgba(56,189,248,.3); }
-  .chip.pass    { background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.35); }
-  .chip.hold    { background: rgba(245,158,11,.15); border-color: rgba(245,158,11,.35); }
-  .chip.fail    { background: rgba(107,114,128,.15); border-color: rgba(107,114,128,.3); color: var(--text-dim); }
-  .chip.expired { background: rgba(75,85,99,.1); border-color: rgba(75,85,99,.25); color: var(--text-mute); }
+  .chip.pending   { background: rgba(56,189,248,.12); border-color: rgba(56,189,248,.3); }
+  .chip.candidate { background: rgba(167,139,250,.13); border-color: rgba(167,139,250,.35); }
+  .chip.pass      { background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.35); }
+  .chip.hold      { background: rgba(245,158,11,.15); border-color: rgba(245,158,11,.35); }
+  .chip.fail      { background: rgba(107,114,128,.15); border-color: rgba(107,114,128,.3); color: var(--text-dim); }
+  .chip.expired   { background: rgba(75,85,99,.1); border-color: rgba(75,85,99,.25); color: var(--text-mute); }
   .chip.expired .chip-text { text-decoration: line-through; }
   .chip.selected { outline: 2px solid var(--accent); outline-offset: 1px; }
   .chip.dday-urgent { box-shadow: 0 0 0 1px #ef4444, 0 0 12px rgba(239,68,68,.45); }
@@ -124,7 +140,13 @@
   /* Detail panel */
   .detail-panel { width: 0; transition: width .25s ease; background: var(--surface); border-left: 1px solid var(--border); overflow: hidden; flex-shrink: 0; }
   .detail-panel.open { width: 460px; }
-  .detail-inner { width: 460px; padding: 20px; overflow-y: auto; height: 100%; }
+  .detail-inner { width: 460px; padding: 20px; overflow-y: auto; height: 100%; scroll-behavior: smooth; }
+  @keyframes detail-flash {
+    0%   { box-shadow: inset 0 0 0 2px rgba(96,165,250,.55); background: rgba(96,165,250,.10); }
+    60%  { box-shadow: inset 0 0 0 2px rgba(96,165,250,.25); background: rgba(96,165,250,.05); }
+    100% { box-shadow: inset 0 0 0 2px rgba(96,165,250,0);   background: transparent; }
+  }
+  .detail-inner.flash { animation: detail-flash .55s ease-out; }
   .detail-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
   .detail-header .case-num { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
   .detail-header .complex-sub { color: var(--text-dim); font-size: 13px; margin-top: 2px; }
@@ -135,11 +157,12 @@
   .detail-header .close:hover { color: var(--text); }
   .detail-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; font-size: 12px; }
   .verdict-badge { padding: 3px 10px; border-radius: 999px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
-  .verdict-badge.pending { background: rgba(56,189,248,.2); color: #7dd3fc; }
-  .verdict-badge.pass    { background: rgba(16,185,129,.2); color: #6ee7b7; }
-  .verdict-badge.hold    { background: rgba(245,158,11,.2); color: #fcd34d; }
-  .verdict-badge.fail    { background: rgba(107,114,128,.2); color: #d1d5db; }
-  .verdict-badge.expired { background: rgba(75,85,99,.2); color: #9ca3af; }
+  .verdict-badge.pending   { background: rgba(56,189,248,.2); color: #7dd3fc; }
+  .verdict-badge.candidate { background: rgba(167,139,250,.2); color: #c4b5fd; }
+  .verdict-badge.pass      { background: rgba(16,185,129,.2); color: #6ee7b7; }
+  .verdict-badge.hold      { background: rgba(245,158,11,.2); color: #fcd34d; }
+  .verdict-badge.fail      { background: rgba(107,114,128,.2); color: #d1d5db; }
+  .verdict-badge.expired   { background: rgba(75,85,99,.2); color: #9ca3af; }
   .risk-badge { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
   .risk-badge.safe     { background: rgba(16,185,129,.15); color: #6ee7b7; }
   .risk-badge.moderate { background: rgba(245,158,11,.15); color: #fcd34d; }
@@ -180,10 +203,11 @@
   .b-score { font-variant-numeric: tabular-nums; color: var(--text-mute); text-align: right; }
 
   .reason-box { padding: 10px 12px; background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 13px; line-height: 1.5; color: var(--text-dim); }
-  .reason-box.pass    { border-left-color: var(--pass); }
-  .reason-box.hold    { border-left-color: var(--hold); }
-  .reason-box.fail    { border-left-color: var(--fail); }
-  .reason-box.expired { border-left-color: var(--expired); }
+  .reason-box.candidate { border-left-color: var(--candidate); }
+  .reason-box.pass      { border-left-color: var(--pass); }
+  .reason-box.hold      { border-left-color: var(--hold); }
+  .reason-box.fail      { border-left-color: var(--fail); }
+  .reason-box.expired   { border-left-color: var(--expired); }
 
   /* Naver section */
   .naver-section .naver-links { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
@@ -232,11 +256,12 @@
   .related-row .r-case { color: var(--text); font-size: 11px; font-variant-numeric: tabular-nums; }
   .related-row .r-meta { color: var(--text-mute); font-size: 10px; }
   .related-row .r-verdict { font-size: 10px; padding: 1px 6px; border-radius: 999px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0; }
-  .related-row .r-verdict.pending { background: rgba(56,189,248,.2); color: #7dd3fc; }
-  .related-row .r-verdict.pass    { background: rgba(16,185,129,.2); color: #6ee7b7; }
-  .related-row .r-verdict.hold    { background: rgba(245,158,11,.2); color: #fcd34d; }
-  .related-row .r-verdict.fail    { background: rgba(107,114,128,.2); color: #d1d5db; }
-  .related-row .r-verdict.expired { background: rgba(75,85,99,.2); color: #9ca3af; }
+  .related-row .r-verdict.pending   { background: rgba(56,189,248,.2); color: #7dd3fc; }
+  .related-row .r-verdict.candidate { background: rgba(167,139,250,.2); color: #c4b5fd; }
+  .related-row .r-verdict.pass      { background: rgba(16,185,129,.2); color: #6ee7b7; }
+  .related-row .r-verdict.hold      { background: rgba(245,158,11,.2); color: #fcd34d; }
+  .related-row .r-verdict.fail      { background: rgba(107,114,128,.2); color: #d1d5db; }
+  .related-row .r-verdict.expired   { background: rgba(75,85,99,.2); color: #9ca3af; }
 
   /* Sales history table */
   .sales-history-table { width: 100%; border-collapse: collapse; font-size: 11px; background: var(--surface-2); border-radius: 6px; overflow: hidden; }
@@ -257,11 +282,12 @@
   .ext-link { color: var(--accent); text-decoration: none; font-size: 12px; word-break: break-all; }
   .ext-link:hover { text-decoration: underline; }
 
-  .dot.pending { background: var(--pending); }
-  .dot.pass    { background: var(--pass); }
-  .dot.hold    { background: var(--hold); }
-  .dot.fail    { background: var(--fail); }
-  .dot.expired { background: var(--expired); }
+  .dot.pending   { background: var(--pending); }
+  .dot.candidate { background: var(--candidate); }
+  .dot.pass      { background: var(--pass); }
+  .dot.hold      { background: var(--hold); }
+  .dot.fail      { background: var(--fail); }
+  .dot.expired   { background: var(--expired); }
 
   /* Case-level comments (Giscus) — collapsible in detail panel */
   .case-comments { border-top: 1px solid var(--border); margin-top: 18px; padding-top: 12px; }
@@ -302,6 +328,7 @@
 <div class="stats">
   <span class="pill total">총 <span id="stat-total">0</span>건</span>
   <span class="pill"><span class="dot pending"></span> Pending <span id="stat-pending">0</span></span>
+  <span class="pill"><span class="dot candidate"></span> Candidate <span id="stat-candidate">0</span></span>
   <span class="pill"><span class="dot pass"></span> Pass <span id="stat-pass">0</span></span>
   <span class="pill"><span class="dot hold"></span> Hold <span id="stat-hold">0</span></span>
   <span class="pill"><span class="dot fail"></span> Fail <span id="stat-fail">0</span></span>
@@ -316,15 +343,15 @@
 
 <div class="filters">
   <div class="filter-group">
-    <label for="f-verdict">판정</label>
-    <select id="f-verdict">
-      <option value="">전체</option>
-      <option value="pending">Pending</option>
-      <option value="pass">Pass</option>
-      <option value="hold">Hold</option>
-      <option value="fail">Fail</option>
-      <option value="expired">Expired</option>
-    </select>
+    <label>판정</label>
+    <div class="verdict-toggles" id="f-verdict-toggles" title="클릭으로 해당 판정 숨기기/표시. 설정은 자동 저장됩니다.">
+      <button type="button" class="vtog" data-verdict="pending">Pending</button>
+      <button type="button" class="vtog" data-verdict="candidate">Candidate</button>
+      <button type="button" class="vtog" data-verdict="pass">Pass</button>
+      <button type="button" class="vtog" data-verdict="hold">Hold</button>
+      <button type="button" class="vtog" data-verdict="fail">Fail</button>
+      <button type="button" class="vtog" data-verdict="expired">Expired</button>
+    </div>
   </div>
   <div class="filter-group">
     <label for="f-region">지역</label>
@@ -418,12 +445,25 @@
   }
 
   // ===== State =====
+  const VERDICTS = ['pending', 'candidate', 'pass', 'hold', 'fail', 'expired'];
+  const LS_VERDICT_HIDDEN = 'calendar.verdictHidden.v1';
+  function loadVerdictHidden() {
+    try {
+      const stored = localStorage.getItem(LS_VERDICT_HIDDEN);
+      if (stored != null) return new Set(JSON.parse(stored));
+    } catch (e) {}
+    return new Set(['fail']); // default: hide fail (per user preference)
+  }
+  function saveVerdictHidden(set) {
+    try { localStorage.setItem(LS_VERDICT_HIDDEN, JSON.stringify([...set])); } catch (e) {}
+  }
   const state = {
     view: 'calendar', // 'calendar' | 'list'
     currentMonth: (() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; })(),
-    filters: { verdict: '', region: '', priority: '', risk: '', rating: '', search: '' },
+    filters: { verdictHidden: loadVerdictHidden(), region: '', priority: '', risk: '', rating: '', search: '' },
     sort: { key: 'saleDate', dir: 'asc' },
     selectedId: null,
+    expandedDates: new Set(), // dates the user clicked "+N건" on — persists across re-renders
   };
 
   // ===== DOM helpers =====
@@ -578,7 +618,7 @@
   }
   function passesFilter(c) {
     const f = state.filters;
-    if (f.verdict && c.verdict !== f.verdict) return false;
+    if (f.verdictHidden.has(c.verdict)) return false;
     if (f.region && c.region !== f.region) return false;
     if (f.priority && String(c.regionPriority) !== f.priority) return false;
     if (f.risk && c.rightsRisk !== f.risk) return false;
@@ -599,7 +639,7 @@
   // ===== Stats =====
   function updateStats() {
     const filtered = getFiltered();
-    const counts = { pending: 0, pass: 0, hold: 0, fail: 0, expired: 0 };
+    const counts = { pending: 0, candidate: 0, pass: 0, hold: 0, fail: 0, expired: 0 };
     const ratings = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
     for (const c of filtered) {
       counts[c.verdict] = (counts[c.verdict] || 0) + 1;
@@ -701,11 +741,25 @@
         chip.addEventListener('click', (e) => { e.stopPropagation(); openDetail(c.id); });
         chipsWrap.appendChild(chip);
       }
-      cases.slice(0, MAX_VISIBLE).forEach(appendChip);
-      if (cases.length > MAX_VISIBLE) {
+      const isExpanded = state.expandedDates.has(dateStr);
+      const visibleCount = isExpanded ? cases.length : MAX_VISIBLE;
+      cases.slice(0, visibleCount).forEach(appendChip);
+      if (cases.length > MAX_VISIBLE && !isExpanded) {
         const more = el('div', { cls: 'more-count', text: `+${cases.length - MAX_VISIBLE}건` });
-        more.addEventListener('click', (e) => { e.stopPropagation(); chipsWrap.removeChild(more); cases.slice(MAX_VISIBLE).forEach(appendChip); });
+        more.addEventListener('click', (e) => {
+          e.stopPropagation();
+          state.expandedDates.add(dateStr);
+          renderCalendar();
+        });
         chipsWrap.appendChild(more);
+      } else if (isExpanded && cases.length > MAX_VISIBLE) {
+        const less = el('div', { cls: 'more-count collapse', text: '− 접기' });
+        less.addEventListener('click', (e) => {
+          e.stopPropagation();
+          state.expandedDates.delete(dateStr);
+          renderCalendar();
+        });
+        chipsWrap.appendChild(less);
       }
       dayCell.appendChild(chipsWrap);
       cal.appendChild(dayCell);
@@ -892,6 +946,11 @@
     panel.classList.add('open');
     const inner = document.getElementById('detail-inner');
     inner.replaceChildren();
+    // Scroll to top + brief flash so user clearly perceives the panel changed
+    inner.scrollTop = 0;
+    inner.classList.remove('flash');
+    void inner.offsetWidth; // force reflow so animation restarts even on rapid clicks
+    inner.classList.add('flash');
 
     // Header
     const header = el('div', { cls: 'detail-header' });
@@ -1343,21 +1402,41 @@
     state.currentMonth = { y: d.getFullYear(), m: d.getMonth() };
     renderCalendar();
   });
-  for (const f of ['verdict', 'region', 'priority', 'risk', 'rating']) {
+  for (const f of ['region', 'priority', 'risk', 'rating']) {
     document.getElementById('f-' + f).addEventListener('change', (e) => {
       state.filters[f] = e.target.value;
       updateStats();
       if (state.view === 'list') renderList(); else renderCalendar();
     });
   }
+  // Verdict multi-toggle — chip click flips hide/show for that verdict
+  function syncVerdictToggleUI() {
+    document.querySelectorAll('#f-verdict-toggles .vtog').forEach((btn) => {
+      const v = btn.dataset.verdict;
+      btn.classList.toggle('hidden', state.filters.verdictHidden.has(v));
+    });
+  }
+  document.querySelectorAll('#f-verdict-toggles .vtog').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const v = btn.dataset.verdict;
+      if (state.filters.verdictHidden.has(v)) state.filters.verdictHidden.delete(v);
+      else state.filters.verdictHidden.add(v);
+      saveVerdictHidden(state.filters.verdictHidden);
+      syncVerdictToggleUI();
+      updateStats();
+      if (state.view === 'list') renderList(); else renderCalendar();
+    });
+  });
+  syncVerdictToggleUI();
   document.getElementById('f-search').addEventListener('input', (e) => {
     state.filters.search = e.target.value.trim();
     updateStats();
     if (state.view === 'list') renderList(); else renderCalendar();
   });
   document.getElementById('f-reset').addEventListener('click', () => {
-    state.filters = { verdict: '', region: '', priority: '', risk: '', rating: '', search: '' };
-    document.getElementById('f-verdict').value = '';
+    state.filters = { verdictHidden: new Set(), region: '', priority: '', risk: '', rating: '', search: '' };
+    saveVerdictHidden(state.filters.verdictHidden);
+    syncVerdictToggleUI();
     document.getElementById('f-region').value = '';
     document.getElementById('f-priority').value = '';
     document.getElementById('f-risk').value = '';
