@@ -6,12 +6,13 @@
 <title>경매 케이스 캘린더</title>
 <style>
   :root {
-    --bg: #070b1a;
+    --bg: #050811;
     --surface: #121831;
     --surface-2: #1a2244;
     --surface-3: #232c52;
-    --panel-bg: #1c2549;        /* Elevated tone for detail panel — clearly distinct from day cells */
-    --panel-border: #34427a;
+    --panel-bg: #2a2548;        /* Elevated panel — hue shifted toward violet so it reads as a separate plane vs. blue day cells */
+    --panel-border: #6b5cb8;
+    --panel-accent: #a78bfa;    /* Strong violet accent stripe along the panel's left edge */
     --border: #2a3568;
     --text: #e7ecff;
     --text-dim: #9aa6d6;
@@ -175,11 +176,17 @@
     width: 0;
     transition: width .25s ease;
     background: var(--panel-bg);
-    border-left: 1px solid var(--panel-border);
-    box-shadow: -16px 0 36px rgba(0,5,30,.55), inset 1px 0 0 rgba(168,196,255,.08);
+    /* Triple separation: (a) violet accent stripe, (b) thin border line, (c) deep multi-layer shadow */
+    border-left: 4px solid var(--panel-accent);
+    box-shadow:
+      -1px 0 0 rgba(168,196,255,.4),                    /* hairline accent next to the stripe */
+      -28px 0 60px rgba(0,0,0,.7),                       /* deep outer shadow */
+      -8px 0 24px rgba(0,0,0,.5),                        /* near shadow for depth */
+      inset 1px 0 0 rgba(255,255,255,.06);              /* subtle inner top highlight */
     overflow: hidden;
     flex-shrink: 0;
     position: relative;
+    margin-left: 10px;                                   /* visible gutter — strongest cue that this is a separate plane */
   }
   .detail-panel.open { width: var(--panel-w); }
   .detail-inner { width: var(--panel-w); padding: 20px 20px 20px 26px; overflow-y: auto; height: 100%; scroll-behavior: smooth; }
@@ -491,9 +498,18 @@
   </aside>
 </main>
 
-<script src="cases.js"></script>
+<!-- cases.js: cache-buster 인라인 로더 (수정 즉시 반영 보장) -->
+<script>
+  (function () {
+    const s = document.createElement('script');
+    s.src = 'cases.js?v=' + Date.now();
+    s.onload = function () { window.dispatchEvent(new Event('cases-loaded')); };
+    document.head.appendChild(s);
+  })();
+</script>
 <script>
 (function () {
+  function main() {
   const CASES = (window.AUCTION_CASES || []).slice();
 
   // ===== Utilities =====
@@ -1693,6 +1709,14 @@
   applyUrl();
   setView(state.view);
   if (state.selectedId) openDetail(state.selectedId, { skipUrlSync: true });
+  } // end main()
+
+  // cases-loaded 이벤트로 진입 (cases.js 동적 로드 완료 시점)
+  if (window.AUCTION_CASES && window.AUCTION_CASES.length) {
+    main();
+  } else {
+    window.addEventListener('cases-loaded', main, { once: true });
+  }
 })();
 </script>
 </body>
