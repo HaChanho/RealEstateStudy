@@ -11,10 +11,10 @@
     --surface: #ffffff;          /* Day cells, list table, header — pure white */
     --surface-2: #f3f5fb;        /* Subtle tinted bg for pills, chip defaults */
     --surface-3: #e4e8f3;        /* Stronger tint for inner accents, mini bars */
-    --panel-bg: #faf5ff;         /* Detail panel — pale lavender, different hue from calendar */
-    --panel-bg-2: #f3eaff;       /* Inner panel accents */
-    --panel-border: #c4b5fd;
-    --panel-accent: #8b5cf6;     /* Strong violet stripe on panel's left edge */
+    --panel-bg: #f7f8fc;         /* Detail panel — neutral cool gray, slightly cooler than calendar bg */
+    --panel-bg-2: #eef0f7;       /* Inner panel accents */
+    --panel-border: #cdd3e2;
+    --panel-accent: #8b5cf6;     /* Violet stripe — only remaining hue accent, signals "active surface" */
     --border: #dde3f0;
     --border-strong: #c1cad9;
     --text: #1a1f2e;             /* Dark charcoal — primary text on white */
@@ -115,12 +115,13 @@
   .chip .chip-mini { display: flex; gap: 2px; align-items: center; }
   .chip .mini-bar { width: 22px; height: 4px; background: var(--surface-3); border-radius: 2px; overflow: hidden; }
   .chip .mini-bar-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #84cc16, #fcd34d); }
-  .chip.pending   { background: rgba(56,189,248,.20); border-color: rgba(2,132,199,.55); }
-  .chip.candidate { background: rgba(167,139,250,.22); border-color: rgba(124,58,237,.55); }
-  .chip.pass      { background: rgba(16,185,129,.20); border-color: rgba(5,150,105,.6); }
-  .chip.hold      { background: rgba(245,158,11,.22); border-color: rgba(217,119,6,.6); }
-  .chip.fail      { background: rgba(107,114,128,.15); border-color: rgba(107,114,128,.5); color: var(--text-dim); }
-  .chip.expired   { background: rgba(156,163,175,.12); border-color: rgba(156,163,175,.4); color: var(--text-mute); }
+  /* Outlined soft chips — pale tint + colored border + colored verdict-text. Modern light-admin look. */
+  .chip.pending   { background: rgba(56,189,248,.10); border-color: rgba(2,132,199,.60); color: #075985; }
+  .chip.candidate { background: rgba(167,139,250,.10); border-color: rgba(124,58,237,.55); color: #5b21b6; }
+  .chip.pass      { background: rgba(16,185,129,.10); border-color: rgba(5,150,105,.60); color: #065f46; }
+  .chip.hold      { background: rgba(245,158,11,.12); border-color: rgba(217,119,6,.60); color: #92400e; }
+  .chip.fail      { background: rgba(107,114,128,.08); border-color: rgba(107,114,128,.45); color: var(--text-mute); }
+  .chip.expired   { background: rgba(156,163,175,.06); border-color: rgba(156,163,175,.30); color: var(--text-mute); }
   .chip.expired .chip-text { text-decoration: line-through; }
   .chip.selected {
     outline: 3px solid var(--accent-strong);
@@ -180,12 +181,12 @@
     width: 0;
     transition: width .25s ease;
     background: var(--panel-bg);
-    /* Triple separation: (a) violet accent stripe, (b) hairline border, (c) soft layered shadow */
-    border-left: 4px solid var(--panel-accent);
+    /* Refined separation: thin violet stripe + soft layered shadow */
+    border-left: 3px solid var(--panel-accent);
     box-shadow:
-      -1px 0 0 rgba(139,92,246,.35),                    /* hairline next to stripe */
-      -20px 0 40px rgba(31,41,55,.10),                   /* soft outer shadow — lighter for light theme */
-      -6px 0 14px rgba(31,41,55,.07);                    /* near shadow */
+      -1px 0 0 rgba(139,92,246,.25),                    /* hairline next to stripe */
+      -16px 0 32px rgba(31,41,55,.08),                   /* soft outer shadow */
+      -4px 0 10px rgba(31,41,55,.05);                    /* near shadow */
     overflow: hidden;
     flex-shrink: 0;
     position: relative;
