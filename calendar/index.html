@@ -6,15 +6,21 @@
 <title>경매 케이스 캘린더</title>
 <style>
   :root {
-    --bg: #0b1020;
+    --bg: #070b1a;
     --surface: #121831;
     --surface-2: #1a2244;
     --surface-3: #232c52;
+    --panel-bg: #1c2549;        /* Elevated tone for detail panel — clearly distinct from day cells */
+    --panel-border: #34427a;
     --border: #2a3568;
     --text: #e7ecff;
     --text-dim: #9aa6d6;
     --text-mute: #6b78ad;
     --accent: #7ca8ff;
+    --accent-strong: #a8c4ff;
+    --price: #fcd34d;            /* Amber — key money figures pop without competing with verdict colors */
+    --positive: #6ee7b7;
+    --negative: #fca5a5;
     --pending: #38bdf8;
     --candidate: #a78bfa;
     --pass: #10b981;
@@ -112,7 +118,32 @@
   .chip.fail      { background: rgba(107,114,128,.15); border-color: rgba(107,114,128,.3); color: var(--text-dim); }
   .chip.expired   { background: rgba(75,85,99,.1); border-color: rgba(75,85,99,.25); color: var(--text-mute); }
   .chip.expired .chip-text { text-decoration: line-through; }
-  .chip.selected { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .chip.selected {
+    outline: 3px solid var(--accent-strong);
+    outline-offset: 2px;
+    background: rgba(168,196,255,.22) !important;
+    box-shadow: 0 0 0 1px var(--accent-strong), 0 4px 16px rgba(124,168,255,.45);
+    transform: translateX(2px) scale(1.04);
+    z-index: 2;
+    position: relative;
+    font-weight: 700;
+  }
+  .chip.selected::before {
+    content: '▸';
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent-strong);
+    font-size: 14px;
+    font-weight: 900;
+    text-shadow: 0 0 8px rgba(168,196,255,.8);
+    animation: chip-pointer-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes chip-pointer-pulse {
+    0%, 100% { opacity: 1; transform: translateY(-50%) translateX(0); }
+    50%      { opacity: 0.5; transform: translateY(-50%) translateX(-2px); }
+  }
   .chip.dday-urgent { box-shadow: 0 0 0 1px #ef4444, 0 0 12px rgba(239,68,68,.45); }
   .chip.dday-soon   { box-shadow: 0 0 0 1px #f59e0b, 0 0 8px rgba(245,158,11,.35); }
   .more-count { font-size: 10px; color: var(--text-mute); padding: 2px 6px; cursor: pointer; }
@@ -128,7 +159,8 @@
   .list-table tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 12px; vertical-align: middle; }
   .list-table tbody tr { cursor: pointer; transition: background .1s; }
   .list-table tbody tr:hover { background: var(--surface-2); }
-  .list-table tbody tr.selected { background: rgba(124,168,255,.1); }
+  .list-table tbody tr.selected { background: rgba(168,196,255,.18); box-shadow: inset 4px 0 0 var(--accent-strong); }
+  .list-table tbody tr.selected td { color: var(--text); font-weight: 600; }
   .list-table tbody tr.dday-urgent td:first-child { border-left: 3px solid #ef4444; }
   .list-table tbody tr.dday-soon   td:first-child { border-left: 3px solid #f59e0b; }
   .list-table .col-num { font-variant-numeric: tabular-nums; }
@@ -137,10 +169,45 @@
   .list-table .dim { color: var(--text-mute); }
   .list-empty { padding: 60px 20px; text-align: center; color: var(--text-mute); }
 
-  /* Detail panel */
-  .detail-panel { width: 0; transition: width .25s ease; background: var(--surface); border-left: 1px solid var(--border); overflow: hidden; flex-shrink: 0; }
-  .detail-panel.open { width: 460px; }
-  .detail-inner { width: 460px; padding: 20px; overflow-y: auto; height: 100%; scroll-behavior: smooth; }
+  /* Detail panel — uses CSS var --panel-w so JS drag can resize without touching layout */
+  .detail-panel {
+    --panel-w: 460px;
+    width: 0;
+    transition: width .25s ease;
+    background: var(--panel-bg);
+    border-left: 1px solid var(--panel-border);
+    box-shadow: -16px 0 36px rgba(0,5,30,.55), inset 1px 0 0 rgba(168,196,255,.08);
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .detail-panel.open { width: var(--panel-w); }
+  .detail-inner { width: var(--panel-w); padding: 20px 20px 20px 26px; overflow-y: auto; height: 100%; scroll-behavior: smooth; }
+  /* Resize handle — drag the left edge to widen/narrow the panel */
+  .resize-handle {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 7px;
+    cursor: ew-resize;
+    z-index: 5;
+    background: transparent;
+    transition: background .15s;
+  }
+  .resize-handle::before {
+    content: '';
+    position: absolute;
+    left: 2px; top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 36px;
+    border-radius: 2px;
+    background: var(--panel-border);
+    transition: background .15s, height .15s;
+  }
+  .resize-handle:hover, .resize-handle.dragging { background: rgba(124,168,255,.18); }
+  .resize-handle:hover::before, .resize-handle.dragging::before { background: var(--accent); height: 56px; }
+  body.resizing { cursor: ew-resize !important; user-select: none; }
+  body.resizing * { cursor: ew-resize !important; user-select: none; }
   @keyframes detail-flash {
     0%   { box-shadow: inset 0 0 0 2px rgba(96,165,250,.55); background: rgba(96,165,250,.10); }
     60%  { box-shadow: inset 0 0 0 2px rgba(96,165,250,.25); background: rgba(96,165,250,.05); }
@@ -184,6 +251,18 @@
   .detail-grid .field .v.mono { font-variant-numeric: tabular-nums; }
   .detail-grid .field .v.muted { color: var(--text-dim); }
   .detail-grid .field.wide { grid-column: span 2; }
+  /* Price-emphasis variant — big, amber, draws the eye to decision-critical numbers */
+  .detail-grid .field.price { background: rgba(252,211,77,.05); border-left: 2px solid rgba(252,211,77,.4); padding: 6px 10px; border-radius: 4px; }
+  .detail-grid .field.price .k { color: var(--price); }
+  .detail-grid .field.price .v { font-size: 18px; font-weight: 700; color: var(--price); letter-spacing: -0.01em; line-height: 1.25; }
+  .detail-grid .field.price .v.muted { color: var(--text-dim); font-weight: 600; font-size: 15px; }
+  .detail-grid .field.price.positive { background: rgba(110,231,183,.06); border-left-color: rgba(110,231,183,.5); }
+  .detail-grid .field.price.positive .k { color: var(--positive); }
+  .detail-grid .field.price.positive .v { color: var(--positive); }
+  .detail-grid .field.price.negative { background: rgba(252,165,165,.06); border-left-color: rgba(252,165,165,.5); }
+  .detail-grid .field.price.negative .k { color: var(--negative); }
+  .detail-grid .field.price.negative .v { color: var(--negative); }
+  .detail-grid .field.price .v .sub-note { font-size: 12px; font-weight: 500; color: var(--text-mute); }
   .sub-note { color: var(--text-mute); font-size: 11px; }
   .small-note { color: var(--text-mute); font-size: 10px; margin-top: 1px; }
   .priority-tag { color: var(--text-mute); font-size: 10px; margin-left: 4px; }
@@ -407,6 +486,7 @@
     </div>
   </div>
   <aside class="detail-panel" id="detail-panel">
+    <div class="resize-handle" id="resize-handle" title="드래그하여 패널 너비 조절"></div>
     <div class="detail-inner" id="detail-inner"></div>
   </aside>
 </main>
@@ -417,8 +497,41 @@
   const CASES = (window.AUCTION_CASES || []).slice();
 
   // ===== Utilities =====
-  const fmtMoney = (n) => n == null ? '—' : '₩' + (n / 1_000_000).toFixed(1) + 'M';
-  const fmtMoneySigned = (n) => n == null ? '—' : (n >= 0 ? '+' : '') + fmtMoney(n);
+  // Korean money format — "2억 7,700만원" / "5,000만원" / "—"
+  // Truncates below 만원 (last 4 digits) which is fine for real estate amounts.
+  function fmtMoney(n) {
+    if (n == null) return '—';
+    const abs = Math.abs(n);
+    if (abs < 10_000) return n.toLocaleString('en-US') + '원';
+    const eok = Math.floor(abs / 100_000_000);
+    const man = Math.floor((abs % 100_000_000) / 10_000);
+    const parts = [];
+    if (eok > 0) parts.push(eok + '억');
+    if (man > 0) parts.push(man.toLocaleString('en-US') + '만원');
+    if (parts.length === 0) parts.push('0원');
+    return (n < 0 ? '-' : '') + parts.join(' ');
+  }
+  function fmtMoneySigned(n) {
+    if (n == null) return '—';
+    if (n === 0) return '0원';
+    return (n > 0 ? '+' : '') + fmtMoney(n); // fmtMoney handles negative sign itself
+  }
+  // Compact form for tight spaces (list table) — "2.77억" / "5,000만"
+  function fmtMoneyShort(n) {
+    if (n == null) return '—';
+    const abs = Math.abs(n);
+    if (abs >= 100_000_000) {
+      const v = n / 100_000_000;
+      return v.toFixed(v >= 10 ? 1 : 2).replace(/\.?0+$/, '') + '억';
+    }
+    if (abs >= 10_000) return (n < 0 ? '-' : '') + Math.floor(abs / 10_000).toLocaleString('en-US') + '만';
+    return n.toLocaleString('en-US') + '원';
+  }
+  function fmtMoneyShortSigned(n) {
+    if (n == null) return '—';
+    if (n === 0) return '0';
+    return (n > 0 ? '+' : '') + fmtMoneyShort(n);
+  }
   const fmtArea = (n) => n == null ? '—' : n.toFixed(2) + '㎡';
   const fmtPct = (n) => n == null ? '—' : (n * 100).toFixed(1) + '%';
   const todayStr = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })();
@@ -457,6 +570,26 @@
   function saveVerdictHidden(set) {
     try { localStorage.setItem(LS_VERDICT_HIDDEN, JSON.stringify([...set])); } catch (e) {}
   }
+  const LS_PANEL_W = 'calendar.panelWidth.v1';
+  const PANEL_W_MIN = 380;
+  const PANEL_W_MAX_RATIO = 0.85; // up to 85% of viewport
+  function clampPanelW(w) {
+    return Math.max(PANEL_W_MIN, Math.min(Math.round(window.innerWidth * PANEL_W_MAX_RATIO), w));
+  }
+  function loadPanelWidth() {
+    try {
+      const v = parseInt(localStorage.getItem(LS_PANEL_W), 10);
+      if (Number.isFinite(v)) return clampPanelW(v);
+    } catch (e) {}
+    return 460;
+  }
+  function applyPanelWidth(w) {
+    const panel = document.getElementById('detail-panel');
+    if (panel) panel.style.setProperty('--panel-w', w + 'px');
+  }
+  function savePanelWidth(w) {
+    try { localStorage.setItem(LS_PANEL_W, String(w)); } catch (e) {}
+  }
   const state = {
     view: 'calendar', // 'calendar' | 'list'
     currentMonth: (() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; })(),
@@ -479,14 +612,20 @@
     return node;
   }
   function field(key, value, opts) {
-    const f = el('div', { cls: 'field' + (opts && opts.wide ? ' wide' : '') });
+    const o = opts || {};
+    const cls = ['field'];
+    if (o.wide) cls.push('wide');
+    if (o.price) cls.push('price');
+    if (o.tone) cls.push(o.tone); // 'positive' | 'negative' — only meaningful when price is set
+    const f = el('div', { cls: cls.join(' ') });
     f.appendChild(el('div', { cls: 'k', text: key }));
+    const vCls = 'v' + (o.mono ? ' mono' : '') + (o.muted ? ' muted' : '');
     if (value instanceof Node) {
-      const v = el('div', { cls: 'v' + (opts && opts.mono ? ' mono' : '') + (opts && opts.muted ? ' muted' : '') });
+      const v = el('div', { cls: vCls });
       v.appendChild(value);
       f.appendChild(v);
     } else {
-      f.appendChild(el('div', { cls: 'v' + (opts && opts.mono ? ' mono' : '') + (opts && opts.muted ? ' muted' : ''), text: value }));
+      f.appendChild(el('div', { cls: vCls, text: value }));
     }
     return f;
   }
@@ -775,9 +914,9 @@
     { key: 'complex',    label: '단지',    width: 'auto' },
     { key: 'region',     label: '지역',    width: '80px' },
     { key: 'areaSqm',    label: '전용',    width: '60px',  align: 'right' },
-    { key: 'minimumPrice', label: '최저가', width: '90px',  align: 'right' },
-    { key: 'kbPrice',    label: 'KB시세',  width: '90px',  align: 'right' },
-    { key: 'margin',     label: '마진',    width: '90px',  align: 'right' },
+    { key: 'minimumPrice', label: '최저가', width: '110px',  align: 'right' },
+    { key: 'kbPrice',    label: 'KB시세',  width: '110px',  align: 'right' },
+    { key: 'margin',     label: '마진',    width: '100px',  align: 'right' },
     { key: 'saleRate',   label: '매각가율', width: '70px', align: 'right' },
     { key: 'rounds',     label: '유찰',    width: '50px', align: 'center' },
   ];
@@ -878,19 +1017,20 @@
       // area
       { const td = el('td', { cls: 'col-num' }); td.style.textAlign = 'right'; td.textContent = c.areaSqm ? c.areaSqm.toFixed(1) : '—'; tr.appendChild(td); }
       // minimumPrice
-      { const td = el('td', { cls: 'col-num' }); td.style.textAlign = 'right'; td.textContent = fmtMoney(c.minimumPrice); tr.appendChild(td); }
+      { const td = el('td', { cls: 'col-num' }); td.style.textAlign = 'right'; td.textContent = fmtMoney(c.minimumPrice); td.title = fmtMoney(c.minimumPrice); tr.appendChild(td); }
       // kbPrice
-      { const td = el('td', { cls: 'col-num' + (!c.kbPrice ? ' dim' : '') }); td.style.textAlign = 'right'; td.textContent = c.kbPrice ? fmtMoney(c.kbPrice) : '—'; tr.appendChild(td); }
-      // margin
+      { const td = el('td', { cls: 'col-num' + (!c.kbPrice ? ' dim' : '') }); td.style.textAlign = 'right'; td.textContent = c.kbPrice ? fmtMoney(c.kbPrice) : '—'; if (c.kbPrice) td.title = fmtMoney(c.kbPrice); tr.appendChild(td); }
+      // margin (short form to keep column tight; full value on hover)
       {
         const margin = (c.kbPrice && c.minimumPrice) ? c.kbPrice - c.minimumPrice : null;
         const td = el('td', { cls: 'col-num' });
         td.style.textAlign = 'right';
         if (margin == null) td.textContent = '—';
         else {
-          td.textContent = fmtMoneySigned(margin);
-          if (margin < 0) td.style.color = '#fca5a5';
-          else if (margin >= 5_000_000) td.style.color = '#6ee7b7';
+          td.textContent = fmtMoneyShortSigned(margin);
+          td.title = fmtMoneySigned(margin);
+          if (margin < 0) td.style.color = 'var(--negative)';
+          else if (margin >= 5_000_000) td.style.color = 'var(--positive)';
           else td.style.color = 'var(--text-mute)';
         }
         tr.appendChild(td);
@@ -993,16 +1133,20 @@
     const marginRaw = (c.kbPrice && c.minimumPrice) ? c.kbPrice - c.minimumPrice : null;
     const marginPct = (marginRaw != null && c.kbPrice) ? marginRaw / c.kbPrice : null;
     const dropPct = (c.minimumPrice && c.appraisalPrice) ? c.minimumPrice / c.appraisalPrice : null;
-    grid.appendChild(field('감정가', fmtMoney(c.appraisalPrice), { mono: true }));
+    grid.appendChild(field('감정가', fmtMoney(c.appraisalPrice), { mono: true, price: true }));
     const minNode = el('span');
     minNode.appendChild(document.createTextNode(fmtMoney(c.minimumPrice)));
-    if (dropPct != null) { const s = el('span', { cls: 'sub-note', text: ` (${(dropPct*100).toFixed(0)}%)` }); s.style.marginLeft = '4px'; minNode.appendChild(s); }
-    grid.appendChild(field('최저매각가', minNode, { mono: true }));
-    grid.appendChild(field('KB시세', c.kbPrice ? fmtMoney(c.kbPrice) : '미확인', { mono: true, muted: !c.kbPrice }));
+    if (dropPct != null) { const s = el('span', { cls: 'sub-note', text: ` ${(dropPct*100).toFixed(0)}%` }); s.style.marginLeft = '6px'; minNode.appendChild(s); }
+    grid.appendChild(field('최저매각가', minNode, { mono: true, price: true }));
+    grid.appendChild(field('KB시세', c.kbPrice ? fmtMoney(c.kbPrice) : '미확인', { mono: true, price: true, muted: !c.kbPrice }));
     const marginNode = el('span');
     marginNode.appendChild(document.createTextNode(marginRaw == null ? '—' : fmtMoneySigned(marginRaw)));
-    if (marginPct != null) { const s = el('span', { cls: 'sub-note', text: ` (${(marginPct*100).toFixed(0)}%)` }); s.style.marginLeft = '4px'; marginNode.appendChild(s); }
-    grid.appendChild(field('미시 마진(KB-최저)', marginNode, { mono: true, muted: marginRaw == null || marginRaw < 5_000_000 }));
+    if (marginPct != null) { const s = el('span', { cls: 'sub-note', text: ` ${(marginPct*100).toFixed(0)}%` }); s.style.marginLeft = '6px'; marginNode.appendChild(s); }
+    const marginTone = marginRaw == null ? null
+      : marginRaw >= 5_000_000 ? 'positive'
+      : marginRaw < 0 ? 'negative'
+      : null;
+    grid.appendChild(field('미시 마진 (KB−최저)', marginNode, { mono: true, price: true, muted: marginRaw == null, tone: marginTone }));
     grid.appendChild(field('전용면적', fmtArea(c.areaSqm), { mono: true }));
     grid.appendChild(field('유찰 회차', c.rounds == null ? '—' : (c.rounds === 0 ? '신건' : c.rounds + '회'), { mono: true }));
     const saleRateNode = el('span');
@@ -1451,6 +1595,61 @@
     if (state.selectedId) openDetail(state.selectedId, { skipUrlSync: true });
     else closeDetail();
   });
+
+  // ===== Resizable detail panel =====
+  applyPanelWidth(loadPanelWidth());
+  (function setupResize() {
+    const handle = document.getElementById('resize-handle');
+    const panel = document.getElementById('detail-panel');
+    if (!handle || !panel) return;
+    let dragging = false;
+    let startX = 0;
+    let startW = 0;
+    let savedTransition = '';
+    handle.addEventListener('pointerdown', (e) => {
+      if (!panel.classList.contains('open')) return; // no-op when panel closed
+      e.preventDefault();
+      dragging = true;
+      startX = e.clientX;
+      startW = panel.getBoundingClientRect().width;
+      savedTransition = panel.style.transition;
+      panel.style.transition = 'none'; // smooth drag — no width animation
+      handle.classList.add('dragging');
+      document.body.classList.add('resizing');
+      try { handle.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    handle.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      const dx = startX - e.clientX; // drag left → bigger panel
+      const newW = clampPanelW(startW + dx);
+      applyPanelWidth(newW);
+    });
+    function endDrag(e) {
+      if (!dragging) return;
+      dragging = false;
+      handle.classList.remove('dragging');
+      document.body.classList.remove('resizing');
+      panel.style.transition = savedTransition;
+      const finalW = Math.round(panel.getBoundingClientRect().width);
+      savePanelWidth(finalW);
+      if (e && e.pointerId != null) {
+        try { handle.releasePointerCapture(e.pointerId); } catch (err) {}
+      }
+    }
+    handle.addEventListener('pointerup', endDrag);
+    handle.addEventListener('pointercancel', endDrag);
+    // Double-click handle → reset to default width
+    handle.addEventListener('dblclick', () => {
+      applyPanelWidth(460);
+      savePanelWidth(460);
+    });
+    // Re-clamp on viewport resize so user can't get stuck wider than the window
+    window.addEventListener('resize', () => {
+      const cur = panel.getBoundingClientRect().width;
+      const clamped = clampPanelW(cur);
+      if (clamped !== cur) applyPanelWidth(clamped);
+    });
+  })();
 
   // ===== Giscus (사건별 댓글, lazy load) =====
   // 사건당 1개 discussion (data-mapping="specific" + data-term=caseId)
