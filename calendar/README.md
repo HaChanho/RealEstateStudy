@@ -162,6 +162,40 @@ salesHistory: [
 - 매각가율 색상: ≤78% 녹색 / 78~88% 노랑 / ≥88% 빨강
 - 행크옥션 동일번지 매각 사례 또는 법원경매정보 매각통계에서 수집 권장
 
+## 낙찰 결과 — `results.js` (회고 전용, cases.js와 분리)
+
+`cases.js`(예측·sourcing, daily-sourcing routine 소유)와 **물리적으로 분리된** 별도 파일.
+`weekly-retrospective` routine이 소유하며, 지난주 매각된 사건의 **실제 결과**를 사건번호 id로 기록한다.
+캘린더는 두 파일을 id로 join하여 디테일 패널 "🏁 경매 결과 (회고)" 섹션과 칩/리스트 마커에 렌더한다.
+
+```js
+// _workspace/calendar/results.js
+window.AUCTION_RESULTS_VERSION = "0.1.0";
+window.AUCTION_RESULTS_UPDATED = "2026-05-20";
+window.AUCTION_RESULTS = {
+  "2025타경12066": {
+    status: "sold",            // sold|failed|changed|withdrawn|postponed|unknown
+    soldPrice: null,           // 낙찰가(원). 행크옥션 비로그인 API는 항상 마스킹 → 구독계정/어시스트 보강
+    soldRate: null,            // 낙찰가/감정가
+    bidderCount: 11,           // 응찰자수 (API bid_count, 비마스킹 — 수요 강도 대리지표)
+    saleDateActual: "2026-05-13",
+    quadrant: "FN",            // TP|FP|FN|TN|null (verdict GO/NO-GO × sold/failed)
+    predictedSaleRate: 0.876,  // 회고 시점 cases.js 스냅샷 (비교 고정용)
+    predictedVerdict: "fail",
+    saleRateError: null,       // soldRate - predictedSaleRate
+    priceMasked: true,
+    lesson: "78% 일괄컷 과도 — 11명 응찰",
+    source: "hauction-api",    // hauction-api|hauction-chrome|user-assist
+    retrospectedAt: "2026-05-20"
+  }
+};
+```
+
+- **소유권 분할**: cases.js는 daily-sourcing(쓰기), results.js는 weekly-retrospective(쓰기). 두 routine이 다른 파일을 write → 머지 충돌 구조적 제거.
+- **append-only**: 한 번 채운 결과는 덮어쓰지 않음 (정정은 새 회고 세션 entry).
+- **quadrant 색상**: FN=빨강(놓친 기회) / FP=주황(헛 GO) / TP·TN=녹색(정확).
+- index.html은 results.js를 cache-buster로 먼저 로드한 뒤 cases.js를 로드(체이닝). results.js 없어도 캘린더는 정상 동작.
+
 ## Giscus 설정
 
 GitHub Discussions 기반 댓글 시스템. 사용자 1회 setup 필요 (1~2분).

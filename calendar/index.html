@@ -298,6 +298,34 @@
   .reason-box.hold      { border-left-color: var(--hold); }
   .reason-box.fail      { border-left-color: var(--fail); }
   .reason-box.expired   { border-left-color: var(--expired); }
+  /* 회고 결과 박스 (예측 vs 실측) */
+  .result-box { padding: 12px; border-radius: 6px; background: var(--panel-bg-2); border-left: 3px solid var(--text-mute); margin-top: 4px; }
+  .result-box.q-FN { border-left-color: #dc2626; background: rgba(220,38,38,.06); }
+  .result-box.q-FP { border-left-color: #f59e0b; background: rgba(245,158,11,.06); }
+  .result-box.q-TP { border-left-color: #10b981; background: rgba(16,185,129,.06); }
+  .result-box.q-TN { border-left-color: #10b981; }
+  .result-head { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+  .result-status { font-weight: 700; font-size: 13px; padding: 2px 10px; border-radius: 999px; background: rgba(16,185,129,.16); color: #047857; }
+  .result-status.failed, .result-status.unknown, .result-status.withdrawn, .result-status.changed, .result-status.postponed { background: rgba(107,114,128,.16); color: #4b5563; }
+  .result-quadrant { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: .03em; }
+  .result-quadrant.FN { background: rgba(220,38,38,.16); color: #b91c1c; }
+  .result-quadrant.FP { background: rgba(245,158,11,.18); color: #b45309; }
+  .result-quadrant.TP, .result-quadrant.TN { background: rgba(16,185,129,.16); color: #047857; }
+  .result-compare { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; flex-wrap: wrap; }
+  .result-compare .k { color: var(--text-mute); }
+  .result-compare .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .result-compare .arrow { color: var(--text-mute); }
+  .result-compare .err { font-weight: 700; font-size: 11px; padding: 1px 6px; border-radius: 4px; }
+  .result-compare .err.neg { background: rgba(220,38,38,.14); color: #b91c1c; }
+  .result-compare .err.pos { background: rgba(16,185,129,.14); color: #047857; }
+  .result-lesson { margin-top: 10px; font-size: 12px; line-height: 1.5; color: var(--text); padding: 8px 10px; background: var(--panel-bg); border-radius: 4px; }
+  .result-foot { margin-top: 8px; display: flex; gap: 12px; font-size: 10px; color: var(--text-mute); }
+  /* 칩/리스트 결과 마커 */
+  .chip-result { font-size: 9px; margin-left: 2px; }
+  .list-result-flag { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+  .list-result-flag.sold { background: rgba(16,185,129,.16); color: #047857; }
+  .list-result-flag.failed, .list-result-flag.unknown, .list-result-flag.changed, .list-result-flag.withdrawn, .list-result-flag.postponed { background: rgba(107,114,128,.16); color: #4b5563; }
+  .list-result-flag.FN { background: rgba(220,38,38,.16); color: #b91c1c; }
 
   /* Naver section */
   .naver-section .naver-links { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
@@ -502,19 +530,29 @@
   </aside>
 </main>
 
-<!-- cases.js: cache-buster 인라인 로더 (수정 즉시 반영 보장) -->
+<!-- results.js + cases.js: cache-buster 인라인 로더 (수정 즉시 반영 보장) -->
+<!-- results.js(회고 실측)를 먼저 로드한 뒤 cases.js(예측)를 로드 → cases-loaded 발화. results.js 없거나 실패해도 캘린더는 정상 동작 -->
 <script>
   (function () {
-    const s = document.createElement('script');
-    s.src = 'cases.js?v=' + Date.now();
-    s.onload = function () { window.dispatchEvent(new Event('cases-loaded')); };
-    document.head.appendChild(s);
+    const v = Date.now();
+    function loadCases() {
+      const s = document.createElement('script');
+      s.src = 'cases.js?v=' + v;
+      s.onload = function () { window.dispatchEvent(new Event('cases-loaded')); };
+      document.head.appendChild(s);
+    }
+    const r = document.createElement('script');
+    r.src = 'results.js?v=' + v;
+    r.onload = loadCases;
+    r.onerror = loadCases; // results.js 없어도 진행
+    document.head.appendChild(r);
   })();
 </script>
 <script>
 (function () {
   function main() {
   const CASES = (window.AUCTION_CASES || []).slice();
+  const RESULTS = window.AUCTION_RESULTS || {};  // 회고 실측 (results.js, id로 join)
 
   // ===== Utilities =====
   // Korean money format — "2억 7,700만원" / "5,000만원" / "—"
@@ -883,6 +921,8 @@
         chip.appendChild(rd);
         // Label
         chip.appendChild(el('span', { cls: 'chip-text', text: chipLabel(c) }));
+        // 회고 결과 마커 (results.js)
+        if (RESULTS[c.id]) chip.appendChild(el('span', { cls: 'chip-result', text: RESULTS[c.id].status === 'sold' ? '🏁' : '◦' }));
         // Mini margin/saleRate indicator
         const mini = el('span', { cls: 'chip-mini' });
         const margin = (c.kbPrice && c.minimumPrice) ? c.kbPrice - c.minimumPrice : null;
@@ -1007,6 +1047,8 @@
       {
         const td = el('td');
         td.appendChild(el('span', { cls: 'verdict-badge ' + c.verdict, text: c.verdict }));
+        const _ar = RESULTS[c.id];
+        if (_ar) td.appendChild(el('span', { cls: 'list-result-flag ' + (_ar.quadrant || _ar.status), text: _ar.quadrant || (_ar.status === 'sold' ? '낙찰' : _ar.status === 'failed' ? '유찰' : '결과') }));
         tr.appendChild(td);
       }
       // saleDate + dday
@@ -1146,6 +1188,42 @@
     const reasonSec = section('판정 사유');
     reasonSec.appendChild(el('div', { cls: 'reason-box ' + c.verdict, text: c.verdictReason || '—' }));
     inner.appendChild(reasonSec);
+
+    // 🏁 경매 결과 (회고 — 예측 vs 실측). results.js와 id로 join.
+    const ar = RESULTS[c.id];
+    if (ar) {
+      const QLAB = { TP: '정확 GO', FP: '헛 GO', FN: '놓친 기회', TN: '정확 NO-GO' };
+      const SLAB = { sold: '매각(낙찰)', failed: '유찰', changed: '변경', withdrawn: '취하', postponed: '연기', unknown: '미확인(변경/취하 추정)' };
+      const rsec = section('🏁 경매 결과 (회고)');
+      const box = el('div', { cls: 'result-box ' + (ar.quadrant ? 'q-' + ar.quadrant : 'q-none') });
+      const head = el('div', { cls: 'result-head' });
+      head.appendChild(el('span', { cls: 'result-status ' + ar.status, text: SLAB[ar.status] || ar.status }));
+      if (ar.quadrant) head.appendChild(el('span', { cls: 'result-quadrant ' + ar.quadrant, text: ar.quadrant + ' · ' + (QLAB[ar.quadrant] || '') }));
+      box.appendChild(head);
+      const rg = el('div', { cls: 'detail-grid' });
+      rg.appendChild(field('낙찰가', ar.soldPrice != null ? fmtMoney(ar.soldPrice) : (ar.priceMasked ? '🔒 마스킹' : '—'), { mono: true, price: true, muted: ar.soldPrice == null }));
+      rg.appendChild(field('낙찰가율', ar.soldRate != null ? fmtPct(ar.soldRate) : '—', { mono: true, muted: ar.soldRate == null }));
+      rg.appendChild(field('응찰자수', ar.bidderCount != null ? ar.bidderCount + '명' : '—', { mono: true, muted: ar.bidderCount == null }));
+      rg.appendChild(field('실제 매각일', ar.saleDateActual || '—', { mono: true, muted: !ar.saleDateActual }));
+      box.appendChild(rg);
+      if (ar.predictedSaleRate != null || ar.soldRate != null) {
+        const cmp = el('div', { cls: 'result-compare' });
+        cmp.appendChild(el('span', { cls: 'k', text: '예측 매각가율' }));
+        cmp.appendChild(el('span', { cls: 'v', text: ar.predictedSaleRate != null ? fmtPct(ar.predictedSaleRate) : '—' }));
+        cmp.appendChild(el('span', { cls: 'arrow', text: '→' }));
+        cmp.appendChild(el('span', { cls: 'k', text: '실측' }));
+        cmp.appendChild(el('span', { cls: 'v', text: ar.soldRate != null ? fmtPct(ar.soldRate) : '🔒' }));
+        if (ar.saleRateError != null) cmp.appendChild(el('span', { cls: 'err' + (ar.saleRateError < 0 ? ' neg' : ' pos'), text: (ar.saleRateError > 0 ? '+' : '') + (ar.saleRateError * 100).toFixed(1) + 'pp' }));
+        box.appendChild(cmp);
+      }
+      if (ar.lesson) box.appendChild(el('div', { cls: 'result-lesson', text: '📌 ' + ar.lesson }));
+      const foot = el('div', { cls: 'result-foot' });
+      foot.appendChild(el('span', { text: '출처 ' + (ar.source || '—') }));
+      if (ar.retrospectedAt) foot.appendChild(el('span', { text: '회고 ' + ar.retrospectedAt }));
+      box.appendChild(foot);
+      rsec.appendChild(box);
+      inner.appendChild(rsec);
+    }
 
     // Numbers
     const numSec = section('핵심 수치');
