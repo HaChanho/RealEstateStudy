@@ -115,6 +115,7 @@
   .chip .chip-mini { display: flex; gap: 2px; align-items: center; }
   .chip .mini-bar { width: 22px; height: 4px; background: var(--surface-3); border-radius: 2px; overflow: hidden; }
   .chip .mini-bar-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #84cc16, #fcd34d); }
+  .chip .chip-price { font-weight: 700; font-size: 10px; white-space: nowrap; letter-spacing: -0.02em; }
   /* Outlined soft chips — pale tint + colored border + colored verdict-text. Modern light-admin look. */
   .chip.pending   { background: rgba(56,189,248,.10); border-color: rgba(2,132,199,.60); color: #075985; }
   .chip.candidate { background: rgba(167,139,250,.10); border-color: rgba(124,58,237,.55); color: #5b21b6; }
@@ -424,6 +425,8 @@
     .detail-inner { width: 100%; }
     .calendar .day { min-height: 80px; }
     .list-table thead th, .list-table tbody td { padding: 8px 6px; font-size: 11px; }
+    .resize-handle { display: none; }  /* 전체화면 패널에선 리사이즈 비활성 (오작동 방지) */
+    .chip .mini-bar { display: none; }  /* 모바일 칩 정리: 추상 마진바 숨김, 최저가 텍스트는 유지 */
   }
 </style>
 </head>
@@ -539,6 +542,10 @@
       const s = document.createElement('script');
       s.src = 'cases.js?v=' + v;
       s.onload = function () { window.dispatchEvent(new Event('cases-loaded')); };
+      s.onerror = function () {
+        const cal = document.getElementById('calendar');
+        if (cal) cal.innerHTML = '<div style="padding:40px;text-align:center;color:#b91c1c;font-size:15px;line-height:1.6">⚠️ 물건 데이터(cases.js)를 불러오지 못했습니다.<br>새로고침하거나 잠시 후 다시 시도해 주세요.</div>';
+      };
       document.head.appendChild(s);
     }
     const r = document.createElement('script');
@@ -914,7 +921,7 @@
         const cls = ['chip', c.verdict];
         if (dCls === 'urgent' && c.verdict !== 'expired') cls.push('dday-urgent');
         else if (dCls === 'soon' && c.verdict !== 'expired') cls.push('dday-soon');
-        const chip = el('div', { cls: cls.join(' '), title: `${c.caseNumber} · ${c.complex}${r != null ? ' · ★' + r : ''}` });
+        const chip = el('div', { cls: cls.join(' '), title: `${c.caseNumber} · ${c.complex}${r != null ? ' · ★' + r : ''}${c.minimumPrice != null ? ' · 최저 ' + fmtMoneyShort(c.minimumPrice) : ''}` });
         if (c.id === state.selectedId) chip.classList.add('selected');
         // Rating dot
         const rd = el('span', { cls: 'chip-rating ' + (r != null ? 'r' + r : 'none'), text: r != null ? r + '' : '·' });
@@ -923,8 +930,9 @@
         chip.appendChild(el('span', { cls: 'chip-text', text: chipLabel(c) }));
         // 회고 결과 마커 (results.js)
         if (RESULTS[c.id]) chip.appendChild(el('span', { cls: 'chip-result', text: RESULTS[c.id].status === 'sold' ? '🏁' : '◦' }));
-        // Mini margin/saleRate indicator
+        // Mini: 최저가(매매사업자 핵심 지표) + margin bar
         const mini = el('span', { cls: 'chip-mini' });
+        if (c.minimumPrice != null) mini.appendChild(el('span', { cls: 'chip-price', text: fmtMoneyShort(c.minimumPrice) }));
         const margin = (c.kbPrice && c.minimumPrice) ? c.kbPrice - c.minimumPrice : null;
         if (margin != null) {
           const bar = el('span', { cls: 'mini-bar' });
@@ -1137,7 +1145,7 @@
   }
 
   // ===== Detail panel =====
-  function verdictLabel(v) { return ({pending:'Pending', pass:'Pass', hold:'Hold', fail:'Fail', expired:'Expired'})[v] || v; }
+  function verdictLabel(v) { return ({pending:'Pending', candidate:'Candidate', pass:'Pass', hold:'Hold', fail:'Fail', expired:'Expired'})[v] || v; }
   function riskLabel(r) { return ({safe:'안전', moderate:'중간', risky:'위험'})[r] || r; }
 
   function openDetail(id, opts) {
@@ -1448,7 +1456,7 @@
 
     // Sales history (단지 매각 이력)
     if (Array.isArray(c.salesHistory) && c.salesHistory.length) {
-      const histSec = section('단지 매각 이력 (행크옥션)');
+      const histSec = section('단지 매각 이력 (지지옥션)');
       const valid = c.salesHistory.filter((s) => !s.outlier);
       if (valid.length) {
         const avgSoldRate = valid.reduce((a, s) => a + (s.soldRate || 0), 0) / valid.length;
@@ -1569,7 +1577,9 @@
     srcGrid.appendChild(field('마지막 갱신', c.updatedAt || '—', { wide: true }));
     if (c.hauctionUrl) {
       const link = el('a', { cls: 'ext-link', text: c.hauctionUrl, attrs: { href: c.hauctionUrl, target: '_blank', rel: 'noopener' } });
-      srcGrid.appendChild(field('행크옥션', link, { wide: true }));
+      // hauctionUrl 필드명은 스키마 호환 위해 유지. 라벨은 실제 URL 호스트로 판별 (지지옥션 전환 2026-05-31)
+      const srcLabel = /ggi\.co\.kr/.test(c.hauctionUrl) ? '지지옥션' : /hauction/.test(c.hauctionUrl) ? '행크옥션(구)' : '경매정보';
+      srcGrid.appendChild(field(srcLabel, link, { wide: true }));
     }
     if (c.reportPath) srcGrid.appendChild(field('보고서', c.reportPath, { wide: true }));
     srcSec.appendChild(srcGrid);
@@ -1670,10 +1680,15 @@
     });
   });
   syncVerdictToggleUI();
+  let searchDebounce;
   document.getElementById('f-search').addEventListener('input', (e) => {
-    state.filters.search = e.target.value.trim();
-    updateStats();
-    if (state.view === 'list') renderList(); else renderCalendar();
+    const val = e.target.value.trim();
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => {
+      state.filters.search = val;
+      updateStats();
+      if (state.view === 'list') renderList(); else renderCalendar();
+    }, 150);
   });
   document.getElementById('f-reset').addEventListener('click', () => {
     state.filters = { verdictHidden: new Set(), region: '', priority: '', risk: '', rating: '', search: '' };
@@ -1692,6 +1707,13 @@
     setView(state.view);
     if (state.selectedId) openDetail(state.selectedId, { skipUrlSync: true });
     else closeDetail();
+  });
+  // 키보드 접근성 (a11y): ESC로 상세 패널 닫기
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && state.selectedId) {
+      e.preventDefault();
+      closeDetail();
+    }
   });
 
   // ===== Resizable detail panel =====
