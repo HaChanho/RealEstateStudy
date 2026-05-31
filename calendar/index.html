@@ -226,7 +226,7 @@
     100% { box-shadow: inset 0 0 0 2px rgba(139,92,246,0);   background: transparent; }
   }
   .detail-inner.flash { animation: detail-flash .55s ease-out; }
-  .detail-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+  .detail-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; position: sticky; top: 0; z-index: 5; background: var(--surface); padding-bottom: 10px; border-bottom: 1px solid var(--border); }
   .detail-header .case-num { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
   .detail-header .complex-sub { color: var(--text-dim); font-size: 13px; margin-top: 2px; }
   .detail-header .actions { display: flex; gap: 4px; }
@@ -420,6 +420,15 @@
   .case-comments-loading { padding: 16px; text-align: center; color: var(--text-mute); font-size: 12px; font-style: italic; }
   .case-comments-disabled { padding: 14px; background: var(--surface-2); border: 1px dashed var(--border); border-radius: 6px; color: var(--text-mute); font-size: 11px; text-align: center; }
 
+  /* 데스크톱 기본: 필터 토글·패널 backdrop 비표시 (사이드 패널이라 불필요) */
+  .filter-toggle { display: none; }
+  .panel-backdrop { display: none; }
+  /* 활성 필터 요약 칩 */
+  .active-filters { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px; margin-top: 6px; }
+  .active-filters:empty { display: none; }
+  .active-filter-chip { display: inline-flex; align-items: center; gap: 2px; background: rgba(59,111,222,.12); color: var(--accent-strong); border: 1px solid rgba(59,111,222,.30); border-radius: 999px; padding: 2px 4px 2px 10px; font-size: 11px; font-weight: 600; }
+  .active-filter-chip .afc-x { background: none; border: none; color: inherit; cursor: pointer; font-size: 14px; line-height: 1; padding: 0 4px; border-radius: 50%; }
+  .active-filter-chip .afc-x:hover { background: rgba(0,0,0,.12); }
   @media (max-width: 900px) {
     .detail-panel.open { width: 100%; position: fixed; top: 0; right: 0; bottom: 0; z-index: 20; }
     .detail-inner { width: 100%; }
@@ -427,6 +436,15 @@
     .list-table thead th, .list-table tbody td { padding: 8px 6px; font-size: 11px; }
     .resize-handle { display: none; }  /* 전체화면 패널에선 리사이즈 비활성 (오작동 방지) */
     .chip .mini-bar { display: none; }  /* 모바일 칩 정리: 추상 마진바 숨김, 최저가 텍스트는 유지 */
+    /* P0 모바일: 필터 수납 토글 */
+    .filter-toggle { display: inline-flex; align-items: center; gap: 6px; margin: 8px 12px 0; padding: 8px 14px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; }
+    .filters { display: none; }
+    .filters.open { display: flex; }
+    /* P0 모바일: stats 가로 스크롤 1줄 (16개 pill 다단 점유 방지) */
+    .stats { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+    .stats .pill { flex: 0 0 auto; }
+    /* P0 모바일: 패널 backdrop (탭하면 닫힘 — 딥링크 갇힘 해소) */
+    .panel-backdrop.show { display: block; position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 19; }
   }
 </style>
 </head>
@@ -462,7 +480,8 @@
   <span class="stats-meta">data v<span id="schema-ver">—</span> · 갱신 <span id="data-updated">—</span></span>
 </div>
 
-<div class="filters">
+<button class="filter-toggle" id="filter-toggle" type="button" aria-expanded="false" aria-controls="filters">🔍 필터 ▾</button>
+<div class="filters" id="filters">
   <div class="filter-group">
     <label>판정</label>
     <div class="verdict-toggles" id="f-verdict-toggles" title="클릭으로 해당 판정 숨기기/표시. 설정은 자동 저장됩니다.">
@@ -513,6 +532,7 @@
   </div>
   <button class="reset" id="f-reset">필터 초기화</button>
 </div>
+<div class="active-filters" id="active-filters"></div>
 
 <main>
   <div class="view-wrap">
@@ -527,6 +547,7 @@
       <div id="list-empty" class="list-empty" hidden>필터 조건에 맞는 사건이 없습니다.</div>
     </div>
   </div>
+  <div class="panel-backdrop" id="panel-backdrop"></div>
   <aside class="detail-panel" id="detail-panel">
     <div class="resize-handle" id="resize-handle" title="드래그하여 패널 너비 조절"></div>
     <div class="detail-inner" id="detail-inner"></div>
@@ -861,6 +882,37 @@
     }
     document.getElementById('schema-ver').textContent = window.AUCTION_SCHEMA_VERSION || '—';
     document.getElementById('data-updated').textContent = window.AUCTION_LAST_UPDATED || '—';
+    renderActiveFilters();
+  }
+
+  // 활성 필터 개별 해제
+  function clearFilter(key) {
+    state.filters[key] = '';
+    const sel = document.getElementById('f-' + key);
+    if (sel) sel.value = '';
+    updateStats();
+    if (state.view === 'list') renderList(); else renderCalendar();
+  }
+  // 활성 필터 요약 칩 (select 기반 필터만 — verdict 토글은 별도 버튼으로 노출됨)
+  function renderActiveFilters() {
+    const cont = document.getElementById('active-filters');
+    if (!cont) return;
+    cont.replaceChildren();
+    const f = state.filters;
+    const chips = [];
+    if (f.region) chips.push(['region', '지역 ' + f.region]);
+    if (f.priority) chips.push(['priority', f.priority + '순위']);
+    if (f.risk) chips.push(['risk', '권리 ' + riskLabel(f.risk)]);
+    if (f.rating) chips.push(['rating', '★' + f.rating + '↑']);
+    if (f.search) chips.push(['search', '"' + f.search + '"']);
+    for (const [key, label] of chips) {
+      const chip = el('span', { cls: 'active-filter-chip' });
+      chip.appendChild(el('span', { text: label }));
+      const x = el('button', { cls: 'afc-x', text: '×', attrs: { 'aria-label': label + ' 해제', type: 'button' } });
+      x.addEventListener('click', () => clearFilter(key));
+      chip.appendChild(x);
+      cont.appendChild(chip);
+    }
   }
 
   // ===== Calendar view =====
@@ -1154,6 +1206,7 @@
     state.selectedId = id;
     const panel = document.getElementById('detail-panel');
     panel.classList.add('open');
+    document.getElementById('panel-backdrop').classList.add('show'); // 모바일 backdrop
     const inner = document.getElementById('detail-inner');
     inner.replaceChildren();
     // Scroll to top + brief flash so user clearly perceives the panel changed
@@ -1366,7 +1419,7 @@
       const tradeAvg = c.naverData && c.naverData.recentTradeAvg;
       const askMid = c.naverData && c.naverData.askingPrice && c.naverData.askingPrice.low && c.naverData.askingPrice.high
         ? (c.naverData.askingPrice.low + c.naverData.askingPrice.high) / 2 : null;
-      const COST = 30_000_000; // 명도·취득세·수리 가정 ₩30M
+      const COST = 30_000_000; // 명도·취득세·수리 가정 ₩30M (v4 보수 기준 — finance.md v4 보수/v5 낙관 2단 정책 중 보수)
 
       if (c.appraisalPrice && c.minimumPrice && (tradeAvg || askMid)) {
         const sec = section('입찰가 시나리오 (자동)');
@@ -1388,7 +1441,7 @@
 
         assumptions.appendChild(el('span', { cls: 'a-label', text: '감정가 ' }));
         assumptions.appendChild(el('span', { cls: 'a-value', text: fmtMoney(c.appraisalPrice) }));
-        assumptions.appendChild(el('span', { cls: 'a-label', text: ' · 명도+취득+수리 ' }));
+        assumptions.appendChild(el('span', { cls: 'a-label', text: ' · 명도+취득+수리(v4 보수) ' }));
         assumptions.appendChild(el('span', { cls: 'a-value', text: '-' + fmtMoney(COST) }));
         if (derivedRate) {
           assumptions.appendChild(el('span', { cls: 'a-label', text: ' · 기준 매각가율 ' }));
@@ -1619,6 +1672,7 @@
   function closeDetail() {
     state.selectedId = null;
     document.getElementById('detail-panel').classList.remove('open');
+    document.getElementById('panel-backdrop').classList.remove('show'); // 모바일 backdrop 해제
     syncUrl();
     if (state.view === 'list') renderList();
     else renderCalendar();
@@ -1691,7 +1745,7 @@
     }, 150);
   });
   document.getElementById('f-reset').addEventListener('click', () => {
-    state.filters = { verdictHidden: new Set(), region: '', priority: '', risk: '', rating: '', search: '' };
+    state.filters = { verdictHidden: new Set(['fail']), region: '', priority: '', risk: '', rating: '', search: '' };
     saveVerdictHidden(state.filters.verdictHidden);
     syncVerdictToggleUI();
     document.getElementById('f-region').value = '';
@@ -1715,6 +1769,19 @@
       closeDetail();
     }
   });
+  // 모바일: backdrop 탭하면 패널 닫기 (딥링크 갇힘 해소)
+  document.getElementById('panel-backdrop').addEventListener('click', closeDetail);
+  // 모바일: 필터 수납 토글
+  (function () {
+    const tg = document.getElementById('filter-toggle');
+    const fl = document.getElementById('filters');
+    if (!tg || !fl) return;
+    tg.addEventListener('click', () => {
+      const open = fl.classList.toggle('open');
+      tg.setAttribute('aria-expanded', open ? 'true' : 'false');
+      tg.textContent = open ? '🔍 필터 ▴' : '🔍 필터 ▾';
+    });
+  })();
 
   // ===== Resizable detail panel =====
   applyPanelWidth(loadPanelWidth());
