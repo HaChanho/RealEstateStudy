@@ -1541,6 +1541,8 @@
         const epTone = ep >= 25_000_000 ? 'positive' : ep <= -10_000_000 ? 'negative' : null;
         pgrid.appendChild(field('예상 수익 (세전 · EP70)', fmtMoneySigned(ep), { mono: true, price: true, tone: epTone }));
       }
+      // 수리비는 변동성이 크고 사용자가 임의 조절 가능 → EP70·예상비용에서 제외, 별도 참고치로 노출.
+      if (c.repairCost != null) pgrid.appendChild(field('예상 수리비 (참고 · EP70 제외)', fmtMoney(c.repairCost), { mono: true, muted: true }));
       profSec.appendChild(pgrid);
       // 호가 입력 → 기대 매도가 상향 → EP70 재계산 (localStorage 저장, 브라우저별 유지)
       if (c.bid70 != null && cost != null) {
@@ -1566,7 +1568,7 @@
         hwrap.appendChild(hres);
         profSec.appendChild(hwrap);
       }
-      profSec.appendChild(el('div', { cls: 'small-note', text: '세전 = 종합소득세·명도비·인수금 제외 / 비용 = 취득세·법무등기(법무통)·대출이자(2~6개월)·중개비·수리비. 매도가는 실거래 기준 — 현재 호가를 입력하면 기대 매도가·예상 수익이 상향 재계산됨. 정본: bid-price-engine §0.5 v6.1' }));
+      profSec.appendChild(el('div', { cls: 'small-note', text: '세전 = 종합소득세·명도비·인수금·수리비 제외 / 비용 = 취득세·법무등기(법무통)·대출이자(2~6개월)·중개비. 수리비는 변동성이 커 EP70에서 빼고 별도 참고치로 표기(사용자 직접 가감). 매도가는 실거래 기준 — 현재 호가 입력 시 기대 매도가·예상 수익 상향 재계산. 정본: bid-price-engine §0.5 v8' }));
       inner.appendChild(profSec);
     }
 
