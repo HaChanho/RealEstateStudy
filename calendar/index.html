@@ -289,6 +289,13 @@
   .chip-tier.tier-star { color: #facc15; } .chip-tier.tier-watch { color: #60a5fa; } .chip-tier.tier-watchlist { color: #94a3b8; }
   /* EP70 리스트 셀 */
   td.col-num.ep-pos { color: var(--positive); } td.col-num.ep-neg { color: var(--negative); }
+  /* 호가 입력 UI */
+  .hoga-wrap { margin-top: 10px; padding: 10px 12px; background: rgba(148,163,184,.06); border: 1px solid rgba(148,163,184,.18); border-radius: 8px; }
+  .hoga-label { display: block; font-size: 11px; color: var(--text-mute); margin-bottom: 6px; }
+  .hoga-input { width: 160px; padding: 6px 9px; font-size: 13px; font-family: inherit; background: var(--bg, #0f1115); color: var(--text, #e5e7eb); border: 1px solid rgba(148,163,184,.35); border-radius: 6px; }
+  .hoga-input:focus { outline: none; border-color: rgba(96,165,250,.6); }
+  .hoga-result { margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--text-mute); }
+  .hoga-result.pos { color: var(--positive); } .hoga-result.neg { color: var(--negative); } .hoga-result.mid { color: #facc15; }
 
   .tag-list { display: flex; flex-wrap: wrap; gap: 4px; }
   .tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); }
@@ -731,7 +738,7 @@
     view: 'calendar', // 'calendar' | 'list'
     currentMonth: (() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; })(),
     filters: { verdictHidden: loadVerdictHidden(), region: '', priority: '', risk: '', rating: '', search: '', result: '' },
-    sort: { key: 'saleDate', dir: 'asc' },
+    sort: { key: 'expectedProfit70', dir: 'desc' },  // v6.1: 예상수익 내림차순 기본 (미산출은 하단)
     selectedId: null,
     expandedDates: new Set(), // dates the user clicked "+N건" on — persists across re-renders
   };
@@ -1523,7 +1530,31 @@
         pgrid.appendChild(field('예상 수익 (세전 · EP70)', fmtMoneySigned(ep), { mono: true, price: true, tone: epTone }));
       }
       profSec.appendChild(pgrid);
-      profSec.appendChild(el('div', { cls: 'small-note', text: '세전 = 종합소득세·명도비·인수금 제외 / 비용 = 취득세·법무등기(법무통)·대출이자(2~6개월)·중개비·수리비. 매도가는 실거래 기준(호가 미반영) — 현재 호가가 높으면 수익 ↑. 정본: bid-price-engine §0.5 v6.1' }));
+      // 호가 입력 → 기대 매도가 상향 → EP70 재계산 (localStorage 저장, 브라우저별 유지)
+      if (c.bid70 != null && cost != null) {
+        const hwrap = el('div', { cls: 'hoga-wrap' });
+        hwrap.appendChild(el('span', { cls: 'hoga-label', text: '🏷️ 호가 반영 (만원, 선택)' }));
+        const hin = el('input', { cls: 'hoga-input', attrs: { type: 'number', placeholder: '예: 22000', inputmode: 'numeric', min: '0' } });
+        const hres = el('div', { cls: 'hoga-result' });
+        const LS = 'hoga:' + c.id;
+        const recompute = () => {
+          const man = parseFloat(hin.value);
+          if (!man || man <= 0) { hres.textContent = ''; hres.className = 'hoga-result'; try { localStorage.removeItem(LS); } catch (e) {} return; }
+          const hoga = Math.round(man) * 10000;
+          const sale = Math.max(c.neutralSalePrice || 0, hoga);
+          const ep2 = sale - c.bid70 - cost;
+          const tier2 = ep2 >= 25_000_000 ? '★ Primary' : ep2 >= 15_000_000 ? '◇ Watch' : ep2 > -10_000_000 ? '▷ Watchlist' : '제외';
+          hres.textContent = `→ 기대 매도가 ${fmtMoney(sale)} 적용 시 예상 수익 ${fmtMoneySigned(ep2)} (${tier2})`;
+          hres.className = 'hoga-result ' + (ep2 >= 15_000_000 ? 'pos' : ep2 <= -10_000_000 ? 'neg' : 'mid');
+          try { localStorage.setItem(LS, String(Math.round(man))); } catch (e) {}
+        };
+        hin.addEventListener('input', recompute);
+        try { const saved = localStorage.getItem(LS); if (saved) { hin.value = saved; recompute(); } } catch (e) {}
+        hwrap.appendChild(hin);
+        hwrap.appendChild(hres);
+        profSec.appendChild(hwrap);
+      }
+      profSec.appendChild(el('div', { cls: 'small-note', text: '세전 = 종합소득세·명도비·인수금 제외 / 비용 = 취득세·법무등기(법무통)·대출이자(2~6개월)·중개비·수리비. 매도가는 실거래 기준 — 현재 호가를 입력하면 기대 매도가·예상 수익이 상향 재계산됨. 정본: bid-price-engine §0.5 v6.1' }));
       inner.appendChild(profSec);
     }
 
