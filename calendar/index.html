@@ -278,6 +278,17 @@
   .sub-note { color: var(--text-mute); font-size: 11px; }
   .small-note { color: var(--text-mute); font-size: 10px; margin-top: 1px; }
   .priority-tag { color: var(--text-mute); font-size: 10px; margin-left: 4px; }
+  /* v6.1 관심 tier 배지 */
+  .tier-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin: 0 0 8px; letter-spacing: -.2px; }
+  .tier-badge.tier-star      { background: rgba(250,204,21,.16);  color: #facc15; border: 1px solid rgba(250,204,21,.4); }
+  .tier-badge.tier-watch     { background: rgba(96,165,250,.16);  color: #60a5fa; border: 1px solid rgba(96,165,250,.4); }
+  .tier-badge.tier-watchlist { background: rgba(148,163,184,.14); color: #94a3b8; border: 1px solid rgba(148,163,184,.35); }
+  .tier-badge.tier-excl      { background: rgba(252,165,165,.12); color: var(--negative); border: 1px solid rgba(252,165,165,.35); }
+  /* 칩 tier 미니배지 */
+  .chip-tier { font-size: 9px; font-weight: 800; margin-left: 3px; }
+  .chip-tier.tier-star { color: #facc15; } .chip-tier.tier-watch { color: #60a5fa; } .chip-tier.tier-watchlist { color: #94a3b8; }
+  /* EP70 리스트 셀 */
+  td.col-num.ep-pos { color: var(--positive); } td.col-num.ep-neg { color: var(--negative); }
 
   .tag-list { display: flex; flex-wrap: wrap; gap: 4px; }
   .tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); }
@@ -321,12 +332,38 @@
   .result-compare .err.pos { background: rgba(16,185,129,.14); color: #047857; }
   .result-lesson { margin-top: 10px; font-size: 12px; line-height: 1.5; color: var(--text); padding: 8px 10px; background: var(--panel-bg); border-radius: 4px; }
   .result-foot { margin-top: 8px; display: flex; gap: 12px; font-size: 10px; color: var(--text-mute); }
-  /* 칩/리스트 결과 마커 */
-  .chip-result { font-size: 9px; margin-left: 2px; }
-  .list-result-flag { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+  /* 칩 결과 배지 (캘린더 한눈 가시성) */
+  .chip-result-badge { font-size: 9.5px; font-weight: 700; padding: 0 4px; border-radius: 4px; margin-left: 3px; line-height: 1.55; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .chip-result-badge.sold   { background: rgba(16,185,129,.18); color: #047857; }
+  .chip-result-badge.TP     { background: rgba(16,185,129,.24); color: #047857; }
+  .chip-result-badge.FN     { background: rgba(220,38,38,.20);  color: #b91c1c; }
+  .chip-result-badge.FP     { background: rgba(245,158,11,.20); color: #b45309; }
+  .chip-result-badge.failed { background: rgba(107,114,128,.16); color: #6b7280; }
+  .chip-result-badge.muted  { background: rgba(107,114,128,.12); color: #9ca3af; font-weight: 600; }
+  /* 리스트 결과 플래그 */
+  .list-result-flag { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; font-variant-numeric: tabular-nums; }
   .list-result-flag.sold { background: rgba(16,185,129,.16); color: #047857; }
   .list-result-flag.failed, .list-result-flag.unknown, .list-result-flag.changed, .list-result-flag.withdrawn, .list-result-flag.postponed { background: rgba(107,114,128,.16); color: #4b5563; }
   .list-result-flag.FN { background: rgba(220,38,38,.16); color: #b91c1c; }
+  .list-result-flag.TP { background: rgba(16,185,129,.22); color: #047857; }
+  .list-result-flag.FP { background: rgba(245,158,11,.18); color: #b45309; }
+
+  /* 🏁 경매 결과 스코어카드 (stats 아래, 필터 무관 전체 기준) */
+  .result-stats { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; padding: 7px 16px; background: var(--panel-bg-2); border-bottom: 1px solid var(--border); font-size: 12px; }
+  .result-stats .rs-title { font-weight: 700; color: var(--text); margin-right: 2px; }
+  .result-stats .rs-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; background: var(--panel-bg); font-variant-numeric: tabular-nums; border: 1px solid transparent; }
+  .result-stats .rs-pill b { font-weight: 700; }
+  .result-stats .rs-pill.sold b { color: #047857; }
+  .result-stats .rs-pill.fn   { background: rgba(220,38,38,.12);  color: #b91c1c; }
+  .result-stats .rs-pill.tp   { background: rgba(16,185,129,.12); color: #047857; }
+  .result-stats .rs-pill.fp   { background: rgba(245,158,11,.14); color: #b45309; }
+  .result-stats .rs-pill.tn   { background: rgba(16,185,129,.08); color: #047857; }
+  .result-stats.clickable .rs-pill { cursor: pointer; }
+  .result-stats.clickable .rs-pill:hover { border-color: var(--accent); }
+  .result-stats .rs-pill.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .result-stats .rs-sep { color: var(--text-mute); opacity: .5; }
+  .result-stats .rs-metric { color: var(--text-mute); }
+  .result-stats .rs-metric b { color: var(--text); font-variant-numeric: tabular-nums; }
 
   /* Naver section */
   .naver-section .naver-links { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
@@ -480,6 +517,8 @@
   <span class="stats-meta">data v<span id="schema-ver">—</span> · 갱신 <span id="data-updated">—</span></span>
 </div>
 
+<div class="result-stats clickable" id="result-stats" hidden></div>
+
 <button class="filter-toggle" id="filter-toggle" type="button" aria-expanded="false" aria-controls="filters">🔍 필터 ▾</button>
 <div class="filters" id="filters">
   <div class="filter-group">
@@ -513,6 +552,18 @@
       <option value="safe">Safe</option>
       <option value="moderate">Moderate</option>
       <option value="risky">Risky</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label for="f-result">결과</label>
+    <select id="f-result" title="경매 결과로 필터. 선택 시 판정 숨김(Fail 등)을 무시하고 표시합니다.">
+      <option value="">전체</option>
+      <option value="has">결과있음</option>
+      <option value="sold">낙찰</option>
+      <option value="failed">유찰</option>
+      <option value="FN">놓친 기회(FN)</option>
+      <option value="TP">정확 GO(TP)</option>
+      <option value="nosale">변경·취하·연기</option>
     </select>
   </div>
   <div class="filter-group">
@@ -679,7 +730,7 @@
   const state = {
     view: 'calendar', // 'calendar' | 'list'
     currentMonth: (() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; })(),
-    filters: { verdictHidden: loadVerdictHidden(), region: '', priority: '', risk: '', rating: '', search: '' },
+    filters: { verdictHidden: loadVerdictHidden(), region: '', priority: '', risk: '', rating: '', search: '', result: '' },
     sort: { key: 'saleDate', dir: 'asc' },
     selectedId: null,
     expandedDates: new Set(), // dates the user clicked "+N건" on — persists across re-renders
@@ -843,7 +894,18 @@
   }
   function passesFilter(c) {
     const f = state.filters;
-    if (f.verdictHidden.has(c.verdict)) return false;
+    // 결과 필터가 켜져 있으면 판정 숨김(기본 Fail 숨김)을 무시 — FN(놓친 기회)은 fail에 있으므로
+    if (!f.result && f.verdictHidden.has(c.verdict)) return false;
+    if (f.result) {
+      const ar = RESULTS[c.id];
+      if (!ar) return false;
+      if (f.result === 'sold' && ar.status !== 'sold') return false;
+      else if (f.result === 'failed' && ar.status !== 'failed') return false;
+      else if (f.result === 'FN' && ar.quadrant !== 'FN') return false;
+      else if (f.result === 'TP' && ar.quadrant !== 'TP') return false;
+      else if (f.result === 'nosale' && !['changed', 'withdrawn', 'postponed', 'unknown'].includes(ar.status)) return false;
+      // 'has' → 결과만 있으면 통과
+    }
     if (f.region && c.region !== f.region) return false;
     if (f.priority && String(c.regionPriority) !== f.priority) return false;
     if (f.risk && c.rightsRisk !== f.risk) return false;
@@ -882,7 +944,101 @@
     }
     document.getElementById('schema-ver').textContent = window.AUCTION_SCHEMA_VERSION || '—';
     document.getElementById('data-updated').textContent = window.AUCTION_LAST_UPDATED || '—';
+    renderResultStats();
     renderActiveFilters();
+  }
+
+  // 🏁 경매 결과 스코어카드 — 필터와 무관하게 전체 결과 기준(FN은 기본 숨김 Fail에 있으므로).
+  // 결과(낙찰/유찰/무산) 분포 + 캘리브레이션 4분면 + 평균 낙찰가율.
+  function renderResultStats() {
+    const cont = document.getElementById('result-stats');
+    if (!cont) return;
+    const rs = { sold: 0, failed: 0, nosale: 0, TP: 0, FP: 0, FN: 0, TN: 0, rateSum: 0, rateN: 0, total: 0 };
+    for (const c of CASES) {
+      const ar = RESULTS[c.id];
+      if (!ar) continue;
+      rs.total++;
+      if (ar.status === 'sold') rs.sold++;
+      else if (ar.status === 'failed') rs.failed++;
+      else rs.nosale++;
+      if (ar.quadrant && rs[ar.quadrant] != null) rs[ar.quadrant]++;
+      if (ar.soldRate != null) { rs.rateSum += ar.soldRate; rs.rateN++; }
+    }
+    if (rs.total === 0) { cont.hidden = true; return; }
+    cont.hidden = false;
+    cont.replaceChildren();
+    const pill = (cls, label, n, filterKey) => {
+      const p = el('span', { cls: 'rs-pill ' + cls });
+      p.appendChild(el('span', { text: label + ' ' }));
+      p.appendChild(el('b', { text: String(n) }));
+      if (filterKey) {
+        if (state.filters.result === filterKey) p.classList.add('active');
+        p.addEventListener('click', () => {
+          const next = state.filters.result === filterKey ? '' : filterKey;
+          const selEl = document.getElementById('f-result');
+          selEl.value = next;
+          selEl.dispatchEvent(new Event('change', { bubbles: true })); // 변경 핸들러 재사용(달 자동 이동 포함)
+        });
+      }
+      return p;
+    };
+    cont.appendChild(el('span', { cls: 'rs-title', text: '🏁 경매 결과 ' + rs.total + '건' }));
+    cont.appendChild(pill('sold', '낙찰', rs.sold, 'sold'));
+    cont.appendChild(pill('', '유찰', rs.failed, 'failed'));
+    cont.appendChild(pill('', '무산', rs.nosale, 'nosale'));
+    cont.appendChild(el('span', { cls: 'rs-sep', text: '│' }));
+    cont.appendChild(pill('tp', 'TP 정확GO', rs.TP, 'TP'));
+    cont.appendChild(pill('fp', 'FP 헛GO', rs.FP, ''));
+    cont.appendChild(pill('fn', 'FN 놓친기회', rs.FN, 'FN'));
+    cont.appendChild(pill('tn', 'TN 정확NO-GO', rs.TN, ''));
+    cont.appendChild(el('span', { cls: 'rs-sep', text: '│' }));
+    const goN = rs.TP + rs.FP, nogoN = rs.TN + rs.FN;
+    if (nogoN > 0) {
+      const m = el('span', { cls: 'rs-metric' });
+      m.appendChild(el('span', { text: 'NO-GO 정확도 ' }));
+      m.appendChild(el('b', { text: Math.round(rs.TN / nogoN * 100) + '%' }));
+      m.title = 'TN / (TN+FN) — 우리가 거른 사건이 실제로도 안 팔렸을 비율';
+      cont.appendChild(m);
+    }
+    if (goN > 0) {
+      const m = el('span', { cls: 'rs-metric' });
+      m.appendChild(el('span', { text: 'GO 적중률 ' }));
+      m.appendChild(el('b', { text: Math.round(rs.TP / goN * 100) + '%' }));
+      m.title = 'TP / (TP+FP) — 우리가 GO한 사건이 실제 낙찰된 비율';
+      cont.appendChild(m);
+    }
+    if (rs.rateN > 0) {
+      const m = el('span', { cls: 'rs-metric' });
+      m.appendChild(el('span', { text: '평균 낙찰가율 ' }));
+      m.appendChild(el('b', { text: (rs.rateSum / rs.rateN * 100).toFixed(1) + '%' }));
+      m.title = '실측 낙찰가율이 확보된 ' + rs.rateN + '건 평균';
+      cont.appendChild(m);
+    }
+  }
+
+  // 칩 결과 배지 — 매각이면 낙찰가율(없으면 응찰자수/낙찰), FN은 빨강 강조. 미확정(unknown)은 배지 생략.
+  function resultChipBadge(ar) {
+    if (!ar) return null;
+    let cls, txt;
+    if (ar.status === 'sold') {
+      cls = ar.quadrant === 'FN' ? 'FN' : (ar.quadrant === 'TP' ? 'TP' : (ar.quadrant === 'FP' ? 'FP' : 'sold'));
+      if (ar.soldRate != null) txt = '낙 ' + Math.round(ar.soldRate * 100) + '%';
+      else if (ar.quadrant) txt = ar.quadrant;
+      else txt = ar.bidderCount != null ? '낙·' + ar.bidderCount + '명' : '낙찰';
+    } else if (ar.status === 'failed') {
+      cls = 'failed'; txt = '유찰';
+    } else if (ar.status === 'changed') { cls = 'muted'; txt = '변경'; }
+    else if (ar.status === 'withdrawn') { cls = 'muted'; txt = '취하'; }
+    else if (ar.status === 'postponed') { cls = 'muted'; txt = '연기'; }
+    else return null; // unknown → 정보 없음, 배지 생략
+    const sp = el('span', { cls: 'chip-result-badge ' + cls, text: txt });
+    const parts = [];
+    if (ar.soldPrice != null) parts.push(fmtMoneyShort(ar.soldPrice));
+    if (ar.soldRate != null) parts.push((ar.soldRate * 100).toFixed(1) + '%');
+    if (ar.bidderCount != null) parts.push(ar.bidderCount + '명 응찰');
+    if (ar.quadrant) parts.push(ar.quadrant);
+    sp.title = '경매 결과' + (parts.length ? ': ' + parts.join(' · ') : '');
+    return sp;
   }
 
   // 활성 필터 개별 해제
@@ -904,6 +1060,10 @@
     if (f.priority) chips.push(['priority', f.priority + '순위']);
     if (f.risk) chips.push(['risk', '권리 ' + riskLabel(f.risk)]);
     if (f.rating) chips.push(['rating', '★' + f.rating + '↑']);
+    if (f.result) {
+      const RLAB = { has: '결과있음', sold: '낙찰', failed: '유찰', FN: '놓친 기회(FN)', TP: '정확 GO(TP)', nosale: '변경·취하·연기' };
+      chips.push(['result', '결과: ' + (RLAB[f.result] || f.result)]);
+    }
     if (f.search) chips.push(['search', '"' + f.search + '"']);
     for (const [key, label] of chips) {
       const chip = el('span', { cls: 'active-filter-chip' });
@@ -980,8 +1140,10 @@
         chip.appendChild(rd);
         // Label
         chip.appendChild(el('span', { cls: 'chip-text', text: chipLabel(c) }));
-        // 회고 결과 마커 (results.js)
-        if (RESULTS[c.id]) chip.appendChild(el('span', { cls: 'chip-result', text: RESULTS[c.id].status === 'sold' ? '🏁' : '◦' }));
+        // v6.1 관심 tier 미니배지 (★/◇/▷)
+        { const _tm = { primary: '★', watch: '◇', watchlist: '▷' }; if (c.interestTier && _tm[c.interestTier]) chip.appendChild(el('span', { cls: 'chip-tier tier-' + (c.interestTier === 'primary' ? 'star' : c.interestTier === 'watch' ? 'watch' : 'watchlist'), text: _tm[c.interestTier] })); }
+        // 회고 결과 배지 (results.js) — 낙찰가율/판정을 칩에서 바로 노출
+        { const _b = resultChipBadge(RESULTS[c.id]); if (_b) chip.appendChild(_b); }
         // Mini: 최저가(매매사업자 핵심 지표) + margin bar
         const mini = el('span', { cls: 'chip-mini' });
         if (c.minimumPrice != null) mini.appendChild(el('span', { cls: 'chip-price', text: fmtMoneyShort(c.minimumPrice) }));
@@ -1035,8 +1197,10 @@
     { key: 'region',     label: '지역',    width: '80px' },
     { key: 'areaSqm',    label: '전용',    width: '60px',  align: 'right' },
     { key: 'minimumPrice', label: '최저가', width: '110px',  align: 'right' },
-    { key: 'kbPrice',    label: 'KB시세',  width: '110px',  align: 'right' },
-    { key: 'margin',     label: '마진',    width: '100px',  align: 'right' },
+    { key: 'kbPrice',    label: 'KB시세',  width: '105px',  align: 'right' },
+    { key: 'neutralSalePrice', label: '기대매도가', width: '110px', align: 'right' },
+    { key: 'bid70',      label: '입찰권장(70%)', width: '115px', align: 'right' },
+    { key: 'expectedProfit70', label: '예상수익', width: '100px', align: 'right' },
     { key: 'saleRate',   label: '매각가율', width: '70px', align: 'right' },
     { key: 'rounds',     label: '유찰',    width: '50px', align: 'center' },
   ];
@@ -1046,6 +1210,9 @@
       case 'rating': return effectiveRating(c) ?? -1;
       case 'margin': return (c.kbPrice && c.minimumPrice) ? c.kbPrice - c.minimumPrice : Number.NEGATIVE_INFINITY;
       case 'saleRate': return c.saleRate ?? 99; // 미확인은 뒤로
+      case 'expectedProfit70': return c.expectedProfit70 ?? Number.NEGATIVE_INFINITY; // 미산출은 뒤로
+      case 'bid70': return c.bid70 ?? Number.NEGATIVE_INFINITY;
+      case 'neutralSalePrice': return c.neutralSalePrice ?? Number.NEGATIVE_INFINITY;
       default: return c[key];
     }
   }
@@ -1108,7 +1275,12 @@
         const td = el('td');
         td.appendChild(el('span', { cls: 'verdict-badge ' + c.verdict, text: c.verdict }));
         const _ar = RESULTS[c.id];
-        if (_ar) td.appendChild(el('span', { cls: 'list-result-flag ' + (_ar.quadrant || _ar.status), text: _ar.quadrant || (_ar.status === 'sold' ? '낙찰' : _ar.status === 'failed' ? '유찰' : '결과') }));
+        if (_ar) {
+          const SMAP = { sold: '낙찰', failed: '유찰', changed: '변경', withdrawn: '취하', postponed: '연기', unknown: '미확정' };
+          const lab = _ar.quadrant || SMAP[_ar.status] || '결과';
+          const rate = _ar.soldRate != null ? ' ' + Math.round(_ar.soldRate * 100) + '%' : '';
+          td.appendChild(el('span', { cls: 'list-result-flag ' + (_ar.quadrant || _ar.status), text: lab + rate }));
+        }
         tr.appendChild(td);
       }
       // saleDate + dday
@@ -1142,19 +1314,17 @@
       { const td = el('td', { cls: 'col-num' }); td.style.textAlign = 'right'; td.textContent = fmtMoney(c.minimumPrice); td.title = fmtMoney(c.minimumPrice); tr.appendChild(td); }
       // kbPrice
       { const td = el('td', { cls: 'col-num' + (!c.kbPrice ? ' dim' : '') }); td.style.textAlign = 'right'; td.textContent = c.kbPrice ? fmtMoney(c.kbPrice) : '—'; if (c.kbPrice) td.title = fmtMoney(c.kbPrice); tr.appendChild(td); }
-      // margin (short form to keep column tight; full value on hover)
+      // 기대매도가 (neutralSalePrice = 최근 실거래)
+      { const td = el('td', { cls: 'col-num' + (c.neutralSalePrice == null ? ' dim' : '') }); td.style.textAlign = 'right'; td.textContent = c.neutralSalePrice ? fmtMoneyShort(c.neutralSalePrice) : '—'; if (c.neutralSalePrice) td.title = '기대 매도가(최근 실거래) ' + fmtMoney(c.neutralSalePrice); tr.appendChild(td); }
+      // 입찰권장가 (낙찰확률 70%)
+      { const td = el('td', { cls: 'col-num' + (c.bid70 == null ? ' dim' : '') }); td.style.textAlign = 'right'; td.textContent = c.bid70 ? fmtMoneyShort(c.bid70) : '—'; if (c.bid70) td.title = '입찰 권장가(낙찰확률 70%) ' + fmtMoney(c.bid70); tr.appendChild(td); }
+      // 예상수익 (세전 EP70, short form; 전액 hover)
       {
-        const margin = (c.kbPrice && c.minimumPrice) ? c.kbPrice - c.minimumPrice : null;
-        const td = el('td', { cls: 'col-num' });
+        const ep = c.expectedProfit70;
+        const td = el('td', { cls: 'col-num' + (ep == null ? ' dim' : ep >= 0 ? ' ep-pos' : ' ep-neg') });
         td.style.textAlign = 'right';
-        if (margin == null) td.textContent = '—';
-        else {
-          td.textContent = fmtMoneyShortSigned(margin);
-          td.title = fmtMoneySigned(margin);
-          if (margin < 0) td.style.color = 'var(--negative)';
-          else if (margin >= 5_000_000) td.style.color = 'var(--positive)';
-          else td.style.color = 'var(--text-mute)';
-        }
+        if (ep == null) td.textContent = '—';
+        else { td.textContent = fmtMoneyShortSigned(ep); td.title = '세전 기대수익(EP70) ' + fmtMoneySigned(ep); }
         tr.appendChild(td);
       }
       // saleRate
@@ -1266,6 +1436,7 @@
       rg.appendChild(field('낙찰가율', ar.soldRate != null ? fmtPct(ar.soldRate) : '—', { mono: true, muted: ar.soldRate == null }));
       rg.appendChild(field('응찰자수', ar.bidderCount != null ? ar.bidderCount + '명' : '—', { mono: true, muted: ar.bidderCount == null }));
       rg.appendChild(field('실제 매각일', ar.saleDateActual || '—', { mono: true, muted: !ar.saleDateActual }));
+      if (ar.secondBid != null) rg.appendChild(field('2위 응찰가', fmtMoney(ar.secondBid), { mono: true, price: true }));
       box.appendChild(rg);
       if (ar.predictedSaleRate != null || ar.soldRate != null) {
         const cmp = el('div', { cls: 'result-compare' });
@@ -1327,6 +1498,34 @@
     grid.appendChild(field('지역', regionNode));
     numSec.appendChild(grid);
     inner.appendChild(numSec);
+
+    // 💰 수익 분석 (v6.1) — 기대 매도가·입찰권장가(70%)·예상비용·예상수익
+    if (c.expectedProfit70 != null || c.bid70 != null || c.neutralSalePrice != null) {
+      const ep = (c.expectedProfit70 != null) ? c.expectedProfit70 : null;
+      const cost = (c.neutralSalePrice != null && c.bid70 != null && ep != null) ? (c.neutralSalePrice - c.bid70 - ep) : null;
+      const tierMap = {
+        primary:   { t: '★ Primary (세전 ≥2,500만)', cls: 'tier-star' },
+        watch:     { t: '◇ Watch (1,500~2,500만)',   cls: 'tier-watch' },
+        watchlist: { t: '▷ Watchlist (본전권)',       cls: 'tier-watchlist' },
+      };
+      const profSec = section('💰 수익 분석 (세전 · 낙찰확률 70% 기준)');
+      if (c.interestTier && tierMap[c.interestTier]) {
+        profSec.appendChild(el('span', { cls: 'tier-badge ' + tierMap[c.interestTier].cls, text: tierMap[c.interestTier].t }));
+      } else if (ep != null && ep <= -10_000_000) {
+        profSec.appendChild(el('span', { cls: 'tier-badge tier-excl', text: '제외 (예상 적자 ≥1,000만)' }));
+      }
+      const pgrid = el('div', { cls: 'detail-grid' });
+      if (c.neutralSalePrice != null) pgrid.appendChild(field('기대 매도가 (최근 실거래)', fmtMoney(c.neutralSalePrice), { mono: true, price: true }));
+      if (c.bid70 != null) pgrid.appendChild(field('입찰 권장가 (낙찰확률 70%)', fmtMoney(c.bid70), { mono: true, price: true, tone: 'positive' }));
+      if (cost != null) pgrid.appendChild(field('예상 비용', fmtMoney(cost), { mono: true, price: true }));
+      if (ep != null) {
+        const epTone = ep >= 25_000_000 ? 'positive' : ep <= -10_000_000 ? 'negative' : null;
+        pgrid.appendChild(field('예상 수익 (세전 · EP70)', fmtMoneySigned(ep), { mono: true, price: true, tone: epTone }));
+      }
+      profSec.appendChild(pgrid);
+      profSec.appendChild(el('div', { cls: 'small-note', text: '세전 = 종합소득세·명도비·인수금 제외 / 비용 = 취득세·법무등기(법무통)·대출이자(2~6개월)·중개비·수리비. 매도가는 실거래 기준(호가 미반영) — 현재 호가가 높으면 수익 ↑. 정본: bid-price-engine §0.5 v6.1' }));
+      inner.appendChild(profSec);
+    }
 
     // Rights
     const rightsSec = section('권리 상태');
@@ -1708,10 +1907,28 @@
     state.currentMonth = { y: d.getFullYear(), m: d.getMonth() };
     renderCalendar();
   });
-  for (const f of ['region', 'priority', 'risk', 'rating']) {
+  // 결과 필터를 켰을 때 현재 달에 해당 결과가 없으면, 가장 최근 매칭 사건의 달로 자동 이동
+  // (결과는 과거에 있는데 캘린더는 오늘=현재 달을 보고 있어 빈 화면이 되는 문제 해소)
+  function ensureResultMonthVisible() {
+    if (state.view !== 'calendar' || !state.filters.result) return;
+    const matches = CASES.filter(passesFilter);
+    if (!matches.length) return;
+    const cm = state.currentMonth;
+    const inCurrent = matches.some((c) => {
+      if (!c.saleDate) return false;
+      const d = new Date(c.saleDate + 'T00:00:00');
+      return d.getFullYear() === cm.y && d.getMonth() === cm.m;
+    });
+    if (inCurrent) return;
+    const dates = matches.map((c) => c.saleDate).filter(Boolean).sort();
+    const latest = dates[dates.length - 1];
+    if (latest) { const d = new Date(latest + 'T00:00:00'); state.currentMonth = { y: d.getFullYear(), m: d.getMonth() }; }
+  }
+  for (const f of ['region', 'priority', 'risk', 'rating', 'result']) {
     document.getElementById('f-' + f).addEventListener('change', (e) => {
       state.filters[f] = e.target.value;
       updateStats();
+      if (f === 'result') ensureResultMonthVisible();
       if (state.view === 'list') renderList(); else renderCalendar();
     });
   }
@@ -1745,13 +1962,14 @@
     }, 150);
   });
   document.getElementById('f-reset').addEventListener('click', () => {
-    state.filters = { verdictHidden: new Set(['fail']), region: '', priority: '', risk: '', rating: '', search: '' };
+    state.filters = { verdictHidden: new Set(['fail']), region: '', priority: '', risk: '', rating: '', search: '', result: '' };
     saveVerdictHidden(state.filters.verdictHidden);
     syncVerdictToggleUI();
     document.getElementById('f-region').value = '';
     document.getElementById('f-priority').value = '';
     document.getElementById('f-risk').value = '';
     document.getElementById('f-rating').value = '';
+    document.getElementById('f-result').value = '';
     document.getElementById('f-search').value = '';
     updateStats();
     if (state.view === 'list') renderList(); else renderCalendar();
