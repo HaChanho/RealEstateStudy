@@ -821,6 +821,36 @@
     if (c.rightsRisk === 'risky') {
       return { rating: 1, score: 0, breakdown: null, note: '권리 위험 — 인수 가능성' };
     }
+    // v8 (2026-06-01): EP70(시장앵커 세전 기대수익) 기반 별점. 수리비·신뢰도 페널티 반영.
+    // 레거시 매각가율·KB마진 공식은 EP70 미산출 과거 항목 폴백으로만 유지(아래).
+    if (c.expectedProfit70 != null) {
+      const ep = c.expectedProfit70;
+      let base, baseLabel;
+      if (ep >= 25_000_000) { base = 5; baseLabel = '★ Primary (EP70 ≥2,500만)'; }
+      else if (ep >= 15_000_000) { base = 4; baseLabel = '◇ Watch (1,500~2,500만)'; }
+      else if (ep >= 0) { base = 3; baseLabel = '▷ 본전권 (0~1,500만)'; }
+      else if (ep > -10_000_000) { base = 2; baseLabel = '▷ 한계 (−1,000만~0)'; }
+      else { base = 1; baseLabel = '제외 (적자 ≥1,000만)'; }
+      // 수리비 페널티 — 예상 수리비가 클수록 추천도 하락 (EP70엔 제외했지만 별점엔 반영)
+      let repairPen = 0, repairLabel = '없음';
+      if (c.repairCost != null) {
+        if (c.repairCost >= 25_000_000) { repairPen = 2; repairLabel = '−2 (대수선급 ≥2,500만)'; }
+        else if (c.repairCost >= 10_000_000) { repairPen = 1; repairLabel = '−1 (10M↑)'; }
+      }
+      // 신뢰도 페널티 — S가 KB폴백(실거래0)이거나 단지 매각사례 0건(k70 추정)
+      let confPen = 0; const confReasons = [];
+      if (c.neutralSalePrice != null && c.kbPrice != null && c.neutralSalePrice === c.kbPrice) confReasons.push('실거래0·KB앵커');
+      if (c.saleRateN === 0) confReasons.push('단지매각사례0·k70추정');
+      if (confReasons.length) confPen = 1;
+      let raw = base - repairPen - confPen;
+      if (ep >= 0 && raw < 2) raw = 2; // 본전권↑(EP70≥0)은 ★2 하한 (적자 물건과 동급으로 떨구지 않음)
+      const rating = Math.max(1, Math.min(5, raw));
+      return {
+        rating, score: rating * 20,
+        breakdown: { kind: 'v8', base, baseLabel, repairPen, repairLabel, repairCost: c.repairCost, confPen, confReasons, ep70: ep },
+        note: null,
+      };
+    }
     const b = {};
     let score = 0;
     const derived = deriveSaleRate(c);
@@ -1820,7 +1850,7 @@
     // Rating + breakdown
     const ratingResult = getRating(c);
     const finalRating = c.rating != null ? c.rating : ratingResult.rating;
-    const rateSec = section('등급 · 채점 (v3.3 정책)');
+    const rateSec = section('추천도 · 채점 (v8 — EP70·수리비·신뢰도)');
     const stars = el('div', { cls: 'rating-stars' });
     for (let i = 0; i < 5; i++) {
       stars.appendChild(el('span', { cls: 'star' + (finalRating != null && i < finalRating ? ' on' : ''), text: '★' }));
@@ -1834,6 +1864,16 @@
     else noteParts.push(`자동 · 점수 ${ratingResult.score}/100`);
     rateSec.appendChild(el('div', { cls: 'rating-note', text: noteParts.join(' · ') }));
     if (ratingResult.breakdown && c.rating == null) {
+      const bd = ratingResult.breakdown;
+      if (bd.kind === 'v8') {
+        const t8 = el('div', { cls: 'breakdown' });
+        const addR = (label, val) => { const r = el('div', { cls: 'breakdown-row' }); r.appendChild(el('span', { cls: 'b-label', text: label })); r.appendChild(el('span', { cls: 'b-score', text: val })); t8.appendChild(r); };
+        addR('EP70 등급', '★' + bd.base + ' · ' + bd.baseLabel);
+        addR('− 수리비 페널티', bd.repairLabel + (bd.repairCost != null ? ' (예상 ' + fmtMoney(bd.repairCost) + ')' : ''));
+        addR('− 신뢰도 페널티', bd.confPen ? '−1 (' + bd.confReasons.join(', ') + ')' : '없음');
+        addR('= 최종 추천도', '★' + finalRating);
+        rateSec.appendChild(t8);
+      } else {
       const labels = {
         saleRate: ['단지 매각가율', 30],
         margin:   ['미시 마진', 25],
@@ -1856,6 +1896,7 @@
         table.appendChild(row);
       }
       rateSec.appendChild(table);
+      }
     }
     inner.appendChild(rateSec);
 
