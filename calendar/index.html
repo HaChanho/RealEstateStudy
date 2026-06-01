@@ -681,6 +681,17 @@
   const todayStr = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })();
   const todayDate = new Date(todayStr + 'T00:00:00');
 
+  // 회고 결과(results.js)를 사건에 join — 단 "현재 매각기일에 해당하는 결과"만 반환.
+  // (1) 매각기일 미도래(미래)면 숨김 — 아직 결과가 없는 사건  (2) 결과의 실제 매각일이
+  // 현재 매각기일과 다르면(유찰·변경 후 다른 회차로 재지정) 숨김 — 회차 충돌 방지.
+  function resultFor(c) {
+    const ar = RESULTS[c.id];
+    if (!ar) return null;
+    if (c.saleDate && c.saleDate > todayStr) return null;
+    if (ar.saleDateActual && c.saleDate && ar.saleDateActual !== c.saleDate) return null;
+    return ar;
+  }
+
   function daysUntil(dateStr) {
     if (!dateStr) return null;
     const d = new Date(dateStr + 'T00:00:00');
@@ -904,7 +915,7 @@
     // 결과 필터가 켜져 있으면 판정 숨김(기본 Fail 숨김)을 무시 — FN(놓친 기회)은 fail에 있으므로
     if (!f.result && f.verdictHidden.has(c.verdict)) return false;
     if (f.result) {
-      const ar = RESULTS[c.id];
+      const ar = resultFor(c);
       if (!ar) return false;
       if (f.result === 'sold' && ar.status !== 'sold') return false;
       else if (f.result === 'failed' && ar.status !== 'failed') return false;
@@ -962,7 +973,7 @@
     if (!cont) return;
     const rs = { sold: 0, failed: 0, nosale: 0, TP: 0, FP: 0, FN: 0, TN: 0, rateSum: 0, rateN: 0, total: 0 };
     for (const c of CASES) {
-      const ar = RESULTS[c.id];
+      const ar = resultFor(c);
       if (!ar) continue;
       rs.total++;
       if (ar.status === 'sold') rs.sold++;
@@ -1150,7 +1161,7 @@
         // v6.1 관심 tier 미니배지 (★/◇/▷)
         { const _tm = { primary: '★', watch: '◇', watchlist: '▷' }; if (c.interestTier && _tm[c.interestTier]) chip.appendChild(el('span', { cls: 'chip-tier tier-' + (c.interestTier === 'primary' ? 'star' : c.interestTier === 'watch' ? 'watch' : 'watchlist'), text: _tm[c.interestTier] })); }
         // 회고 결과 배지 (results.js) — 낙찰가율/판정을 칩에서 바로 노출
-        { const _b = resultChipBadge(RESULTS[c.id]); if (_b) chip.appendChild(_b); }
+        { const _b = resultChipBadge(resultFor(c)); if (_b) chip.appendChild(_b); }
         // Mini: 최저가(매매사업자 핵심 지표) + margin bar
         const mini = el('span', { cls: 'chip-mini' });
         if (c.minimumPrice != null) mini.appendChild(el('span', { cls: 'chip-price', text: fmtMoneyShort(c.minimumPrice) }));
@@ -1281,7 +1292,7 @@
       {
         const td = el('td');
         td.appendChild(el('span', { cls: 'verdict-badge ' + c.verdict, text: c.verdict }));
-        const _ar = RESULTS[c.id];
+        const _ar = resultFor(c);
         if (_ar) {
           const SMAP = { sold: '낙찰', failed: '유찰', changed: '변경', withdrawn: '취하', postponed: '연기', unknown: '미확정' };
           const lab = _ar.quadrant || SMAP[_ar.status] || '결과';
@@ -1428,7 +1439,8 @@
     inner.appendChild(reasonSec);
 
     // 🏁 경매 결과 (회고 — 예측 vs 실측). results.js와 id로 join.
-    const ar = RESULTS[c.id];
+    // resultFor: 미래 기일·회차 충돌 결과는 숨김(과거 회차 결과가 재지정된 미래 사건에 노출되는 것 방지).
+    const ar = resultFor(c);
     if (ar) {
       const QLAB = { TP: '정확 GO', FP: '헛 GO', FN: '놓친 기회', TN: '정확 NO-GO' };
       const SLAB = { sold: '매각(낙찰)', failed: '유찰', changed: '변경', withdrawn: '취하', postponed: '연기', unknown: '미확인(변경/취하 추정)' };
