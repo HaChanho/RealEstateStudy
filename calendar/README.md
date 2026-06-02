@@ -11,10 +11,14 @@
 
 ```
 _workspace/calendar/
-├── index.html      # 뷰 + 로직 (단일 페이지)
-├── cases.js        # 데이터 (window.AUCTION_CASES = [...])
-└── README.md       # 이 문서
+├── index.html        # 뷰 + 로직 (단일 페이지)
+├── cases.js          # 모델 예측·sourcing 데이터 (window.AUCTION_CASES = [...])
+├── results.js        # 낙찰 실측·회고 (window.AUCTION_RESULTS = {...}, id로 join)
+├── predictions.js    # 내 예상 낙찰가·사용자 베팅 (window.AUCTION_PREDICTIONS = {...}, id로 join)
+└── README.md         # 이 문서
 ```
+
+**3-layer 소유권 분리**: `cases.js`(모델 예측) · `results.js`(현실) · `predictions.js`(내 주관 베팅). 셋 다 사건번호 id로 join되며 서로 다른 주체가 write → 머지 충돌 구조적 제거.
 
 ## 기능
 
@@ -91,7 +95,7 @@ GitHub Discussions 기반. setup 필요 — 아래 참고.
 | `notes` | string? | 자유 메모 |
 | `sourcingSession` | string | |
 | `addedAt`, `updatedAt` | `YYYY-MM-DD` | |
-| `hauctionUrl` | string? | |
+| `hauctionUrl` | string? | 경매정보 사건 상세 URL (현 지지옥션 `ggi.co.kr`, 과거 행크옥션). 필드명은 스키마 호환 위해 유지 |
 | `reportPath` | string? | deep-dive 보고서 경로 |
 
 ### 네이버 부동산 필드 (v0.2.0 신규)
@@ -160,7 +164,7 @@ salesHistory: [
 
 - 정상치 사례만 평균 매각가율 계산 (outlier=true는 line-through로 회색 표시, hover 시 사유)
 - 매각가율 색상: ≤78% 녹색 / 78~88% 노랑 / ≥88% 빨강
-- 행크옥션 동일번지 매각 사례 또는 법원경매정보 매각통계에서 수집 권장
+- 지지옥션 단지 매각통계(동일번지 매각 사례) 또는 법원경매정보 매각통계에서 수집 권장
 
 ## 낙찰 결과 — `results.js` (회고 전용, cases.js와 분리)
 
@@ -175,17 +179,17 @@ window.AUCTION_RESULTS_UPDATED = "2026-05-20";
 window.AUCTION_RESULTS = {
   "2025타경12066": {
     status: "sold",            // sold|failed|changed|withdrawn|postponed|unknown
-    soldPrice: null,           // 낙찰가(원). 행크옥션 비로그인 API는 항상 마스킹 → 구독계정/어시스트 보강
+    soldPrice: null,           // 낙찰가(원). 지지옥션은 구독 로그인이라 직접 확보. (이 레코드는 legacy — 행크옥션 비로그인 API 마스킹으로 null)
     soldRate: null,            // 낙찰가/감정가
-    bidderCount: 11,           // 응찰자수 (API bid_count, 비마스킹 — 수요 강도 대리지표)
+    bidderCount: 11,           // 응찰자수 (비마스킹 — 수요 강도 대리지표)
     saleDateActual: "2026-05-13",
     quadrant: "FN",            // TP|FP|FN|TN|null (verdict GO/NO-GO × sold/failed)
     predictedSaleRate: 0.876,  // 회고 시점 cases.js 스냅샷 (비교 고정용)
     predictedVerdict: "fail",
     saleRateError: null,       // soldRate - predictedSaleRate
-    priceMasked: true,
+    priceMasked: true,         // 지지옥션은 통상 false. 이 레코드는 legacy(행크옥션) 마스킹 사례
     lesson: "78% 일괄컷 과도 — 11명 응찰",
-    source: "hauction-api",    // hauction-api|hauction-chrome|user-assist
+    source: "hauction-api",    // ggi-chrome|user-assist (legacy: hauction-api, hauction-chrome)
     retrospectedAt: "2026-05-20"
   }
 };
@@ -195,6 +199,33 @@ window.AUCTION_RESULTS = {
 - **append-only**: 한 번 채운 결과는 덮어쓰지 않음 (정정은 새 회고 세션 entry).
 - **quadrant 색상**: FN=빨강(놓친 기회) / FP=주황(헛 GO) / TP·TN=녹색(정확).
 - index.html은 results.js를 cache-buster로 먼저 로드한 뒤 cases.js를 로드(체이닝). results.js 없어도 캘린더는 정상 동작.
+
+## 내 예상 낙찰가 — `predictions.js` (사용자 베팅, 제3 계층)
+
+`cases.js`(모델 예측)·`results.js`(실측)와 **물리 분리된** 제3의 소유권 계층 — **사용자의 주관적 낙찰가 베팅**.
+사건당 **최대 2개**(예: 보수/공격 밴드). 같은 사건번호 id로 join.
+매각 결과(`results.js` soldPrice)가 도래하면 디테일 패널 "🎯 내 예상 낙찰가" 섹션에서
+**[내 예상 N개 + 모델 예측 vs 실측]** 3자 오차를 자동 비교하고 최소 |오차%|를 🏆로 강조한다.
+
+```js
+// _workspace/calendar/predictions.js
+window.AUCTION_PREDICTIONS_VERSION = "0.1.0";
+window.AUCTION_PREDICTIONS_UPDATED = "2026-06-02";
+window.AUCTION_PREDICTIONS = {
+  "2025타경11474": {
+    predictedAt: "2026-06-02",        // 최초 입력일(엔트리 기준). bid별 at 없으면 이 값 사용
+    bids: [                            // 최대 2개
+      { value: 220000000, memo: "보수 — 저경쟁(≤6명) 가정" },
+      { value: 240000000, memo: "공격 — 27평 수요 강세 시" }   // at: "YYYY-MM-DD" (선택)
+    ]
+  }
+};
+```
+
+- **입력 방식**: 채팅으로 LLM에게 지시 → LLM이 이 파일에 기록·push. 예) `"11474 예상낙찰가 2.2억 보수, 2.4억 공격"` / 둘째 칸 추가는 `"11474 예상낙찰가 추가 2.4억 공격"`. 이미 2개면 3번째 입력 시 어느 칸(①/②)을 교체할지 확인 후 기록.
+- **모델 예측 낙찰가** = `감정가 × 예측 매각가율`(`saleRateMu → saleRate → deriveSaleRate`). bid70(권장 입찰가)이 아니라 **낙찰가 점추정** — 기존 회고 캘리브레이션(predictedSaleRate→soldRate)과 동일 축.
+- **소유권 분할**: 사용자(쓰기) 전용. 회고 routine·sourcing이 건드리지 않음 → 머지 충돌 구조적 제거.
+- index.html 로드 체인: results.js → **predictions.js** → cases.js. predictions.js 없거나 비어 있어도 캘린더는 정상 동작(예측 없으면 🎯 섹션 자체가 숨김).
 
 ## Giscus 설정
 
@@ -258,4 +289,5 @@ window.GISCUS_CONFIG = {
 | 0.6.0 | 2026-05-17 | UX 개선 5종 — 가시성·강조·인터랙션. (1) **테마 elevation** — 디테일 패널 전용 `--panel-bg`(#1c2549)로 캘린더 day cell과 색 분리 + 좌측 그림자로 깊이감. (2) **선택 chip 강조** — 3px outline + accent glow + scale 1.04 + 좌측 ▸ 화살표 pulse 애니메이션. (3) **가격 강조 variant** — 디테일 패널 핵심 수치 4종(감정가·최저가·KB시세·미시 마진)이 18px 굵은 amber, 좌측 보더 + 미시 마진은 sign에 따라 positive(녹색)/negative(빨강) 자동 톤. (4) **한국식 금액 표기** — `fmtMoney`가 "2억 7,700만원" 형태로 변환, list view용 `fmtMoneyShort`("2.77억")는 컬럼 너비 보존, 정확한 값은 hover title. (5) **드래그 리사이즈** — 패널 좌측 핸들로 너비 자유 조절(380~85vw), 더블클릭 시 460px 리셋, `calendar.panelWidth.v1` localStorage 영속화 |
 | 0.6.1 | 2026-05-17 | **패널-캘린더 영역 분리 강화** — 3대 시각 신호 동시 적용. (a) **Hue shift**: 패널 bg를 보라 계열(`#2a2548`)로 시프트 — 캘린더 파랑(`#121831`)과 색상 자체가 다른 plane으로 인식. (b) **10px 갭**: `margin-left: 10px`로 두 영역 사이 실제 빈 공간 확보. (c) **4px violet accent stripe + 다층 그림자**: 좌측 4px `--panel-accent`(#a78bfa) 보더 + hairline accent + 28px/8px 2단 그림자. (d) body `--bg`도 `#050811`로 더 진하게 — day cell 대비 강화 |
 | 0.7.0 | 2026-05-17 | **라이트 테마 전환** — 캘린더를 흰색 working surface로, 디테일 패널을 옅은 lavender(`#faf5ff`)로 차별화. (1) 팔레트 전면 교체: `--bg`(pale cool gray)·`--surface`(white day cells)·`--panel-bg`(pale lavender)·다크 텍스트(`#1a1f2e`). (2) Verdict/Risk/D-Day 배지 색상 라이트 대응 — 알파 18~22%, foreground 텍스트를 어두운 shade로 변환(0369a1·6d28d9·047857·b45309·b91c1c). (3) Selected chip outline을 `--accent-strong`(`#1e40af`)로, glow도 라이트에 맞게 톤다운. (4) 패널 그림자도 light theme 관례에 맞춰 부드럽게(rgba(31,41,55,.10/.07)). (5) 별점 dot·rating chip도 흰색 위 가독 가능한 채도로 재배치. 다크 모드는 git history에 보존(v0.6.1) |
+| 0.8.0 | 2026-06-02 | **내 예상 낙찰가 트래킹 — `predictions.js` 제3 계층 신설.** 사건당 최대 2개(보수/공격 밴드) 사용자 주관 베팅. 매각 결과 도래 시 디테일 패널 "🎯 내 예상 낙찰가" 섹션에서 [내 예상 N + 모델 예측(감정가×예측매각가율) vs 실측] 3자 오차 자동 비교 + 최소 |오차%| 🏆 강조. 입력은 채팅으로 LLM에게 지시 → predictions.js 기록. 로드 체인 results.js→predictions.js→cases.js. 예측 없으면 🎯 섹션 숨김(무손상) |
 | 0.7.1 | 2026-05-17 | **라이트 톤 가다듬기** — chip과 패널을 modern light-admin 스타일로 통일. (a) **Outlined soft chip**: 사건 chip 알파 .20~.22 → .08~.12로 거의 흰색에 가깝게, 보더는 verdict 색 .55~.60 유지, 텍스트를 verdict별 darker shade(`#075985`·`#5b21b6`·`#065f46`·`#92400e`)로 명시 — Notion·Linear 톤. (b) **패널 hue 중화**: `--panel-bg`를 lavender(`#faf5ff`) → neutral cool gray(`#f7f8fc`)로, 보라 hue는 좌측 3px stripe(이전 4px)와 hairline shadow에만 남김. (c) 패널 그림자 더 부드럽게(rgba .08/.05) — 캘린더 흰 표면과 자연스럽게 어우러짐 |

@@ -339,6 +339,19 @@
   .result-compare .err.pos { background: rgba(16,185,129,.14); color: #047857; }
   .result-lesson { margin-top: 10px; font-size: 12px; line-height: 1.5; color: var(--text); padding: 8px 10px; background: var(--panel-bg); border-radius: 4px; }
   .result-foot { margin-top: 8px; display: flex; gap: 12px; font-size: 10px; color: var(--text-mute); }
+  /* 🎯 내 예상 낙찰가 — 3자 비교 박스 (result 팔레트와 색상 통일) */
+  .pred-box { padding: 10px 12px; border-radius: 6px; background: var(--panel-bg-2); border-left: 3px solid #6366f1; margin-top: 4px; }
+  .pred-cmp { display: grid; grid-template-columns: auto auto auto auto 1fr; align-items: center; gap: 8px; font-size: 12px; padding: 4px 6px; border-radius: 4px; }
+  .pred-cmp + .pred-cmp { margin-top: 2px; }
+  .pred-cmp.model { opacity: .82; }
+  .pred-cmp.best { background: rgba(99,102,241,.12); }
+  .pred-cmp .pk { color: var(--text-mute); white-space: nowrap; }
+  .pred-cmp .pv, .pred-cmp .pa { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pred-cmp .arrow { color: var(--text-mute); }
+  .pred-cmp .perr { justify-self: end; font-weight: 700; font-size: 11px; padding: 1px 6px; border-radius: 4px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pred-cmp .perr.neg { background: rgba(220,38,38,.14); color: #b91c1c; }
+  .pred-cmp .perr.pos { background: rgba(16,185,129,.14); color: #047857; }
+  .pred-winner { margin-top: 8px; font-size: 12px; font-weight: 700; color: #4338ca; }
   /* 칩 결과 배지 (캘린더 한눈 가시성) */
   .chip-result-badge { font-size: 9.5px; font-weight: 700; padding: 0 4px; border-radius: 4px; margin-left: 3px; line-height: 1.55; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .chip-result-badge.sold   { background: rgba(16,185,129,.18); color: #047857; }
@@ -616,8 +629,9 @@
   </aside>
 </main>
 
-<!-- results.js + cases.js: cache-buster 인라인 로더 (수정 즉시 반영 보장) -->
-<!-- results.js(회고 실측)를 먼저 로드한 뒤 cases.js(예측)를 로드 → cases-loaded 발화. results.js 없거나 실패해도 캘린더는 정상 동작 -->
+<!-- results.js + predictions.js + cases.js: cache-buster 인라인 로더 (수정 즉시 반영 보장) -->
+<!-- results.js(회고 실측) → predictions.js(내 예상 낙찰가) → cases.js(모델 예측) 순 로드 → cases-loaded 발화. -->
+<!-- results.js·predictions.js는 없거나 실패해도 캘린더는 정상 동작(둘 다 id로 join하는 선택적 오버레이). -->
 <script>
   (function () {
     const v = Date.now();
@@ -631,10 +645,17 @@
       };
       document.head.appendChild(s);
     }
+    function loadPredictions() {
+      const p = document.createElement('script');
+      p.src = 'predictions.js?v=' + v;
+      p.onload = loadCases;
+      p.onerror = loadCases; // predictions.js 없어도 진행
+      document.head.appendChild(p);
+    }
     const r = document.createElement('script');
     r.src = 'results.js?v=' + v;
-    r.onload = loadCases;
-    r.onerror = loadCases; // results.js 없어도 진행
+    r.onload = loadPredictions;
+    r.onerror = loadPredictions; // results.js 없어도 진행
     document.head.appendChild(r);
   })();
 </script>
@@ -643,6 +664,7 @@
   function main() {
   const CASES = (window.AUCTION_CASES || []).slice();
   const RESULTS = window.AUCTION_RESULTS || {};  // 회고 실측 (results.js, id로 join)
+  const PREDICTIONS = window.AUCTION_PREDICTIONS || {};  // 내 예상 낙찰가 (predictions.js, id로 join · 사건당 최대 2개)
 
   // ===== Utilities =====
   // Korean money format — "2억 7,700만원" / "5,000만원" / "—"
@@ -694,6 +716,29 @@
     if (c.saleDate && c.saleDate > todayStr) return null;
     if (ar.saleDateActual && c.saleDate && ar.saleDateActual !== c.saleDate) return null;
     return ar;
+  }
+
+  // 내 예상 낙찰가(predictions.js) — 사건당 최대 2개. value 있는 것만, 상한 2개로 잘라 반환.
+  function predictionBids(c) {
+    const p = PREDICTIONS[c.id];
+    if (!p || !Array.isArray(p.bids)) return [];
+    const at = p.predictedAt || null;
+    return p.bids
+      .filter(b => b && b.value != null)
+      .slice(0, 2)
+      .map(b => ({ value: b.value, memo: b.memo || null, at: b.at || at }));
+  }
+
+  // 모델 예측 낙찰가 = 감정가 × 예측 매각가율(μ → saleRate → 자동도출). 비교의 '모델' 축.
+  // bid70(권장 입찰가)이 아니라 매각가 점추정을 쓴다 — 회고 캘리브레이션(predictedSaleRate→soldRate)과 동일 축.
+  function modelExpectedBid(c) {
+    if (c.appraisalPrice == null) return null;
+    let rate = (c.saleRateMu != null) ? c.saleRateMu
+             : (c.saleRate != null) ? c.saleRate
+             : null;
+    if (rate == null) { const d = deriveSaleRate(c); if (d) rate = d.value; }
+    if (rate == null) return null;
+    return Math.round(c.appraisalPrice * rate);
   }
 
   function daysUntil(dateStr) {
@@ -1616,6 +1661,61 @@
       }
       profSec.appendChild(el('div', { cls: 'small-note', text: '세전 = 종합소득세·명도비·인수금·수리비 제외 / 비용 = 취득세·법무등기(법무통)·대출이자(2~6개월)·중개비. 수리비는 변동성이 커 EP70에서 빼고 별도 참고치로 표기(사용자 직접 가감). 매도가는 실거래 기준 — 현재 호가 입력 시 기대 매도가·예상 수익 상향 재계산. 정본: bid-price-engine §0.5 v8' }));
       inner.appendChild(profSec);
+    }
+
+    // 🎯 내 예상 낙찰가 (predictions.js) — 사건당 최대 2개.
+    // 매각 결과 도래 시 [내 예상 N개 + 모델 예측(감정가×예측매각가율)] vs 실측 3자 오차를 일괄 비교, 최소 |오차%| 강조.
+    {
+      const myBids = predictionBids(c);
+      if (myBids.length) {
+        const modelBid = modelExpectedBid(c);
+        const ar = resultFor(c);
+        const actual = (ar && ar.soldPrice != null) ? ar.soldPrice : null;
+        const mark = i => (myBids.length > 1 ? ['①', '②'][i] : '');
+        const psec = section('🎯 내 예상 낙찰가');
+
+        if (actual != null) {
+          // 결과 후 — 후보(내 예상들 + 모델) 일괄 비교
+          const rows = myBids.map((b, i) => ({ label: ('내 예상 ' + mark(i)).trim(), value: b.value, isModel: false }));
+          if (modelBid != null) rows.push({ label: '모델 예측', value: modelBid, isModel: true });
+          rows.forEach(r => { r.err = actual - r.value; r.errPct = r.value ? r.err / r.value : null; });
+          const ranked = rows.filter(r => r.errPct != null).slice().sort((a, b) => Math.abs(a.errPct) - Math.abs(b.errPct));
+          const best = ranked.length ? ranked[0] : null;
+
+          const box = el('div', { cls: 'pred-box' });
+          rows.forEach(r => {
+            const line = el('div', { cls: 'pred-cmp' + (r === best ? ' best' : '') + (r.isModel ? ' model' : '') });
+            line.appendChild(el('span', { cls: 'pk', text: r.label }));
+            line.appendChild(el('span', { cls: 'pv', text: fmtMoney(r.value) }));
+            line.appendChild(el('span', { cls: 'arrow', text: '→' }));
+            line.appendChild(el('span', { cls: 'pa', text: fmtMoney(actual) }));
+            if (r.errPct != null) {
+              const sgn = r.err > 0 ? '+' : '';
+              line.appendChild(el('span', { cls: 'perr' + (r.err < 0 ? ' neg' : r.err > 0 ? ' pos' : ''), text: sgn + fmtMoney(r.err) + ' (' + sgn + (r.errPct * 100).toFixed(1) + '%)' }));
+            }
+            box.appendChild(line);
+          });
+          if (best) box.appendChild(el('div', { cls: 'pred-winner', text: '🏆 가장 정확: ' + best.label + ' (' + (best.errPct > 0 ? '+' : '') + (best.errPct * 100).toFixed(1) + '%)' }));
+          psec.appendChild(box);
+          myBids.forEach((b, i) => { if (b.memo) psec.appendChild(el('div', { cls: 'small-note', text: (mark(i) ? mark(i) + ' ' : '') + b.memo })); });
+        } else {
+          // 결과 전 — 내 예상(들) + 모델 참고
+          const grid = el('div', { cls: 'detail-grid' });
+          myBids.forEach((b, i) => {
+            const node = el('span');
+            node.appendChild(document.createTextNode(fmtMoney(b.value)));
+            const sub = [];
+            if (b.memo) sub.push(b.memo);
+            if (b.at) sub.push(b.at);
+            if (sub.length) node.appendChild(el('div', { cls: 'small-note', text: sub.join(' · ') }));
+            grid.appendChild(field(('내 예상 ' + mark(i)).trim(), node, { mono: true, price: true, tone: 'positive' }));
+          });
+          if (modelBid != null) grid.appendChild(field('모델 예측 (참고)', fmtMoney(modelBid), { mono: true, price: true, muted: true }));
+          psec.appendChild(grid);
+          psec.appendChild(el('div', { cls: 'small-note', text: '모델 예측 = 감정가 × 예측 매각가율. 매각 결과가 나오면 내 예상·모델·실측 3자 오차가 자동 비교됩니다.' }));
+        }
+        inner.appendChild(psec);
+      }
     }
 
     // Rights
