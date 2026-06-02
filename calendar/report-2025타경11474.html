@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>분석 보고서 · 2025타경11474 아산온천미소지움</title>
+<style>
+  :root{
+    --bg:#0f172a; --surface:#1e293b; --surface-2:#273449; --surface-3:#334155;
+    --text:#e2e8f0; --text-mute:#94a3b8; --line:#334155;
+    --amber:#f59e0b; --green:#65a30d; --blue:#0284c7; --red:#ef4444; --purple:#7c3aed;
+    --pos:#22c55e; --neg:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",Segoe UI,Roboto,sans-serif;line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 20px 80px}
+  a{color:#38bdf8}
+  h1{font-size:22px;margin:0 0 4px;letter-spacing:-0.02em}
+  h2{font-size:17px;margin:34px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--line);letter-spacing:-0.01em}
+  h3{font-size:14px;margin:20px 0 8px;color:var(--text-mute);text-transform:none;letter-spacing:0.02em}
+  .sub{color:var(--text-mute);font-size:13px;margin:0 0 18px}
+  .verdict{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:10px;font-weight:700;font-size:15px;margin:14px 0 4px;background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+  .badges{margin:10px 0 0;display:flex;gap:8px;flex-wrap:wrap}
+  .badge{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--surface-2);color:var(--text-mute);border:1px solid var(--line)}
+  .badge.good{color:var(--pos);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
+  .badge.warn{color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08)}
+  .lead{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:18px 0}
+  .lead p{margin:0 0 10px} .lead p:last-child{margin:0}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;background:var(--surface);border-radius:10px;overflow:hidden}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:var(--surface-2);color:var(--text-mute);font-weight:600;font-size:12.5px}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:none}
+  .hl{color:var(--amber);font-weight:700}
+  .pos{color:var(--pos);font-weight:600} .neg{color:var(--neg);font-weight:600}
+  .pick{background:rgba(245,158,11,.10)}
+  .note{font-size:12.5px;color:var(--text-mute);margin:8px 0 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .card h4{margin:0 0 6px;font-size:13.5px}
+  .kv{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:13.5px}
+  .kv .k{color:var(--text-mute)} .kv .v{font-variant-numeric:tabular-nums;text-align:right}
+  ul{margin:8px 0;padding-left:20px} li{margin:4px 0}
+  .insight{background:rgba(2,132,199,.08);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:13.5px}
+  .foot{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--text-mute)}
+  .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--text-mute);text-decoration:none}
+  .back:hover{color:var(--text)}
+  code{background:var(--surface-2);padding:1px 6px;border-radius:5px;font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 캘린더로</a>
+  <h1>2025타경11474 · 아산온천미소지움 106동 1804호</h1>
+  <p class="sub">천안지원 3계 · 매각기일 2026-06-15(월) 10:00 · deep-dive 작성 2026-06-02</p>
+
+  <div class="verdict">🟡 조건부 GO — 사용자 판단 (구조적 안전, 수익 마진은 경쟁강도 의존)</div>
+  <div class="badges">
+    <span class="badge good">권리 A · 인수 0</span>
+    <span class="badge good">자금 OK (필요 ~5,100만 ≪ 162M)</span>
+    <span class="badge">9년차 신축급</span>
+    <span class="badge">69㎡ 부가세 면세</span>
+    <span class="badge warn">EP70 ◇/▷ 경계</span>
+    <span class="badge warn">★기준(2,500만@70%) 미충족</span>
+  </div>
+
+  <div class="lead">
+    <p><b>깨끗한 물건, 그러나 얇은 마진.</b> 권리는 등기 전부 말소·인수 0·소유자 점유로 완전 클린(A), 자금력도 대폭 여유(필요 자기자본 ~5,100만 ≪ 가용 162M)입니다. <b>구조적 NO-GO 사유(권리 결손·인수 위험·Walk-away&lt;최저가·자금 불가)는 하나도 없습니다.</b></p>
+    <p>핵심은 <b>감정가(251M, 2025.04) &gt; 현재 시장가(230M)</b> — 감정 이후 시장이 약 9% 하락해 경매 할인폭(이익의 원천)이 작아졌습니다. v7 시장앵커로 재계산하니 sourcing의 EP70 22.3M(◇)은 <b>감정가 기준 과대평가</b>였고, 실제는 <b>EP70 ~₩1,480만(중립·보통경쟁) = ◇/▷ 경계</b>입니다.</p>
+    <p>사용자 관심 기준(세전 2,500만 @ 낙찰확률 70%)은 <b>미충족</b>. 단, <b>저경쟁(≤6명)이면 ★로 상향</b>(단지 동일평형 106동이 과거 4명 응찰).</p>
+  </div>
+
+  <h2>1. 물건 개요</h2>
+  <div class="grid2">
+    <div class="card">
+      <h4>기본</h4>
+      <div class="kv"><span class="k">소재지</span><span class="v">아산 온천동 1935 106동 1804호</span></div>
+      <div class="kv"><span class="k">전용 / 평형</span><span class="v">69.0㎡ (20.9평) · 27평형</span></div>
+      <div class="kv"><span class="k">준공</span><span class="v">2017.02 · 9년차</span></div>
+      <div class="kv"><span class="k">단지</span><span class="v">586가구 7개동 · 674대 주차</span></div>
+      <div class="kv"><span class="k">경매구분</span><span class="v">임의경매 (캠코)</span></div>
+      <div class="kv"><span class="k">점유</span><span class="v">소유자 본인</span></div>
+    </div>
+    <div class="card">
+      <h4>금액</h4>
+      <div class="kv"><span class="k">감정가</span><span class="v">2.51억 (2025.04)</span></div>
+      <div class="kv"><span class="k">최저가</span><span class="v"><b>1.757억 (70%, 1회유찰)</b></span></div>
+      <div class="kv"><span class="k">입찰보증금</span><span class="v">1,757만 (10%)</span></div>
+      <div class="kv"><span class="k">현재 시장가(S)</span><span class="v"><b class="hl">2.30억</b> (실거래)</span></div>
+      <div class="kv"><span class="k">KB시세</span><span class="v">2.41~2.47억</span></div>
+      <div class="kv"><span class="k">지지 alg 예상매각</span><span class="v">2.03억 (감정 81%)</span></div>
+    </div>
+  </div>
+  <p class="note">⚠️ 매각기일 <b>2회 변경</b>(2025.09·12 → 2026.06). 최저가 70% 유지, 추가 저감 없음. D-1 취하·변경 재확인 필요.</p>
+
+  <h2>2. 권리분석 — 안전등급 A</h2>
+  <p>말소기준권리 = <b>한국주택금융공사 근저당(2017.05.26)</b>. 이후 등기 7건(소유권·근저당2·압류·가압류2·임의경매) <b>전부 말소</b>, 채권액 합계 3.71억. <b>인수권리 0</b>.</p>
+  <ul>
+    <li><b>임차인 없음</b> (법원기록·매각물건명세서). 소유자(문연경) 본인 점유, 공동소유자 가족 전입 → 대항력 이슈 없음.</li>
+    <li>관리비 미납 0원. 특수권리(유치권·법정지상권·선순위 등) 전무.</li>
+    <li>GG TIP: "권리분석(등기 포함)상 하자 및 매각 후 인수사항 없을 것으로 예상".</li>
+    <li>명도: 소유자 점유 → 협의형. 예상 명도비 2.76M (EP70 제외 항목).</li>
+  </ul>
+
+  <h2>3. 시장 앵커 (v7) — 왜 마진이 얇은가</h2>
+  <div class="insight">
+    <b>감정가가 시장을 추월했습니다.</b> 감정 251M(2025.04) vs 현재 실거래 230M = <b>−9%</b>. 경매의 이익은 "감정가와의 차이"가 아니라 <b>"현재 시장가 대비 낙찰 할인폭"(S×(1−k70))</b>입니다. 감정가에 매각가율을 곱하면 이 할인폭을 과대평가하게 됩니다(sourcing의 22.3M이 그 사례).
+  </div>
+  <table>
+    <tr><th>항목</th><th>값</th><th>근거</th></tr>
+    <tr><td>기대 매도가 S</td><td class="num"><b>230,000,000</b></td><td>국토부 실거래 median (26.3월 230M·26.2월 232M·25.12월 228M)</td></tr>
+    <tr><td>k70 (시장 대비 낙찰비율)</td><td class="num">0.90</td><td>보통 경쟁(7~12명) tier. 105동 사례 낙찰/시장 ≈ 0.905로 검증</td></tr>
+    <tr><td>경매 엣지 = S×(1−k70)</td><td class="num">23,000,000</td><td>시장 대비 10% 할인폭</td></tr>
+    <tr><td>비용(취득세·법무·이자·중개·기타)</td><td class="num">−8,200,000</td><td>법무통 환산식·대출이자 4개월·중개 0.4%</td></tr>
+    <tr><td><b>EP70 (세전 기대수익)</b></td><td class="num"><b class="hl">+14,800,000</b></td><td>◇/▷ 경계. 명도·수리·세금 별도</td></tr>
+  </table>
+  <h3>실거래 추세 (전용 68.98㎡, 국토부)</h3>
+  <table>
+    <tr><th>계약</th><th class="num">금액</th><th>비고</th></tr>
+    <tr><td>2026.03 · 15층</td><td class="num">230,000,000</td><td>최근</td></tr>
+    <tr><td>2026.02 · 7층</td><td class="num">232,000,000</td><td></td></tr>
+    <tr><td>2025.12 · 3층</td><td class="num">228,000,000</td><td></td></tr>
+    <tr><td>2026.01 · 14층</td><td class="num">200,000,000</td><td>저가 이상치(제외)</td></tr>
+    <tr><td>2025 상반기</td><td class="num">242~260,000,000</td><td>이후 −10% 하락</td></tr>
+  </table>
+  <h3>단지 매각사례 (n=2)</h3>
+  <table>
+    <tr><th>매각</th><th>동·평형</th><th class="num">매각가</th><th class="num">응찰</th><th class="num">매각가율</th></tr>
+    <tr><td>2024.12</td><td>105동 22.7평</td><td class="num">230,778,000</td><td class="num">7명</td><td class="num">87%</td></tr>
+    <tr><td>2022.11</td><td><b>106동 동일평형</b></td><td class="num">215,500,000</td><td class="num">4명</td><td class="num">82%</td></tr>
+  </table>
+  <p class="note">아산 아파트 시장: 매각가율 6개월 평균 90%, 평균 응찰 11.4명. 조회수 265(높음·수요 신호). → 경쟁강도가 EP70을 좌우하는 핵심 불확실성.</p>
+
+  <h2>4. 입찰가별 기대수익 곡선</h2>
+  <p class="note">세전이익 = S(230M) − 입찰가 − 비용. 명도·수리·세금 별도. 낙찰확률은 추정(당일 응찰자 수에 편차 큼).</p>
+  <table>
+    <tr><th>입찰가</th><th class="num">낙찰확률</th><th class="num">세전이익(명도·수리·세금 前)</th><th class="num">명도+수리(~7M) 後</th><th>tier</th></tr>
+    <tr><td>195,000,000</td><td class="num">~45%</td><td class="num pos">+26.8M</td><td class="num">+19.8M</td><td>★</td></tr>
+    <tr><td>200,000,000</td><td class="num">~55%</td><td class="num">+21.8M</td><td class="num">+14.8M</td><td>◇</td></tr>
+    <tr class="pick"><td>207,000,000 (B70)</td><td class="num"><b>~70%</b></td><td class="num"><b>+14.8M</b></td><td class="num">+7.8M</td><td>◇/▷</td></tr>
+    <tr><td>213,000,000</td><td class="num">~80%</td><td class="num">+7.9M</td><td class="num">+0.9M</td><td>▷</td></tr>
+    <tr><td>218,000,000</td><td class="num">~89%</td><td class="num">+3.9M</td><td class="num neg">−3.1M</td><td>본전 부근</td></tr>
+    <tr><td>221,500,000</td><td class="num">~93%</td><td class="num">≈0</td><td class="num neg">−7M</td><td>세전 BEP</td></tr>
+  </table>
+  <p class="note"><b>★지점(EP70 ≥2,500만)</b>: ~196M 이하(낙찰확률 45%) · <b>실질 본전선(명도·수리 포함)</b>: ~214M = <b>절대 상한 권장</b>.</p>
+
+  <h2>5. 입찰 3안 비교 ★</h2>
+  <table>
+    <tr><th>지표</th><th class="num">🟢 마진형 198.3M</th><th class="num">🟡 균형 207.2M</th><th class="num">🔴 낙찰형 213.4M</th></tr>
+    <tr><td>입찰가</td><td class="num">198,317,891</td><td class="num">207,219,743</td><td class="num">213,418,629</td></tr>
+    <tr><td>낙찰확률</td><td class="num">~50%</td><td class="num">~70%</td><td class="num">~80%</td></tr>
+    <tr><td>들어간 내 돈</td><td class="num">~4,920만</td><td class="num">~5,100만</td><td class="num">~5,240만</td></tr>
+    <tr><td>낙찰 시 세전이익(EP70)</td><td class="num pos">+2,365만</td><td class="num">+1,453만</td><td class="num">+819만</td></tr>
+    <tr><td><b>세후 순이익(중립매도)</b></td><td class="num pos"><b>+1,327만</b></td><td class="num">+565만</td><td class="num">+36만</td></tr>
+    <tr><td>자기자본 수익률(4개월)</td><td class="num">27.0%</td><td class="num">11.1%</td><td class="num">0.7%</td></tr>
+    <tr><td><b>기대 세후이익(확률×이익)</b></td><td class="num pos"><b>664만</b></td><td class="num">396만</td><td class="num">29만</td></tr>
+    <tr><td>손익분기 매도가</td><td class="num">~215M</td><td class="num">~224M</td><td class="num neg">~230.5M</td></tr>
+    <tr><td>안전마진(시장 230M까지)</td><td class="num pos">+15M (7%)</td><td class="num">+6M (3%)</td><td class="num neg">−0.5M (없음)</td></tr>
+  </table>
+
+  <h3>매도가 민감도 — 세후 순이익 (만원)</h3>
+  <table>
+    <tr><th>입찰가 \ 매도가</th><th class="num">보수 222M</th><th class="num">중립 230M</th><th class="num">낙관 240M</th></tr>
+    <tr><td>마진형 198.3M</td><td class="num pos">+661</td><td class="num pos">+1,327</td><td class="num pos">+2,159</td></tr>
+    <tr><td>균형 207.2M</td><td class="num neg">−120</td><td class="num">+565</td><td class="num">+1,397</td></tr>
+    <tr><td>낙찰형 213.4M</td><td class="num neg">−754</td><td class="num">+36</td><td class="num">+868</td></tr>
+  </table>
+  <div class="insight">
+    <b>반직관 포인트.</b> 마진이 얇아서 <b>높게 써서 확실히 받을수록 기대이익이 줄어듭니다.</b> 마진형(198M)의 기대 세후이익 664만은 낙찰형(213M) 29만의 <b>23배</b>. "더 비싸게 사서 더 작은 이익을 얻는" 구조. → 이 건은 <b>싸게 받으면 좋고, 비싸지면 굳이 안 받는 게 합리</b>.
+  </div>
+
+  <h2>6. 수익화 — 단기회전 (배우자 명의 매매사업자)</h2>
+  <ul>
+    <li><b>배우자 명의 15% 구간 확정</b> — 사업소득(낙찰차익)이 700~1,600만으로 작아 종합과세표준 5,000만 미만 유지 (finance.md 가정 24%보다 유리).</li>
+    <li>69㎡ ≤ 85㎡ → <b>건물분 부가세 면세</b>. 무주택 첫 진입 → 종부세 무영향.</li>
+    <li>전제: <b>혼인신고 완료</b>(배우자 명의 자금출처 합법화) — 잔금 전.</li>
+    <li>건강보험: 보수외소득 &lt; 2,000만 → 추가 보험료 없음.</li>
+    <li>보유 4개월·중립매도 230M 기준 세후 회당 ~565만(균형 입찰). <b>빠른 매도가 유리</b>(하락장·이자). 호가는 KB 하단(~238~241M)에 공격적으로.</li>
+  </ul>
+
+  <h2>7. D-day 액션 플랜</h2>
+  <div class="grid2">
+    <div class="card">
+      <h4>입찰 전 (D-13~D-1)</h4>
+      <ul style="margin:0">
+        <li>입찰가 결정 (3안 중 성향 선택)</li>
+        <li>혼인신고 완료 확인</li>
+        <li>(선택) 27평형 네이버 호가 확인</li>
+        <li>D-1 지지옥션 취하·변경 재확인</li>
+        <li>입찰보증금 1,757만 준비</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>낙찰 후 (D+0~D+30)</h4>
+      <ul style="margin:0">
+        <li>잔금 전 매매사업자 등록(배우자·면세)</li>
+        <li>경락잔금대출 실행(LTV80%·~166M)</li>
+        <li>소유자 명도 협의</li>
+        <li>매도 호가 등록(~238~241M)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>8. 최종 의견</h2>
+  <div class="lead">
+    <p>구조적으로 안전하고 자금·권리·세금 모두 통과하나, 현재 시장에서 수익 마진이 얇아 사용자 관심 기준은 미충족합니다.</p>
+    <ul style="margin:6px 0">
+      <li><b>마진·안전 우선</b> → 198~203M (낙찰확률 45~60%, 성공 시 세후 1,000만+, 안전마진 7%)</li>
+      <li><b>확보·회전 우선</b> → 207~210M (낙찰확률 70%, 세후 ~565만)</li>
+      <li><b>수익 효율 엄격</b> → 이번 회차 관망(▷), 더 큰 시장-감정 괴리 물건 대기</li>
+    </ul>
+    <p>판단은 사용자 몫. 어느 쪽이든 <b>절대 상한 214M</b>은 넘기지 마세요.</p>
+  </div>
+
+  <div class="foot">
+    출처: 지지옥션(web.ggi.co.kr 사건상세, 구독 로그인) + 국토부 실거래 · 분석 정본: bid-price-engine §0.5 v7/v8, monetization-scenarios · 작성 2026-06-02<br>
+    Wiki: complex/아산온천미소지움, topic/market-anchored-bid · 케이스 산출물: _workspace/cases/2025타경11474/<br>
+    ※ 법원 공시자료 기반 추정치로 오류·변경 가능. 투자 책임은 이용자에게 있습니다.
+  </div>
+</div>
+</body>
+</html>

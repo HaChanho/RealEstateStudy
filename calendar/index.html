@@ -444,6 +444,10 @@
 
   .ext-link { color: var(--accent); text-decoration: none; font-size: 12px; word-break: break-all; }
   .ext-link:hover { text-decoration: underline; }
+  .report-link { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 8px; background: rgba(245,158,11,.14); border: 1px solid rgba(245,158,11,.45); color: #f59e0b; text-decoration: none; font-size: 13px; font-weight: 700; transition: background .12s; }
+  .report-link:hover { background: rgba(245,158,11,.24); }
+  .report-link .rp-ico { font-size: 14px; }
+  .report-link .rp-arrow { font-weight: 800; }
 
   .dot.pending   { background: var(--pending); }
   .dot.candidate { background: var(--candidate); }
@@ -1547,6 +1551,18 @@
     grid.appendChild(field('지역', regionNode));
     numSec.appendChild(grid);
     inner.appendChild(numSec);
+
+    // 📄 상세 분석 보고서 (deep-dive 케이스) — 같은 디렉토리의 report HTML로 링크
+    if (c.reportUrl) {
+      const rpSec = section('📄 상세 분석 보고서');
+      const a = el('a', { cls: 'report-link', attrs: { href: c.reportUrl, target: '_blank', rel: 'noopener' } });
+      a.appendChild(el('span', { cls: 'rp-ico', text: '📄' }));
+      a.appendChild(document.createTextNode('심층 분석 보고서 열기'));
+      a.appendChild(el('span', { cls: 'rp-arrow', text: '→' }));
+      rpSec.appendChild(a);
+      rpSec.appendChild(el('div', { cls: 'small-note', text: 'deep-dive 풀 파이프라인 — 권리·시장앵커·입찰가 곡선·입찰 3안 비교·수익화·D-day 액션' }));
+      inner.appendChild(rpSec);
+    }
 
     // 💰 수익 분석 (v6.1) — 기대 매도가·입찰권장가(70%)·예상비용·예상수익
     if (c.expectedProfit70 != null || c.bid70 != null || c.neutralSalePrice != null) {
