@@ -59,9 +59,6 @@ _workspace/calendar/
 - 하드 탈락(권리 risky·면적·가격 초과)은 자동 ★1, 매각기일 경과는 별점 없음
 - `case.rating`이 명시되면 자동 채점 우선순위보다 위. AI는 자동 채점만 부여.
 
-### 💬 댓글 (Giscus)
-GitHub Discussions 기반. setup 필요 — 아래 참고.
-
 ## 데이터 스키마 (v0.2.0)
 
 `cases.js`의 `window.AUCTION_CASES`는 케이스 객체 배열. 동일 `id`가 들어오면 **머지 업데이트**.
@@ -226,42 +223,6 @@ window.AUCTION_PREDICTIONS = {
 - **모델 예측 낙찰가** = `감정가 × 예측 매각가율`(`saleRateMu → saleRate → deriveSaleRate`). bid70(권장 입찰가)이 아니라 **낙찰가 점추정** — 기존 회고 캘리브레이션(predictedSaleRate→soldRate)과 동일 축.
 - **소유권 분할**: 사용자(쓰기) 전용. 회고 routine·sourcing이 건드리지 않음 → 머지 충돌 구조적 제거.
 - index.html 로드 체인: results.js → **predictions.js** → cases.js. predictions.js 없거나 비어 있어도 캘린더는 정상 동작(예측 없으면 🎯 섹션 자체가 숨김).
-
-## Giscus 설정
-
-GitHub Discussions 기반 댓글 시스템. 사용자 1회 setup 필요 (1~2분).
-
-### Step 1: GitHub Discussions 활성화
-저장소 Settings → General → Features → **Discussions** 체크. (또는 `gh api -X PATCH repos/HaChanho/RealEstateStudy -f has_discussions=true`)
-
-### Step 2: Giscus GitHub App 설치
-1. https://github.com/apps/giscus 방문 → "Install"
-2. RealEstateStudy 저장소에 접근 권한 부여
-
-### Step 3: Giscus 설정 가져오기
-1. https://giscus.app 방문
-2. Repository: `HaChanho/RealEstateStudy`
-3. Page ↔ Discussions Mapping: **pathname** 권장
-4. Discussion Category: `General` (또는 새로 만든 `Comments`)
-5. 페이지 하단의 설정 스니펫에서 다음 값 확인:
-   - `data-repo-id` (예: `R_kgDOXxxxxx`)
-   - `data-category-id` (예: `DIC_kwDOXxxxxxxxxxxxxxx`)
-
-### Step 4: cases.js에 한 줄 추가
-파일 끝에 추가:
-
-```js
-window.GISCUS_CONFIG = {
-  repo: "HaChanho/RealEstateStudy",
-  repoId: "R_kgDOXxxxxx",                  // ← Step 3에서 받은 값
-  category: "General",
-  categoryId: "DIC_kwDOXxxxxxxxxxxxxxx",   // ← Step 3에서 받은 값
-  mapping: "pathname",
-  theme: "noborder_dark"
-};
-```
-
-이렇게 하면 페이지 하단 placeholder가 진짜 Giscus 댓글창으로 자동 교체됩니다.
 
 ## 누적 사용법
 

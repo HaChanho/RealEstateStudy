@@ -251,12 +251,17 @@
   .dday-detail.soon   { background: rgba(245,158,11,.22); color: #b45309; }
   .dday-detail.near   { background: rgba(56,189,248,.18); color: #0369a1; }
   .dday-detail.future { background: var(--surface-2); color: var(--text-mute); }
-  .court-meta { color: var(--text-mute); font-size: 11px; }
 
   .detail-section { margin-bottom: 18px; }
   .detail-section h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-mute); margin: 0 0 6px; font-weight: 600; }
   .detail-section .value { font-size: 13px; color: var(--text); line-height: 1.5; }
   .detail-section .value.dim { color: var(--text-dim); }
+  /* 단락 구획 — 재무 의사결정 스택(핵심수치→수익분석→내예상)을 흰 카드 on 회색 패널로 분리.
+     좌측 accent 색으로 단계 구분: 파랑(원시수치)→앰버(모델수익)→인디고(내 베팅) */
+  .detail-section.boxed { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 13px 15px; margin-bottom: 14px; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+  .detail-section.boxed > h3 { color: var(--text-dim); font-size: 11.5px; font-weight: 700; margin-bottom: 11px; }
+  .detail-section.boxed.acc-profit { border-left-color: var(--price); }
+  .detail-section.boxed.acc-pred   { border-left-color: #6366f1; }
   .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
   .detail-grid .field .k { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-mute); margin-bottom: 2px; }
   .detail-grid .field .v { font-size: 13px; color: var(--text); }
@@ -289,13 +294,23 @@
   .chip-tier.tier-star { color: #facc15; } .chip-tier.tier-watch { color: #60a5fa; } .chip-tier.tier-watchlist { color: #94a3b8; }
   /* EP70 리스트 셀 */
   td.col-num.ep-pos { color: var(--positive); } td.col-num.ep-neg { color: var(--negative); }
-  /* 호가 입력 UI */
-  .hoga-wrap { margin-top: 10px; padding: 10px 12px; background: rgba(148,163,184,.06); border: 1px solid rgba(148,163,184,.18); border-radius: 8px; }
-  .hoga-label { display: block; font-size: 11px; color: var(--text-mute); margin-bottom: 6px; }
-  .hoga-input { width: 160px; padding: 6px 9px; font-size: 13px; font-family: inherit; background: var(--bg, #0f1115); color: var(--text, #e5e7eb); border: 1px solid rgba(148,163,184,.35); border-radius: 6px; }
-  .hoga-input:focus { outline: none; border-color: rgba(96,165,250,.6); }
-  .hoga-result { margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--text-mute); }
-  .hoga-result.pos { color: var(--positive); } .hoga-result.neg { color: var(--negative); } .hoga-result.mid { color: #facc15; }
+  /* 사건번호 + 매각일 인라인 — 캘린더가 이미 날짜를 보여주므로 상세에선 경량 표시(사건번호 옆) */
+  .case-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .case-saledate { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-mute); font-variant-numeric: tabular-nums; }
+  .case-saledate .csd-ico { font-size: 10px; opacity: .75; }
+  .case-saledate .csd-date { font-weight: 600; }
+  .case-saledate .dday-detail { font-size: 10px; font-weight: 700; padding: 1px 6px; }
+
+  /* 컨텍스트 칩 — 사건번호 옆 경량 강조, 같은 레벨 맥락(법원·지역·유찰회차) + 강조 전용면적 칩 */
+  .case-context { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+  .ctx-chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 7px; background: var(--surface-2); border: 1px solid var(--border-strong); font-size: 12px; line-height: 1.5; }
+  .ctx-chip .ctx-ico { font-size: 11px; opacity: .8; }
+  .ctx-chip .ctx-val { color: var(--text); font-weight: 700; letter-spacing: -.01em; }
+  .ctx-chip .ctx-sub { color: var(--text-mute); font-weight: 600; font-size: 10px; }
+  /* 전용면적 — 같은 칩 패밀리지만 accent 틴트 + 큰 값으로 "섞이되 도드라지게" */
+  .ctx-chip.ctx-area { background: rgba(59,111,222,.10); border-color: rgba(59,111,222,.45); }
+  .ctx-chip.ctx-area .ctx-ico { opacity: 1; }
+  .ctx-chip.ctx-area .ctx-val { color: var(--accent-strong); font-size: 13px; }
 
   .tag-list { display: flex; flex-wrap: wrap; gap: 4px; }
   .tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); }
@@ -311,12 +326,18 @@
   .b-bar-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #84cc16, #fcd34d); }
   .b-score { font-variant-numeric: tabular-nums; color: var(--text-mute); text-align: right; }
 
-  .reason-box { padding: 10px 12px; background: var(--panel-bg-2); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 13px; line-height: 1.5; color: var(--text); }
+  .reason-box { padding: 12px 14px; background: var(--panel-bg-2); border-left: 3px solid var(--accent); border-radius: 6px; color: var(--text); }
   .reason-box.candidate { border-left-color: var(--candidate); }
   .reason-box.pass      { border-left-color: var(--pass); }
   .reason-box.hold      { border-left-color: var(--hold); }
   .reason-box.fail      { border-left-color: var(--fail); }
   .reason-box.expired   { border-left-color: var(--expired); }
+  .reason-head { margin-bottom: 9px; }
+  .reason-body { font-size: 13px; line-height: 1.55; color: var(--text); }
+  .reason-list { display: flex; flex-direction: column; gap: 7px; }
+  .reason-list .reason-item { position: relative; padding-left: 15px; font-size: 13px; line-height: 1.5; color: var(--text); }
+  .reason-list .reason-item::before { content: ''; position: absolute; left: 3px; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .45; }
+  .reason-foot { margin-top: 11px; padding-top: 8px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-mute); display: flex; align-items: center; gap: 5px; }
   /* 회고 결과 박스 (예측 vs 실측) */
   .result-box { padding: 12px; border-radius: 6px; background: var(--panel-bg-2); border-left: 3px solid var(--text-mute); margin-top: 4px; }
   .result-box.q-FN { border-left-color: #dc2626; background: rgba(220,38,38,.06); }
@@ -468,18 +489,6 @@
   .dot.hold      { background: var(--hold); }
   .dot.fail      { background: var(--fail); }
   .dot.expired   { background: var(--expired); }
-
-  /* Case-level comments (Giscus) — collapsible in detail panel */
-  .case-comments { border-top: 1px solid var(--border); margin-top: 18px; padding-top: 12px; }
-  .case-comments-toggle { display: flex; align-items: center; gap: 8px; width: 100%; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: border-color .15s; }
-  .case-comments-toggle:hover { border-color: var(--accent); }
-  .case-comments-toggle .caret { font-size: 10px; color: var(--text-mute); transition: transform .2s; margin-left: auto; }
-  .case-comments-toggle.open .caret { transform: rotate(90deg); }
-  .case-comments-body { display: none; margin-top: 10px; }
-  .case-comments-body.open { display: block; }
-  .case-comments-body .giscus, .case-comments-body .giscus-frame { max-width: 100%; }
-  .case-comments-loading { padding: 16px; text-align: center; color: var(--text-mute); font-size: 12px; font-style: italic; }
-  .case-comments-disabled { padding: 14px; background: var(--surface-2); border: 1px dashed var(--border); border-radius: 6px; color: var(--text-mute); font-size: 11px; text-align: center; }
 
   /* 데스크톱 기본: 필터 토글·패널 backdrop 비표시 (사이드 패널이라 불필요) */
   .filter-toggle { display: none; }
@@ -833,8 +842,10 @@
     }
     return f;
   }
-  function section(title) {
-    const s = el('div', { cls: 'detail-section' });
+  function section(title, opts) {
+    const o = opts || {};
+    const cls = 'detail-section' + (o.boxed ? ' boxed' : '') + (o.accent ? ' acc-' + o.accent : '');
+    const s = el('div', { cls });
     s.appendChild(el('h3', { text: title }));
     return s;
   }
@@ -1485,8 +1496,37 @@
     // Header
     const header = el('div', { cls: 'detail-header' });
     const left = el('div');
-    left.appendChild(el('div', { cls: 'case-num', text: c.caseNumber }));
+    // 사건번호 + 매각일(경량 인라인) — 캘린더가 날짜를 이미 보여주므로 상세에선 작게
+    const titleRow = el('div', { cls: 'case-title-row' });
+    titleRow.appendChild(el('div', { cls: 'case-num', text: c.caseNumber }));
+    {
+      const sd = el('span', { cls: 'case-saledate' });
+      sd.appendChild(el('span', { cls: 'csd-ico', text: '📅' }));
+      sd.appendChild(el('span', { cls: 'csd-date', text: c.saleDate || '—' }));
+      const days = daysUntil(c.saleDate);
+      if (days != null && c.verdict !== 'expired') {
+        sd.appendChild(el('span', { cls: 'dday-detail ' + (ddayClass(days) || 'future'), text: ddayLabel(days) }));
+      }
+      titleRow.appendChild(sd);
+    }
+    left.appendChild(titleRow);
     left.appendChild(el('div', { cls: 'complex-sub', text: `${c.complex || '—'} ${c.dongHo || ''}`.trim() }));
+    // 컨텍스트 칩 — 전용면적(강조)·담당법원·지역·유찰회차 (같은 레벨, 사건번호 옆 경량 강조)
+    {
+      const ctx = el('div', { cls: 'case-context' });
+      const ctxChip = (ico, val, sub, extraCls) => {
+        const chip = el('span', { cls: 'ctx-chip' + (extraCls ? ' ' + extraCls : '') });
+        chip.appendChild(el('span', { cls: 'ctx-ico', text: ico }));
+        chip.appendChild(el('span', { cls: 'ctx-val', text: val }));
+        if (sub) chip.appendChild(el('span', { cls: 'ctx-sub', text: sub }));
+        return chip;
+      };
+      if (c.areaSqm != null) ctx.appendChild(ctxChip('📐', fmtArea(c.areaSqm), null, 'ctx-area'));
+      ctx.appendChild(ctxChip('🏛', c.court || '—'));
+      ctx.appendChild(ctxChip('📍', c.region || '—', c.regionPriority ? 'P' + c.regionPriority : null));
+      ctx.appendChild(ctxChip('🔁', c.rounds == null ? '—' : (c.rounds === 0 ? '신건' : c.rounds + '회 유찰')));
+      left.appendChild(ctx);
+    }
     header.appendChild(left);
     const actions = el('div', { cls: 'actions' });
     const shareBtn = el('button', { cls: 'icon-btn', text: '🔗 링크' });
@@ -1499,23 +1539,11 @@
     header.appendChild(actions);
     inner.appendChild(header);
 
-    // Meta (verdict + risk + dday + court)
+    // Meta (verdict + risk) — 일정·법원·면적은 아래 핵심 정보 스트립으로 이관
     const meta = el('div', { cls: 'detail-meta' });
     meta.appendChild(el('span', { cls: 'verdict-badge ' + c.verdict, text: verdictLabel(c.verdict) }));
     if (c.rightsRisk) meta.appendChild(el('span', { cls: 'risk-badge ' + c.rightsRisk, text: '권리 ' + riskLabel(c.rightsRisk) }));
-    const days = daysUntil(c.saleDate);
-    if (days != null && c.verdict !== 'expired') {
-      const dCls = ddayClass(days);
-      const ddBadge = el('span', { cls: 'dday-detail ' + (dCls || 'future'), text: ddayLabel(days) });
-      meta.appendChild(ddBadge);
-    }
-    meta.appendChild(el('span', { cls: 'court-meta', text: `${c.court || ''} · 매각 ${c.saleDate || '—'}` }));
     inner.appendChild(meta);
-
-    // Reason
-    const reasonSec = section('판정 사유');
-    reasonSec.appendChild(el('div', { cls: 'reason-box ' + c.verdict, text: c.verdictReason || '—' }));
-    inner.appendChild(reasonSec);
 
     // 🏁 경매 결과 (회고 — 예측 vs 실측). results.js와 id로 join.
     // resultFor: 미래 기일·회차 충돌 결과는 숨김(과거 회차 결과가 재지정된 미래 사건에 노출되는 것 방지).
@@ -1556,7 +1584,7 @@
     }
 
     // Numbers
-    const numSec = section('핵심 수치');
+    const numSec = section('핵심 수치', { boxed: true });
     const grid = el('div', { cls: 'detail-grid' });
     const marginRaw = (c.kbPrice && c.minimumPrice) ? c.kbPrice - c.minimumPrice : null;
     const marginPct = (marginRaw != null && c.kbPrice) ? marginRaw / c.kbPrice : null;
@@ -1575,8 +1603,6 @@
       : marginRaw < 0 ? 'negative'
       : null;
     grid.appendChild(field('미시 마진 (KB−최저)', marginNode, { mono: true, price: true, muted: marginRaw == null, tone: marginTone }));
-    grid.appendChild(field('전용면적', fmtArea(c.areaSqm), { mono: true }));
-    grid.appendChild(field('유찰 회차', c.rounds == null ? '—' : (c.rounds === 0 ? '신건' : c.rounds + '회'), { mono: true }));
     const saleRateNode = el('span');
     const derivedRate = deriveSaleRate(c);
     if (derivedRate) {
@@ -1590,10 +1616,6 @@
     }
     if (c.saleRateNote) saleRateNode.appendChild(el('div', { cls: 'small-note', text: c.saleRateNote }));
     grid.appendChild(field('단지 매각가율', saleRateNode, { mono: true, muted: !derivedRate }));
-    const regionNode = el('span');
-    regionNode.appendChild(document.createTextNode(c.region || '—'));
-    if (c.regionPriority) regionNode.appendChild(el('span', { cls: 'priority-tag', text: `priority ${c.regionPriority}` }));
-    grid.appendChild(field('지역', regionNode));
     numSec.appendChild(grid);
     inner.appendChild(numSec);
 
@@ -1618,7 +1640,7 @@
         watch:     { t: '◇ Watch (1,500~2,500만)',   cls: 'tier-watch' },
         watchlist: { t: '▷ Watchlist (본전권)',       cls: 'tier-watchlist' },
       };
-      const profSec = section('💰 수익 분석 (세전 · 낙찰확률 70% 기준)');
+      const profSec = section('💰 수익 분석 (세전 · 낙찰확률 70% 기준)', { boxed: true, accent: 'profit' });
       if (c.interestTier && tierMap[c.interestTier]) {
         profSec.appendChild(el('span', { cls: 'tier-badge ' + tierMap[c.interestTier].cls, text: tierMap[c.interestTier].t }));
       } else if (ep != null && ep <= -10_000_000) {
@@ -1635,31 +1657,7 @@
       // 수리비는 변동성이 크고 사용자가 임의 조절 가능 → EP70·예상비용에서 제외, 별도 참고치로 노출.
       if (c.repairCost != null) pgrid.appendChild(field('예상 수리비 (참고 · EP70 제외)', fmtMoney(c.repairCost), { mono: true, muted: true }));
       profSec.appendChild(pgrid);
-      // 호가 입력 → 기대 매도가 상향 → EP70 재계산 (localStorage 저장, 브라우저별 유지)
-      if (c.bid70 != null && cost != null) {
-        const hwrap = el('div', { cls: 'hoga-wrap' });
-        hwrap.appendChild(el('span', { cls: 'hoga-label', text: '🏷️ 호가 반영 (만원, 선택)' }));
-        const hin = el('input', { cls: 'hoga-input', attrs: { type: 'number', placeholder: '예: 22000', inputmode: 'numeric', min: '0' } });
-        const hres = el('div', { cls: 'hoga-result' });
-        const LS = 'hoga:' + c.id;
-        const recompute = () => {
-          const man = parseFloat(hin.value);
-          if (!man || man <= 0) { hres.textContent = ''; hres.className = 'hoga-result'; try { localStorage.removeItem(LS); } catch (e) {} return; }
-          const hoga = Math.round(man) * 10000;
-          const sale = Math.max(c.neutralSalePrice || 0, hoga);
-          const ep2 = sale - c.bid70 - cost;
-          const tier2 = ep2 >= 25_000_000 ? '★ Primary' : ep2 >= 15_000_000 ? '◇ Watch' : ep2 > -10_000_000 ? '▷ Watchlist' : '제외';
-          hres.textContent = `→ 기대 매도가 ${fmtMoney(sale)} 적용 시 예상 수익 ${fmtMoneySigned(ep2)} (${tier2})`;
-          hres.className = 'hoga-result ' + (ep2 >= 15_000_000 ? 'pos' : ep2 <= -10_000_000 ? 'neg' : 'mid');
-          try { localStorage.setItem(LS, String(Math.round(man))); } catch (e) {}
-        };
-        hin.addEventListener('input', recompute);
-        try { const saved = localStorage.getItem(LS); if (saved) { hin.value = saved; recompute(); } } catch (e) {}
-        hwrap.appendChild(hin);
-        hwrap.appendChild(hres);
-        profSec.appendChild(hwrap);
-      }
-      profSec.appendChild(el('div', { cls: 'small-note', text: '세전 = 종합소득세·명도비·인수금·수리비 제외 / 비용 = 취득세·법무등기(법무통)·대출이자(2~6개월)·중개비. 수리비는 변동성이 커 EP70에서 빼고 별도 참고치로 표기(사용자 직접 가감). 매도가는 실거래 기준 — 현재 호가 입력 시 기대 매도가·예상 수익 상향 재계산. 정본: bid-price-engine §0.5 v8' }));
+      profSec.appendChild(el('div', { cls: 'small-note', text: '세전 = 종합소득세·명도비·인수금·수리비 제외 / 비용 = 취득세·법무등기(법무통)·대출이자(2~6개월)·중개비. 수리비는 변동성이 커 EP70에서 빼고 별도 참고치로 표기(사용자 직접 가감). 매도가는 실거래 기준. 정본: bid-price-engine §0.5 v8' }));
       inner.appendChild(profSec);
     }
 
@@ -1672,7 +1670,7 @@
         const ar = resultFor(c);
         const actual = (ar && ar.soldPrice != null) ? ar.soldPrice : null;
         const mark = i => (myBids.length > 1 ? ['①', '②'][i] : '');
-        const psec = section('🎯 내 예상 낙찰가');
+        const psec = section('🎯 내 예상 낙찰가', { boxed: true, accent: 'pred' });
 
         if (actual != null) {
           // 결과 후 — 후보(내 예상들 + 모델) 일괄 비교
@@ -1716,6 +1714,41 @@
         }
         inner.appendChild(psec);
       }
+    }
+
+    // 판정 사유 (권리 상태 직전 배치) — verdict 헤더 + 문장 단위 정리 + 출처/버전 각주
+    {
+      const reasonSec = section('판정 사유');
+      const box = el('div', { cls: 'reason-box ' + c.verdict });
+      const head = el('div', { cls: 'reason-head' });
+      head.appendChild(el('span', { cls: 'verdict-badge ' + c.verdict, text: verdictLabel(c.verdict) }));
+      box.appendChild(head);
+      const raw = (c.verdictReason || '').trim();
+      if (!raw) {
+        box.appendChild(el('div', { cls: 'reason-body', text: '—' }));
+      } else {
+        // 끝에 붙은 출처/버전 괄호(예: "(2026-06-01 v4)", "(1차 sourcing 분석)")는 각주로 분리
+        let bodyTxt = raw, foot = null;
+        const fm = raw.match(/\s*\(([^()]*(?:\d{4}-\d{2}-\d{2}|v\d|sourcing|sweep|회고|차\s*분석)[^()]*)\)\s*$/i);
+        if (fm) { foot = fm[1].trim(); bodyTxt = raw.slice(0, fm.index).trim(); }
+        // 문장 단위 분리(". " 기준 — "3.1%" 등 소수점은 뒤 공백이 없어 안전)
+        const sentences = bodyTxt.split(/\.\s+/).map((s) => s.trim().replace(/\.$/, '')).filter(Boolean);
+        if (sentences.length >= 2) {
+          const list = el('div', { cls: 'reason-list' });
+          sentences.forEach((s) => list.appendChild(el('div', { cls: 'reason-item', text: s })));
+          box.appendChild(list);
+        } else {
+          box.appendChild(el('div', { cls: 'reason-body', text: bodyTxt }));
+        }
+        if (foot) {
+          const footEl = el('div', { cls: 'reason-foot' });
+          footEl.appendChild(el('span', { text: '🗓' }));
+          footEl.appendChild(document.createTextNode(foot));
+          box.appendChild(footEl);
+        }
+      }
+      reasonSec.appendChild(box);
+      inner.appendChild(reasonSec);
     }
 
     // Rights
@@ -2039,32 +2072,6 @@
     srcSec.appendChild(srcGrid);
     inner.appendChild(srcSec);
 
-    // 사건별 댓글 (Giscus, lazy)
-    {
-      const commentsSec = el('div', { cls: 'case-comments' });
-      if (!isGiscusConfigured()) {
-        const disabled = el('div', { cls: 'case-comments-disabled', text: '💬 댓글 미설정 — README의 Giscus 설정 가이드 참고' });
-        commentsSec.appendChild(disabled);
-      } else {
-        const toggle = el('button', { cls: 'case-comments-toggle', attrs: { type: 'button' } });
-        toggle.appendChild(document.createTextNode(`💬 이 사건 의견 (${c.caseNumber})`));
-        toggle.appendChild(el('span', { cls: 'caret', text: '▶' }));
-        const body = el('div', { cls: 'case-comments-body' });
-        let loaded = false;
-        toggle.addEventListener('click', () => {
-          const open = toggle.classList.toggle('open');
-          body.classList.toggle('open', open);
-          if (open && !loaded) {
-            embedGiscusInto(body, c.id);
-            loaded = true;
-          }
-        });
-        commentsSec.appendChild(toggle);
-        commentsSec.appendChild(body);
-      }
-      inner.appendChild(commentsSec);
-    }
-
     if (!opts || !opts.skipUrlSync) syncUrl();
     if (state.view === 'list') renderList();
     else renderCalendar();
@@ -2257,42 +2264,6 @@
       if (clamped !== cur) applyPanelWidth(clamped);
     });
   })();
-
-  // ===== Giscus (사건별 댓글, lazy load) =====
-  // 사건당 1개 discussion (data-mapping="specific" + data-term=caseId)
-  // 사용자가 "💬 의견 펼치기" 토글 클릭한 시점에만 embed
-  function isGiscusConfigured() {
-    const cfg = window.GISCUS_CONFIG;
-    return !!(cfg && cfg.repo && cfg.repoId && cfg.categoryId);
-  }
-  function embedGiscusInto(container, caseId) {
-    const cfg = window.GISCUS_CONFIG;
-    container.replaceChildren();
-    const loading = el('div', { cls: 'case-comments-loading', text: '댓글 불러오는 중…' });
-    container.appendChild(loading);
-    const script = document.createElement('script');
-    script.src = 'https://giscus.app/client.js';
-    script.async = true;
-    script.crossOrigin = 'anonymous';
-    const attrs = {
-      'data-repo': cfg.repo,
-      'data-repo-id': cfg.repoId,
-      'data-category': cfg.category || 'General',
-      'data-category-id': cfg.categoryId,
-      'data-mapping': 'specific',
-      'data-term': caseId,
-      'data-strict': '0',
-      'data-reactions-enabled': '1',
-      'data-emit-metadata': '0',
-      'data-input-position': 'top',
-      'data-theme': cfg.theme || 'noborder_dark',
-      'data-lang': 'ko',
-      'data-loading': 'lazy',
-    };
-    for (const k of Object.keys(attrs)) script.setAttribute(k, attrs[k]);
-    // giscus iframe이 삽입되면 loading placeholder는 자연스럽게 가려짐 (placeholder는 컨테이너 첫 child)
-    container.appendChild(script);
-  }
 
   // ===== Init =====
   initRegionFilter();
