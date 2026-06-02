@@ -112,6 +112,8 @@
   .chip .chip-rating.r2 { background: #7c3aed; color: #ffffff; }
   .chip .chip-rating.r1 { background: #94a3b8; color: #ffffff; }
   .chip .chip-rating.none { background: var(--surface-3); color: var(--text-mute); }
+  .chip .chip-trail { display: flex; align-items: center; gap: 3px; min-width: 0; }
+  .chip .chip-trail > * { margin-left: 0; }
   .chip .chip-mini { display: flex; gap: 2px; align-items: center; }
   .chip .mini-bar { width: 22px; height: 4px; background: var(--surface-3); border-radius: 2px; overflow: hidden; }
   .chip .mini-bar-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #84cc16, #fcd34d); }
@@ -1249,10 +1251,14 @@
         chip.appendChild(rd);
         // Label
         chip.appendChild(el('span', { cls: 'chip-text', text: chipLabel(c) }));
-        // v6.1 관심 tier 미니배지 (★/◇/▷)
-        { const _tm = { primary: '★', watch: '◇', watchlist: '▷' }; if (c.interestTier && _tm[c.interestTier]) chip.appendChild(el('span', { cls: 'chip-tier tier-' + (c.interestTier === 'primary' ? 'star' : c.interestTier === 'watch' ? 'watch' : 'watchlist'), text: _tm[c.interestTier] })); }
-        // 회고 결과 배지 (results.js) — 낙찰가율/판정을 칩에서 바로 노출
-        { const _b = resultChipBadge(resultFor(c)); if (_b) chip.appendChild(_b); }
+        // v6.1 관심 tier 미니배지(★/◇/▷) + 회고 결과 배지를 하나의 trailing 그룹으로 묶는다.
+        // 3컬럼 grid(22px 1fr auto)는 trailing 셀이 1개일 때만 안정적이다. tier·result가
+        // 동시에 존재(예: ▷watchlist 물건이 매각 당일 결과까지 도래)하면 각각 별도 grid 셀이 되어
+        // result배지가 2행 22px 컬럼으로 밀려 가격과 겹친다. 둘을 한 셀(.chip-trail)에 수용해 방지.
+        const trail = el('span', { cls: 'chip-trail' });
+        { const _tm = { primary: '★', watch: '◇', watchlist: '▷' }; if (c.interestTier && _tm[c.interestTier]) trail.appendChild(el('span', { cls: 'chip-tier tier-' + (c.interestTier === 'primary' ? 'star' : c.interestTier === 'watch' ? 'watch' : 'watchlist'), text: _tm[c.interestTier] })); }
+        { const _b = resultChipBadge(resultFor(c)); if (_b) trail.appendChild(_b); }
+        if (trail.childNodes.length) chip.appendChild(trail);
         // Mini: 최저가(매매사업자 핵심 지표) + margin bar
         const mini = el('span', { cls: 'chip-mini' });
         if (c.minimumPrice != null) mini.appendChild(el('span', { cls: 'chip-price', text: fmtMoneyShort(c.minimumPrice) }));
