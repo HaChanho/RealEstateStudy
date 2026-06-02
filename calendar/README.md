@@ -82,7 +82,9 @@ _workspace/calendar/
 | `region` | string | 지역 그룹 |
 | `regionPriority` | 1\|2\|3 | finance.md priority |
 | `rightsStatus` | string | 권리 표시 텍스트 |
-| `rightsRisk` | `safe`\|`moderate`\|`risky` | |
+| `rightsRisk` | `safe`\|`moderate`\|`risky` | 미검증/주의=`moderate` |
+| `rightsVerified` | boolean? | 권리 raw(등기·명세서·임차조사) 검증 여부. `false`=미검증 → v8 별점 신뢰도 −1. `true`/생략=페널티 없음 (deep-dive 결손→검증 2단계) |
+| `reportUrl` | string? | deep-dive HTML 보고서 파일명(`report-{사건번호}.html`) → 상세 패널 "📄 상세 분석 보고서" 자동 렌더 |
 | `saleRate` | 0~1? | 단지 매각가율 |
 | `saleRateNote` | string? | 근거 메모 |
 | `verdict` | enum | `pending`\|`candidate`\|`pass`\|`hold`\|`fail`\|`expired` |
