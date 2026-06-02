@@ -897,11 +897,12 @@
         if (c.repairCost >= 25_000_000) { repairPen = 2; repairLabel = '−2 (대수선급 ≥2,500만)'; }
         else if (c.repairCost >= 10_000_000) { repairPen = 1; repairLabel = '−1 (10M↑)'; }
       }
-      // 신뢰도 페널티 — S가 KB폴백(실거래0)이거나 단지 매각사례 0건(k70 추정)
+      // 신뢰도 페널티 — S가 KB폴백(실거래0)이거나 단지 매각사례 0건(k70 추정)이거나 권리 raw 미검증
       let confPen = 0; const confReasons = [];
       if (c.neutralSalePrice != null && c.kbPrice != null && c.neutralSalePrice === c.kbPrice) confReasons.push('실거래0·KB앵커');
       if (c.saleRateN === 0) confReasons.push('단지매각사례0·k70추정');
-      if (confReasons.length) confPen = 1;
+      if (c.rightsVerified === false) confReasons.push('권리 raw 미검증');
+      confPen = Math.min(2, confReasons.length); // 다중 결손 시 최대 −2 (단일 −1)
       let raw = base - repairPen - confPen;
       if (ep >= 0 && raw < 2) raw = 2; // 본전권↑(EP70≥0)은 ★2 하한 (적자 물건과 동급으로 떨구지 않음)
       const rating = Math.max(1, Math.min(5, raw));
