@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>분석 보고서 · 2025타경12295 아산테크노밸리이지더원2단지</title>
+<style>
+  :root{
+    --bg:#0f172a; --surface:#1e293b; --surface-2:#273449; --surface-3:#334155;
+    --text:#e2e8f0; --text-mute:#94a3b8; --line:#334155;
+    --amber:#f59e0b; --green:#65a30d; --blue:#0284c7; --red:#ef4444; --purple:#7c3aed;
+    --pos:#22c55e; --neg:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",Segoe UI,Roboto,sans-serif;line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 20px 80px}
+  a{color:#38bdf8}
+  h1{font-size:22px;margin:0 0 4px;letter-spacing:-0.02em}
+  h2{font-size:17px;margin:34px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--line);letter-spacing:-0.01em}
+  h3{font-size:14px;margin:20px 0 8px;color:var(--text-mute);text-transform:none;letter-spacing:0.02em}
+  .sub{color:var(--text-mute);font-size:13px;margin:0 0 18px}
+  .verdict{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:10px;font-weight:700;font-size:15px;margin:14px 0 4px;background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+  .badges{margin:10px 0 0;display:flex;gap:8px;flex-wrap:wrap}
+  .badge{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--surface-2);color:var(--text-mute);border:1px solid var(--line)}
+  .badge.good{color:var(--pos);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
+  .badge.warn{color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08)}
+  .badge.bad{color:var(--neg);border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08)}
+  .lead{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:18px 0}
+  .lead p{margin:0 0 10px} .lead p:last-child{margin:0}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;background:var(--surface);border-radius:10px;overflow:hidden}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:var(--surface-2);color:var(--text-mute);font-weight:600;font-size:12.5px}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:none}
+  .hl{color:var(--amber);font-weight:700}
+  .pos{color:var(--pos);font-weight:600} .neg{color:var(--neg);font-weight:600}
+  .pick{background:rgba(245,158,11,.10)}
+  .note{font-size:12.5px;color:var(--text-mute);margin:8px 0 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .card h4{margin:0 0 6px;font-size:13.5px}
+  .kv{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:13.5px}
+  .kv .k{color:var(--text-mute)} .kv .v{font-variant-numeric:tabular-nums;text-align:right}
+  ul{margin:8px 0;padding-left:20px} li{margin:4px 0}
+  .insight{background:rgba(2,132,199,.08);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:13.5px}
+  .danger{background:rgba(239,68,68,.08);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:13.5px}
+  .foot{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--text-mute)}
+  .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--text-mute);text-decoration:none}
+  .back:hover{color:var(--text)}
+  code{background:var(--surface-2);padding:1px 6px;border-radius:5px;font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 캘린더로</a>
+  <h1>2025타경12295 · 아산테크노밸리이지더원2단지 202동 903호</h1>
+  <p class="sub">천안지원 4계 · 매각기일 2026-06-22(월) · deep-dive 작성 2026-06-02 · <b style="color:var(--pos)">분석 신뢰도 상</b> (권리 raw 전체 검증 · 단일 약점 k70 표본 1건)</p>
+
+  <div class="verdict">🟡 조건부 — "마진형 저가 한정 선택적 입찰 또는 관망" (▷ Watchlist)</div>
+  <div class="badges">
+    <span class="badge good">권리 A 검증 · 인수 0</span>
+    <span class="badge warn">EP70 대표 +11.5M · ▷ Watchlist</span>
+    <span class="badge good">자금 OK (필요 ~4,666만 ≪ 162M)</span>
+    <span class="badge good">산단 임대 안전판 ★★★★</span>
+    <span class="badge">10.7년차 · 542세대</span>
+    <span class="badge">60㎡ 부가세 면세</span>
+    <span class="badge bad">★/◇ 기준 미달 (저경쟁이면 ◇ +21.5M)</span>
+  </div>
+
+  <div class="lead">
+    <p><b>정직하게 — 구조는 안전한데 수익이 얇은 물건입니다.</b> 권리는 등기 11건 전부 말소·인수 0·임차인 보증금 전액 소멸로 <b>완전 클린(A 검증 완료)</b>, 자금력도 대폭 여유(필요 자기자본 ~4,666만 ≪ 가용 162M), 60㎡ 부가세 면세. <b>구조적 NO-GO 사유(권리 결손·인수 위험·Walk-away&lt;최저가·자금 불가)는 하나도 없고, 적자 물건도 아닙니다.</b> 권리는 12974(잠정)보다 오히려 더 확실합니다(본건은 검증 완료).</p>
+    <p>그러나 <b>수익은 ▷ Watchlist</b>입니다. 대표 시나리오(70%승률 입찰가 171M·k70 0.90)에서 EP70 +₩1,150만으로, <b>사용자 관심 기준(세전 2,500만@70%)은 물론 ◇ tier(1,500만)에도 미달</b>합니다. 이유는 단순합니다 — 이 단지가 인기라(4개월 전 같은 동 12157이 <b>28명 응찰·매각가율 92.9%</b>) <b>경매 할인폭이 구조적으로 얇습니다</b>. 시장가(S 190M)와 70%승률 입찰가(171M)의 경매 엣지가 19M에 불과해, 비용·명도·수리를 빼면 마진이 빠르게 소멸합니다.</p>
+    <p><b>유일한 ◇/★급 기회는 마진형 저가(161.6M·EP70 +21.5M·◇)</b> 한 점뿐인데, 그 가격의 낙찰확률은 ~50%(보통 분위기)입니다. 그 위(균형·낙찰형)는 수익이 박하거나 적자입니다. <b>"싸게 받으면 ◇, 비싸지면 다음 물건"의 전형</b> — 강매할 물건이 아니고, NO-GO로 버릴 물건도 아닙니다. <b>관망도 정당한 선택</b>입니다. 다만 단기 매도가 막혀도 <b>산단(아산테크노밸리) 임대로 약흑자 버티기</b>가 가능한 게 본건의 진짜 안전판입니다.</p>
+  </div>
+
+  <h2>1. 물건 개요</h2>
+  <div class="grid2">
+    <div class="card">
+      <h4>기본</h4>
+      <div class="kv"><span class="k">소재지</span><span class="v">아산 둔포면 석곡리 1801 · 202동 903호</span></div>
+      <div class="kv"><span class="k">전용 / 평형</span><span class="v">59.98㎡ (18평) · 25평형(공급)</span></div>
+      <div class="kv"><span class="k">준공</span><span class="v">2015.09 · 10.7년차</span></div>
+      <div class="kv"><span class="k">단지</span><span class="v">542세대 9개동 · 라인건설 · 주차 1.19/세대</span></div>
+      <div class="kv"><span class="k">입지</span><span class="v">아산테크노밸리 산단 내 · <b>역세권 아님</b> · 배후=산단 근로자</span></div>
+      <div class="kv"><span class="k">점유</span><span class="v">점유관계 미상 (공실/소유자 추정)</span></div>
+    </div>
+    <div class="card">
+      <h4>금액</h4>
+      <div class="kv"><span class="k">감정가</span><span class="v">2.01억 (실거래+6% 경미오염)</span></div>
+      <div class="kv"><span class="k">최저가</span><span class="v"><b>1.407억 (70%, 1회유찰)</b></span></div>
+      <div class="kv"><span class="k">입찰보증금</span><span class="v">1,407만 (최저 10%)</span></div>
+      <div class="kv"><span class="k">현재 시장가(S)</span><span class="v"><b class="hl">1.90억</b> (실거래 7건 median)</span></div>
+      <div class="kv"><span class="k">KB시세</span><span class="v">1.92억 (보조·미검증)</span></div>
+      <div class="kv"><span class="k">청구액 / 채권총액</span><span class="v">1.185억 / 12.6억 (다중채무)</span></div>
+    </div>
+  </div>
+  <p class="note">✅ sourcing 추정(감정 201M·최저 140.7M·70%·1회유찰·D 06-22) <b>전부 검증 일치</b>. 신건 201M이 2026-05-18 유찰 → 70%로 재등장(2차 유찰 시 7-27 ₩98.49M). 임의경매(채권자 농협은행), 미납관리비 <b>0</b>(2026-03분 완납). wiki 구 관찰("신건 최저 201M·유찰0·fail")은 stale → ingest 정정 대상.</p>
+
+  <h2>2. 권리분석 — 안전등급 A <span style="color:var(--pos);font-size:13px">(전체 검증 완료 · 신뢰도 상)</span></h2>
+  <p>말소기준권리 = <b>근저당권 농협자산관리 서남권역(2016-03-14, 138,000,000원)</b> — 최선순위 담보물권. 이후 등기 11건(근저당 1·가압류 5·가처분 1·압류 2·임의경매 1) <b>전부 말소</b>, 선순위 권리 없음. <b>인수권리 0 · 인수금 0 확정</b>. (지지옥션 등기권리표·법원임차조사·전입세대조사·GG Tip 4종 검증, 2026-06-02)</p>
+  <table>
+    <tr><th>종류</th><th>권리자</th><th>등기일</th><th class="num">채권액</th><th>처리</th></tr>
+    <tr><td>소유권</td><td>전명덕</td><td>2016-03-14</td><td class="num">(매매 160.5M)</td><td>말소</td></tr>
+    <tr class="pick"><td><b>근저당권</b></td><td><b>농협자산관리</b></td><td>2016-03-14</td><td class="num">138,000,000</td><td><b>말소 ★말소기준</b></td></tr>
+    <tr><td>근저당권</td><td>한국기계유통렌탈</td><td>2021-08-30</td><td class="num">240,000,000</td><td>말소</td></tr>
+    <tr><td>가압류</td><td>중소벤처기업진흥공단</td><td>2024-07-31</td><td class="num">195,657,618</td><td>말소</td></tr>
+    <tr><td>가처분</td><td>중소벤처기업진흥공단</td><td>2024-08-13</td><td class="num">—</td><td>말소(보전)</td></tr>
+    <tr><td>압류</td><td>화성세무서</td><td>2024-11-06</td><td class="num">—</td><td>말소</td></tr>
+    <tr><td>가압류</td><td>한국캐피탈</td><td>2024-12-13</td><td class="num">107,402,260</td><td>말소</td></tr>
+    <tr><td>가압류</td><td>서울보증보험</td><td>2025-01-08</td><td class="num">519,750,000</td><td>말소</td></tr>
+    <tr><td>가압류</td><td>서울보증보험</td><td>2025-03-17</td><td class="num">41,212,600</td><td>말소</td></tr>
+    <tr><td>압류</td><td>국민건강보험공단</td><td>2025-07-25</td><td class="num">—</td><td>말소</td></tr>
+    <tr><td>임의경매</td><td>농협은행</td><td>2025-08-27</td><td class="num">118,502,549</td><td>말소</td></tr>
+    <tr><td>가압류</td><td>이녹스첨단소재</td><td>2025-11-04</td><td class="num">19,350,000</td><td>말소</td></tr>
+  </table>
+  <div class="insight">
+    <b>임차인 보증금 ₩20M 인수 우려 — 완전 해소.</b> (주)이녹스첨단소재(법인, 보 ₩20M/월 65만)가 권리신고·배당요구했으나 <b>전입신고 없음 · 확정일자 없음 · 전입세대 없음</b>(주민센터 2026-05-07 확인) · 점유개시(2021.07)도 말소기준(2016-03) 후순위. 주임법 대항력 요건(인도+전입신고) 미충족 → <b>대항력 없음 · 우선변제권 없음 → 보증금 전액 소멸, 매수인 인수 0</b>. (법인 임차인 직원전입 특례도 전입 전무로 차단. 보증금 채권은 11번 가압류로 전환됐고 이 역시 후순위 말소.)
+  </div>
+  <ul>
+    <li>채권총액 12.6억(감정 6배)·가압류 5건의 <b>복잡한 외관에도 말소기준 일괄 말소로 실질은 깨끗</b> — "외형 복잡 ≠ 인수 위험"의 대표 사례. 중진공 가처분(2024-08-13)도 후순위 보전형이라 인수 함정 아님.</li>
+    <li>미납관리비 0원(2026.03분까지). 특수권리(유치권·법정지상권·선순위 가처분/가등기/전세권) 전무.</li>
+    <li>GG Tip: <b>"권리분석(등기 포함)상 하자 및 매각 후 인수사항 없을 것으로 예상"</b>(2026.05.18).</li>
+    <li>명도: <b>점유관계 미상</b>(현장 미대면·전입세대 없음 → 공실 또는 소유자 점유 추정). 임차인 대항력 없음·관리비 0 → 난이도 낮음~보통, 보수 ₩300~500만(EP70 제외 항목).</li>
+  </ul>
+
+  <h2>3. 시장 앵커 (v7) — 왜 마진이 얇은가</h2>
+  <div class="insight">
+    <b>인기 단지라 경매 할인폭이 얇습니다.</b> 같은 동(202동) 12157호가 4개월 전 <b>28명 응찰·매각가율 92.9%</b>로 낙찰됐습니다(낙찰 175.5M = 당시 실거래 186M의 94%). 감정 201M은 실거래 190M의 +6%(경미 오염)이라 감정가×매각가율 모델은 보조 강등하고, <b>S 앵커 + 응찰자 tier k70</b>을 씁니다. 핵심은 <b>k70(과열 재현 여부)이 판정을 가른다</b>는 것 — 단일 고정 불가, 3 시나리오로 봅니다.
+  </div>
+  <table>
+    <tr><th>항목</th><th class="num">값</th><th>근거</th></tr>
+    <tr><td>기대 매도가 S</td><td class="num"><b>190,000,000</b></td><td>지지옥션 국토부 실거래 59.98㎡ 7건(2025Q2~2026Q2, range 177~195M) · 9층 mid-high median · 최근 2026.03 190M</td></tr>
+    <tr><td>최저가 / 시장 갭</td><td class="num">−26.0%</td><td>최저 140.7M이 시장 190M 대비. 그러나 인기 단지라 실제 낙찰은 시장 90%선까지 상승</td></tr>
+    <tr><td>감정가 오염</td><td class="num">+6%</td><td>감정 201M vs 실거래 190M (12974 +15%보다 경미)</td></tr>
+  </table>
+  <h3>★ k70 3 시나리오 — 28명 과열의 재현 여부가 판정 변수</h3>
+  <table>
+    <tr><th>시나리오 (응찰)</th><th class="num">k70</th><th class="num">입찰가 B70</th><th class="num">경매엣지 S×(1−k)</th><th class="num">EP70 (세전)</th><th>tier</th></tr>
+    <tr class="pick"><td><b>저경쟁 (≤6명)</b></td><td class="num">0.85</td><td class="num"><b>161,637,193</b></td><td class="num">28.5M</td><td class="num pos"><b>+21,376,422</b></td><td><b>◇ Watch</b></td></tr>
+    <tr><td><b>보통 (7~12명) ★대표</b></td><td class="num">0.90</td><td class="num">171,283,471</td><td class="num">19.0M</td><td class="num">+11,502,239</td><td>▷ Watchlist</td></tr>
+    <tr><td>과열 재현 (28명)</td><td class="num">0.929</td><td class="num">176,419,637</td><td class="num">13.5M</td><td class="num">+6,233,888</td><td>▷ Watchlist</td></tr>
+  </table>
+  <p class="note">비용(취득세·법무·이자·중개·기타) ~₩7.0~7.3M, 명도·수리·세금 별도. 불변식 <b>B70 ≤ S(190M)</b> 3 시나리오 전부 충족. <b>★ 기준(EP70 ≥2,500만@70%)은 어느 k70에서도 미달</b> — 저경쟁 B70(161.6M)에서 ★까지 ₩349만 부족(◇), 보통 B70(171.3M)에서 ₩1,321만 부족(▷).</p>
+  <div class="insight">
+    <b>과열 미재현 우세 → 보통(0.90) 대표 권고.</b> 28명 과열은 (1) 직접 표본 <b>1건</b>(12157)이고, (2) 본건 조회수 <b>81</b> = 12157 종결시점 172의 <b>절반</b>이며, (3) 단지 31평형 12425는 <b>[재매각]</b>(직전 낙찰 대금미납)으로 과열 후 자금이탈 사례까지 있습니다. 그래서 28명 재현을 기본 가정으로 두지 않습니다. <b>다만 표본 1건이라 민감도가 크고, 당일 응찰 분위기가 결정적</b>입니다 — 저경쟁이면 ◇(+2,138만), 과열 재현이면 ▷ 하단(+623만).
+  </div>
+
+  <h2>4. 입찰가별 기대수익 곡선</h2>
+  <p class="note">세전이익 = S(190M) − 입찰가 − 비용(입찰가 비례 ~7.0~7.3M). 명도·수리·세금 별도. 낙찰확률은 추정(12157 28명 1건 + 조회수 81=절반 + 31평형 재매각 종합, 당일 편차 큼). <b>인수금 0 검증 완료.</b></p>
+  <table>
+    <tr><th>입찰가</th><th class="num">k=B/S</th><th class="num">낙찰확률</th><th class="num">세전이익(명도·수리·세금 前)</th><th>tier</th></tr>
+    <tr><td>140,700,000 (최저)</td><td class="num">0.741</td><td class="num">~25%</td><td class="num pos">+42.8M</td><td>★</td></tr>
+    <tr class="pick"><td>152,000,000 (~B50·마진형 상한)</td><td class="num">0.800</td><td class="num"><b>~50%</b></td><td class="num pos"><b>+31.3M</b></td><td>★</td></tr>
+    <tr class="pick"><td>161,637,193 (저경쟁 B70·마진형)</td><td class="num">0.851</td><td class="num"><b>~70%@저경쟁</b></td><td class="num pos"><b>+21.4M</b></td><td>◇</td></tr>
+    <tr><td>165,000,000</td><td class="num">0.868</td><td class="num">~73%</td><td class="num pos">+17.9M</td><td>◇</td></tr>
+    <tr class="pick"><td>171,283,471 (보통 B70·균형 ★대표)</td><td class="num">0.902</td><td class="num"><b>~70%@보통</b></td><td class="num">+11.5M</td><td>▷</td></tr>
+    <tr><td>176,419,637 (과열 B70·낙찰형)</td><td class="num">0.929</td><td class="num">~85%@보통</td><td class="num">+6.2M</td><td>▷</td></tr>
+    <tr><td>180,000,000</td><td class="num">0.947</td><td class="num">~88%</td><td class="num">+2.6M</td><td>▷</td></tr>
+    <tr><td>182,509,595 (세전 BEP)</td><td class="num">0.961</td><td class="num">~91%</td><td class="num">≈0</td><td>Walk-away</td></tr>
+    <tr><td>190,000,000 (=S 상한)</td><td class="num">1.000</td><td class="num">~96%</td><td class="num neg">−7.7M</td><td>경매 메리트 소멸</td></tr>
+  </table>
+  <p class="note"><b>★지점(EP70 ≥2,500만)</b>: 입찰가 ~157.5M 이하(70%승률 161.6M·171.3M은 모두 ★ 미달) · <b>실질 본전선(명도·수리 포함)</b>: ~172.7M = 보통 B70(171.3M) 바로 위 · <b>−₩1,000만 제외선</b>: 합리적 입찰가(≤182.5M)에선 미도달, 단 183M+ 과열 응찰 시 명도·수리 후 진입.</p>
+
+  <h2>5. 입찰 3안 비교 ★</h2>
+  <table>
+    <tr><th>지표</th><th class="num">🟢 마진형 161.6M (저경쟁)</th><th class="num">🟡 균형 171.3M (보통)</th><th class="num">🔴 낙찰형 176.4M (과열)</th></tr>
+    <tr><td>입찰가</td><td class="num">161,637,193</td><td class="num">171,283,471</td><td class="num">176,419,637</td></tr>
+    <tr><td>k=B/S</td><td class="num">0.851</td><td class="num">0.902</td><td class="num">0.929</td></tr>
+    <tr><td>낙찰확률</td><td class="num">~50%@보통 / ~70%@저경쟁</td><td class="num">~70%@보통</td><td class="num">~85%@보통</td></tr>
+    <tr><td>들어간 내 돈</td><td class="num">~4,363만</td><td class="num">~4,566만</td><td class="num">~4,675만</td></tr>
+    <tr><td>낙찰 시 세전이익(EP70)</td><td class="num pos">+2,138만</td><td class="num">+1,150만</td><td class="num">+623만</td></tr>
+    <tr><td><b>세후 순이익(중립매도 190M)</b></td><td class="num pos"><b>+1,032만</b></td><td class="num">+208만</td><td class="num neg">−276만 (손실)</td></tr>
+    <tr><td>자기자본 수익률(4개월)</td><td class="num">23.7%</td><td class="num">4.6%</td><td class="num neg">−5.9%</td></tr>
+    <tr><td>연환산 IRR</td><td class="num pos">~71%</td><td class="num">~14%</td><td class="num neg">~−18%</td></tr>
+    <tr><td><b>매도분포 기대 세후</b></td><td class="num pos"><b>+826만</b></td><td class="num neg">+75만 (붕괴)</td><td class="num">—</td></tr>
+    <tr><td><b>낙찰확률 가중 기대세후</b></td><td class="num pos"><b>+578만 (1위)</b></td><td class="num">+53만</td><td class="num">—</td></tr>
+    <tr><td>tier</td><td class="num">◇</td><td class="num">▷</td><td class="num">▷</td></tr>
+  </table>
+
+  <h3>매도가 민감도 — 세후 순이익 (만원, 명도4M+수리5M 차감·배우자 15%)</h3>
+  <table>
+    <tr><th>입찰가 \ 매도가</th><th class="num">보수 183M</th><th class="num">중립 190M</th><th class="num">낙관 195M</th></tr>
+    <tr><td>마진형 161.6M</td><td class="num pos">+449</td><td class="num pos">+1,032</td><td class="num pos">+1,451</td></tr>
+    <tr><td>균형 171.3M</td><td class="num neg">−449</td><td class="num">+208</td><td class="num">+627</td></tr>
+    <tr><td>낙찰형 176.4M</td><td class="num neg">−977</td><td class="num neg">−276</td><td class="num">+186</td></tr>
+  </table>
+  <div class="danger">
+    <b>★ 본건 핵심 — 균형(B70 0.90)의 취약성.</b> 12974는 균형 입찰도 회당 +1,036만의 견고한 흑자였으나, <b>본건은 균형 입찰 시 회당 세후가 +208만으로 얇습니다.</b> 경매 엣지(S−B70)가 19M으로 작고, 명도·수리(9M)·비용(7.2M)을 빼면 사업소득이 2.5M만 남기 때문입니다. <b>매도가 188M 이하로 1%만 밀려도 적자.</b> 여기에 매도 유동성 약점(외곽·역세권 아님·거래 한산)을 매도기간 확률분포로 반영하면 <b>균형의 기대 세후가 +75만으로 사실상 붕괴</b>합니다. 반면 마진형은 +826만으로 견고 → <b>마진형 단독 권고</b>.
+  </div>
+
+  <h2>6. 수익화 — 단기전매(A) + 산단 임대 안전판(B)</h2>
+  <ul>
+    <li><b>1순위 = A 즉시전매(단기회전, 중앙 4개월·배우자 명의)</b>. 매도 S 190M ≪ 355M → <b>배우자 15% 구간 안전</b>(사업소득이 작아 본인조차 35% 미진입). 마진형 회당 세후 +1,032만 / 균형 +208만(얇음).</li>
+    <li><b>강한 fallback = B 산단 임대</b> — 아산테크노밸리 근로자 임대수요로 단기 매도가 막혀도 <b>전세(보 170M·대출/이자 0, 묶인 자기자본 ~12.7M) 또는 월세(보10M/72만, 월 순현금 +20만)</b>로 약흑자 버티기 → <b>헐값 매도 회피</b>. 본건 임대 안전판이 12974(매도 유동성 의존)보다 강해 B 추천도 ★★★★.</li>
+    <li>60㎡ ≤ 85㎡ → <b>건물분 부가세 면세</b>. 무주택 첫 진입 → 종부세·다주택 중과 무영향.</li>
+    <li>전제: <b>혼인신고 완료</b>(배우자 명의 자금출처 합법화·증여세 회피) — 잔금 전 필수. 미완료 시 증여세 ₩600~800만으로 절세 상쇄.</li>
+    <li>건강보험: <b>전 시나리오 ₩0</b>(회당 사업소득 2천만 미만 — 12974 마진형 +72만과 대비). 연 2건 회전 시 소액(~34만).</li>
+    <li>C(장기임대 5년+)·D(10.7년차 리모델링 비적합)·E(자가·명의상충+외곽 통근 부적합)는 비추천/비적합.</li>
+    <li>3년 2~3건 회전 시 누적 ~2,000~3,000만 시드 기여(12974보다 회당 작음 — 본건 마진 얇음 반영) → 2029 수도권 이사 목표와 합치.</li>
+  </ul>
+
+  <h2>7. D-day 액션 플랜</h2>
+  <div class="insight">
+    <b>✅ 권리 확정 완료 — D-1 액션은 점유 확인 + 변경 확인 + 입찰가 결정.</b> 등기·법원임차조사·전입세대조사·GG Tip 4종으로 인수 0·임차인 대항력 없음 전부 검증됐습니다. 권리 등급(A)은 불변이고, 남은 건 명도비 변수(점유 미상)와 매각기일 변경(31평형 12425 재매각 패턴) 확인뿐입니다.
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h4>D-1 확인 (권리는 확정)</h4>
+      <ul style="margin:0">
+        <li>🔴 점유 현장확인(공실/소유자 — 명도비 정밀화)</li>
+        <li>매각기일 변경/취하(12425 재매각 패턴 감안)</li>
+        <li>(선택) 네이버 호가(단지 107732) → S 190M 상단 교차</li>
+        <li>(선택) 매각물건명세서 PDF 본문 — 인수 0 완전무결</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>입찰 전 (D-20~D-1)</h4>
+      <ul style="margin:0">
+        <li>입찰가 결정 — 마진형 161.6M(저가 한정) 또는 관망</li>
+        <li>균형 이상은 본건 수익성상 비권고</li>
+        <li>혼인신고 완료 확인</li>
+        <li>입찰보증금 1,407만 준비(미낙찰 즉시 반환)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>낙찰 후 (D+0~D+30)</h4>
+      <ul style="margin:0">
+        <li>잔금 전 매매사업자 등록(배우자·면세)</li>
+        <li>경락잔금대출 실행(마진형 ~129.3M)</li>
+        <li>점유자 명도 협상(공실 즉시·소유자 300~500만)</li>
+        <li>소유권 이전</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>매도 (D+90~D+150)</h4>
+      <ul style="margin:0">
+        <li>네이버부동산 등록, 중립 190M 타겟</li>
+        <li>6개월 내 체결 목표</li>
+        <li><b>6개월 미체결 → B(산단 임대) 전환</b></li>
+        <li>건보 추가분: 본건 단건 ₩0</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>8. 최종 의견</h2>
+  <div class="lead">
+    <p><b>정직한 결론 — 이 물건은 "안전한데 얇은" 전형입니다.</b> 권리는 A 검증 완료(인수 0·임차인 보증금 전액 소멸·미납관리비 0), 자금력은 대폭 여유, 부가세 면세까지 — <b>구조적 NO-GO 사유는 하나도 없고 적자 물건도 아닙니다.</b> 권리는 12974(◇ candidate, 잠정)보다 오히려 더 확실합니다.</p>
+    <p>문제는 수익입니다. <b>이 단지가 인기라(4개월 전 같은 동에서 28명 응찰·매각가율 92.9%) 경매 할인폭이 구조적으로 얇습니다.</b> 70%승률 입찰가(171M)가 시장가(190M)의 90%까지 올라가, 경매 엣지가 19M에 불과합니다. 여기서 비용·명도·수리를 빼면 균형 입찰의 마진은 회당 세후 +208만으로 얇아지고, 매도가 1%만 밀려도 적자입니다. 매도 유동성 약점(외곽·역세권 아님)까지 더하면 균형의 확률가중 기대수익은 +75만으로 사실상 붕괴합니다.</p>
+    <p><b>유일하게 흑자 마진이 두툼한 지점은 마진형 저가(161.6M·EP70 +21.5M·◇·세후 +1,032만)</b> 한 점인데, 그 가격의 낙찰확률은 ~50%(보통 분위기)입니다. 그 위는 다 박합니다.</p>
+    <ul style="margin:6px 0">
+      <li><b>수익 효율 엄격 + 저경쟁 베팅</b> → 마진형 161.6M(승률 ~50%, 성공 시 세후 +1,032만·IRR ~71%, 확률가중 +578만으로 1위). <b>싸게 받으면 ◇, 밀리면 미련 없이 다음 물건</b>.</li>
+      <li><b>관망도 정당한 선택</b> — ★/◇급 기회가 마진형 한 점뿐이라 다음 달 sourcing에서 더 두툼한 물건을 기다리는 것도 합리적.</li>
+      <li><b>절대 상한 = 세전 BEP ~182.5M</b>(그 위로는 입찰 금지). S 190M은 경매 메리트 소멸선.</li>
+    </ul>
+    <p><b>이 물건을 강매하지 마세요. 비싸지면 다음 물건입니다.</b> 단기 매도가 막혀도 <b>산단 임대(B)로 약흑자 버티기</b>가 가능하니 헐값 매도는 피할 수 있습니다 — 이 안전판이 본건의 진짜 가치입니다. 권리·자금·구조는 모두 확정됐고, D-1 액션은 점유 현장확인 + 매각기일 변경 확인 + 입찰가 결정뿐입니다.</p>
+  </div>
+
+  <div class="foot">
+    출처: <b style="color:var(--pos)">지지옥션 사건상세(등기권리표 2026-04-28·법원임차조사·전입세대조사 2026-05-07·GG Tip 2026-05-18, 구독 로그인) 권리 4종 전체 검증</b> + AptInfo MCP(단지 메타 K-apt·준공 2015.09·542세대) co-primary 교차(양 소스 일치) + 지지옥션 국토부 실거래 59.98㎡ 7건(S 190M) · 분석 정본: bid-price-engine §0.5 v7/v8, monetization-scenarios · 작성 2026-06-02<br>
+    분석 신뢰도: <b>상</b> — 권리·S앵커·단지메타 검증 완료. <b>단일 약점 = k70 표본 1건(12157 28명·과열, 조회수 81=절반으로 미재현 우세 판단)</b>. 잔여 D-1: 점유 현장확인(명도비)·매각기일 변경·네이버 호가(선택). EP70·자금력·곡선은 "인수금 0" 검증 위 성립.<br>
+    Wiki: complex/아산테크노밸리이지더원2단지(구 관찰 stale → ingest 정정 대상), court/천안지원, region/아산, topic/market-anchored-bid · 케이스 산출물: _workspace/cases/2025타경12295/<br>
+    ※ 법원 공시자료 기반 추정치로 오류·변경 가능. 투자 책임은 이용자에게 있습니다.
+  </div>
+</div>
+</body>
+</html>
