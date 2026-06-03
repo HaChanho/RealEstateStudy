@@ -425,27 +425,35 @@
   .naver-data .trade-item .floor { color: var(--text-mute); }
   .naver-data .empty { color: var(--text-mute); font-size: 11px; font-style: italic; }
   .naver-updated { color: var(--text-mute); font-size: 10px; margin-top: 6px; text-align: right; }
-  /* 호가 range 바 (v9) */
-  .hoga-range { margin: 8px 0 4px; }
-  .hoga-range .hr-head { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-mute); margin-bottom: 5px; }
-  .hoga-range .hr-head b { color: var(--text-dim); }
-  .hoga-range .hr-bar { position: relative; height: 8px; background: linear-gradient(90deg, rgba(96,165,250,.25), rgba(96,165,250,.55)); border-radius: 999px; }
-  .hoga-range .hr-ends { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; margin-top: 5px; }
-  .hoga-range .hr-mark { position: absolute; top: -3px; width: 2px; height: 14px; background: var(--text); border-radius: 1px; }
-  .hoga-range .hr-mark.anchor { background: var(--price); width: 3px; }
-  .hoga-range .hr-mark .lab { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 9px; white-space: nowrap; color: var(--text-mute); }
-  .hoga-range .hr-mark.anchor .lab { color: var(--price); font-weight: 700; }
+  /* 호가 분포 바 (v9.1 — track + ticks + legend, 라벨 오버플로 없음) */
+  .hoga-range { margin: 6px 0 2px; }
+  .hoga-range .hr-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 11px; color: var(--text-mute); margin-bottom: 9px; }
+  .hoga-range .hr-head b { color: var(--text-dim); font-weight: 700; }
+  .hoga-range .hr-track { position: relative; height: 8px; background: linear-gradient(90deg, rgba(96,165,250,.2), rgba(96,165,250,.5)); border-radius: 999px; }
+  .hoga-range .hr-tick { position: absolute; top: 50%; transform: translate(-50%,-50%); width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 0 0 1px rgba(15,23,42,.25); }
+  .hoga-range .hr-tick.trade  { background: #3b82f6; }
+  .hoga-range .hr-tick.anchor { background: var(--price); }
+  .hoga-range .hr-ends { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; margin-top: 6px; }
+  .hoga-range .hr-ends .cap { display: block; font-size: 9.5px; font-weight: 500; color: var(--text-mute); }
+  .hoga-range .hr-ends .hi { text-align: right; }
+  .hoga-range .hr-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 9px; font-size: 11px; }
+  .hoga-range .hr-legend .lg { display: flex; align-items: center; gap: 5px; color: var(--text-mute); }
+  .hoga-range .hr-legend .lg .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .hoga-range .hr-legend .lg .dot.trade { background: #3b82f6; }
+  .hoga-range .hr-legend .lg .dot.anchor { background: var(--price); }
+  .hoga-range .hr-legend .lg b { color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; }
   .last-trade { display: flex; align-items: baseline; gap: 8px; padding: 8px 10px; background: rgba(16,185,129,.08); border-left: 3px solid var(--positive); border-radius: 6px; margin: 8px 0 4px; }
   .last-trade .lt-date { font-size: 11px; color: var(--text-dim); }
   .last-trade .lt-price { font-size: 16px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
   .last-trade .lt-meta { font-size: 10px; color: var(--text-mute); margin-left: auto; }
   .trade-item.stale { opacity: .45; }
   .trade-sep { font-size: 9.5px; color: var(--text-mute); text-align: center; padding: 4px 0 2px; letter-spacing: .04em; }
-  /* 이자 보유개월 표 (v9) */
-  .int-table { width: 100%; border-collapse: collapse; font-size: 11px; margin: 4px 0 2px; }
-  .int-table th, .int-table td { padding: 4px 6px; text-align: right; font-variant-numeric: tabular-nums; border-top: 1px solid var(--border); }
+  /* 이자 보유개월 표 (v9) — table-layout:fixed로 모바일 오버플로 방지 */
+  .int-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 11px; margin: 4px 0 2px; }
+  .int-table th, .int-table td { padding: 4px 4px; text-align: right; font-variant-numeric: tabular-nums; border-top: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; }
   .int-table th { color: var(--text-mute); font-weight: 600; font-size: 10px; }
-  .int-table td.lbl, .int-table th.lbl { text-align: left; color: var(--text-dim); }
+  .int-table col.c-lbl { width: 34%; }
+  .int-table td.lbl, .int-table th.lbl { text-align: left; color: var(--text-dim); white-space: nowrap; }
   .int-table td.anchor { color: var(--price); font-weight: 700; background: rgba(245,158,11,.08); }
   /* 세금 서브박스 (v9) */
   .tax-box { margin-top: 10px; padding: 9px 11px; background: rgba(99,102,241,.07); border-left: 3px solid #6366f1; border-radius: 6px; }
@@ -457,6 +465,35 @@
   .tax-box .tb-row.after .v { color: var(--positive); font-weight: 800; }
   .cost-line { display: flex; justify-content: space-between; font-size: 11.5px; padding: 2px 0; color: var(--text-dim); font-variant-numeric: tabular-nums; }
   .cost-line .v { color: var(--text); }
+
+  /* 판정 배너 (v9.1 — 상세 최상단 의사결정 요약) */
+  .verdict-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 12px 15px; border-radius: 10px; margin: 14px 0 4px; border: 1px solid var(--border); border-left-width: 4px; background: var(--surface); }
+  .verdict-banner .vb-icon { font-size: 19px; line-height: 1; }
+  .verdict-banner .vb-verdict { font-size: 15px; font-weight: 800; letter-spacing: -.01em; }
+  .verdict-banner .vb-tier { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .verdict-banner .vb-risk { font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 999px; background: var(--surface-2); color: var(--text-dim); }
+  .verdict-banner .vb-line { flex-basis: 100%; font-size: 12px; color: var(--text-dim); line-height: 1.5; margin-top: 2px; }
+  .verdict-banner .vb-key { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 4px; font-size: 12px; }
+  .verdict-banner .vb-key .kk { color: var(--text-mute); }
+  .verdict-banner .vb-key .vv { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text); }
+  .verdict-banner .vb-key .vv.pos { color: var(--positive); } .verdict-banner .vb-key .vv.neg { color: var(--negative); }
+  .verdict-banner.v-candidate, .verdict-banner.v-pass { border-left-color: var(--positive); background: rgba(110,231,183,.06); }
+  .verdict-banner.v-hold { border-left-color: var(--price); background: rgba(252,211,77,.06); }
+  .verdict-banner.v-fail { border-left-color: var(--negative); background: rgba(252,165,165,.07); }
+  .verdict-banner.v-pending, .verdict-banner.v-expired { border-left-color: var(--text-mute); }
+  .vb-tier.t-primary { background: rgba(250,204,21,.16); color: #facc15; border: 1px solid rgba(250,204,21,.4); }
+  .vb-tier.t-watch { background: rgba(96,165,250,.16); color: #60a5fa; border: 1px solid rgba(96,165,250,.4); }
+  .vb-tier.t-watchlist { background: rgba(148,163,184,.14); color: #94a3b8; border: 1px solid rgba(148,163,184,.35); }
+  .vb-tier.t-excl { background: rgba(252,165,165,.12); color: var(--negative); border: 1px solid rgba(252,165,165,.35); }
+
+  /* 접이식 참고 정보 (v9.1) */
+  details.more-sections { margin-top: 16px; border-top: 1px dashed var(--border); padding-top: 6px; }
+  details.more-sections > summary { cursor: pointer; list-style: none; font-size: 12px; font-weight: 600; color: var(--text-mute); padding: 8px 2px; user-select: none; }
+  details.more-sections > summary::-webkit-details-marker { display: none; }
+  details.more-sections > summary::before { content: '▸ '; }
+  details.more-sections[open] > summary::before { content: '▾ '; }
+  details.more-sections > summary:hover { color: var(--text); }
+  details.more-sections .detail-section { margin-top: 14px; }
 
   /* Bid scenario matrix */
   .bid-scenarios { width: 100%; border-collapse: collapse; font-size: 11px; background: var(--panel-bg-2); border-radius: 6px; overflow: hidden; }
@@ -533,9 +570,26 @@
   .active-filter-chip { display: inline-flex; align-items: center; gap: 2px; background: rgba(59,111,222,.12); color: var(--accent-strong); border: 1px solid rgba(59,111,222,.30); border-radius: 999px; padding: 2px 4px 2px 10px; font-size: 11px; font-weight: 600; }
   .active-filter-chip .afc-x { background: none; border: none; color: inherit; cursor: pointer; font-size: 14px; line-height: 1; padding: 0 4px; border-radius: 50%; }
   .active-filter-chip .afc-x:hover { background: rgba(0,0,0,.12); }
+  @media (max-width: 560px) {
+    /* 모바일 헤더: 제목+탭 한 줄, 월 네비게이션은 다음 줄 전체폭 (가로 오버플로 방지) */
+    header { flex-wrap: wrap; gap: 8px 10px; padding: 12px 14px; }
+    header h1 { font-size: 18px; }
+    header .tabs { margin-left: auto; }
+    header .month-nav { margin-left: 0; width: 100%; justify-content: space-between; }
+    header .month-label { min-width: 0; flex: 1; font-size: 15px; }
+  }
   @media (max-width: 900px) {
-    .detail-panel.open { width: 100%; position: fixed; top: 0; right: 0; bottom: 0; z-index: 20; }
-    .detail-inner { width: 100%; }
+    /* 데스크톱 거터(margin-left)·좌측 stripe는 모바일 전체화면에서 오버플로 유발 → 제거 */
+    .detail-panel { margin-left: 0; border-left: none; }
+    .detail-panel.open { width: 100vw; position: fixed; top: 0; left: 0; right: auto; bottom: 0; z-index: 20; }
+    .detail-inner { width: 100%; padding: 16px 14px; overflow-x: hidden; }  /* 모바일 가로 오버플로 차단 */
+    /* 모바일: 2컬럼 그리드 → 1컬럼 (가격 숫자 잘림 방지) */
+    .detail-grid { grid-template-columns: 1fr; gap: 8px; }
+    .detail-grid .field.wide { grid-column: span 1; }
+    .detail-grid .field.price .v { font-size: 17px; }
+    .int-table { font-size: 10px; }
+    .int-table th, .int-table td { padding: 3px 2px; }
+    .verdict-banner { padding: 11px 13px; }
     .calendar .day { min-height: 80px; }
     .list-table thead th, .list-table tbody td { padding: 8px 6px; font-size: 11px; }
     .resize-handle { display: none; }  /* 전체화면 패널에선 리사이즈 비활성 (오작동 방지) */
@@ -881,7 +935,8 @@
     const o = opts || {};
     const cls = 'detail-section' + (o.boxed ? ' boxed' : '') + (o.accent ? ' acc-' + o.accent : '');
     const s = el('div', { cls });
-    s.appendChild(el('h3', { text: title }));
+    if (o.key) s.dataset.sec = o.key;          // v9.1: 정보 계층 재배치용 키
+    if (title) s.appendChild(el('h3', { text: title }));
     return s;
   }
 
@@ -1579,11 +1634,34 @@
     header.appendChild(actions);
     inner.appendChild(header);
 
-    // Meta (verdict + risk) — 일정·법원·면적은 아래 핵심 정보 스트립으로 이관
-    const meta = el('div', { cls: 'detail-meta' });
-    meta.appendChild(el('span', { cls: 'verdict-badge ' + c.verdict, text: verdictLabel(c.verdict) }));
-    if (c.rightsRisk) meta.appendChild(el('span', { cls: 'risk-badge ' + c.rightsRisk, text: '권리 ' + riskLabel(c.rightsRisk) }));
-    inner.appendChild(meta);
+    // 판정 배너 (v9.1) — 상세 최상단 의사결정 요약 (판정 + tier + 핵심 수익)
+    {
+      const vIcon = { candidate: '🟡', pass: '✅', hold: '⚪', fail: '🔴', pending: '🔵', expired: '⬜' }[c.verdict] || '•';
+      const banner = el('div', { cls: 'verdict-banner v-' + c.verdict, attrs: { 'data-sec': 'banner' } });
+      banner.appendChild(el('span', { cls: 'vb-icon', text: vIcon }));
+      banner.appendChild(el('span', { cls: 'vb-verdict', text: verdictLabel(c.verdict) }));
+      const tierMap = { primary: ['★ Primary', 't-primary'], watch: ['◇ Watch', 't-watch'], watchlist: ['▷ Watchlist', 't-watchlist'] };
+      if (c.interestTier && tierMap[c.interestTier]) {
+        banner.appendChild(el('span', { cls: 'vb-tier ' + tierMap[c.interestTier][1], text: tierMap[c.interestTier][0] }));
+      } else if (c.expectedProfit70 != null && c.expectedProfit70 <= -10_000_000) {
+        banner.appendChild(el('span', { cls: 'vb-tier t-excl', text: '제외 (예상 적자)' }));
+      }
+      if (c.rightsRisk) banner.appendChild(el('span', { cls: 'vb-risk', text: '권리 ' + riskLabel(c.rightsRisk) + (c.rightsVerified === false ? ' · 미검증' : '') }));
+      // 1줄 요지 (판정사유 첫 문장)
+      const rsn = (c.verdictReason || '').replace(/\s*\([^()]*(?:\d{4}-\d{2}-\d{2}|v\d|sourcing|sweep|회고|차\s*분석)[^()]*\)\s*$/i, '').trim();
+      const firstSentence = rsn ? (rsn.split(/\.\s+/)[0].replace(/\.$/, '').slice(0, 120)) : null;
+      if (firstSentence) banner.appendChild(el('span', { cls: 'vb-line', text: firstSentence }));
+      // 핵심 수익 키
+      if (c.expectedProfit70 != null || c.afterTaxProfit != null) {
+        const k = el('div', { cls: 'vb-key' });
+        const pair = (kk, v, cls) => { const w = el('span'); w.appendChild(el('span', { cls: 'kk', text: kk + ' ' })); w.appendChild(el('span', { cls: 'vv' + (cls ? ' ' + cls : ''), text: v })); return w; };
+        if (c.expectedProfit70 != null) k.appendChild(pair('세전 EP70', fmtMoneySigned(c.expectedProfit70), c.expectedProfit70 < 0 ? 'neg' : c.expectedProfit70 >= 25_000_000 ? 'pos' : null));
+        if (c.afterTaxProfit != null) k.appendChild(pair('세후', fmtMoneySigned(c.afterTaxProfit), c.afterTaxProfit < 0 ? 'neg' : 'pos'));
+        if (c.bid70 != null) k.appendChild(pair('입찰권장', fmtMoneyShort(c.bid70)));
+        banner.appendChild(k);
+      }
+      inner.appendChild(banner);
+    }
 
     // 🏁 경매 결과 (회고 — 예측 vs 실측). results.js와 id로 join.
     // resultFor: 미래 기일·회차 충돌 결과는 숨김(과거 회차 결과가 재지정된 미래 사건에 노출되는 것 방지).
@@ -1591,7 +1669,7 @@
     if (ar) {
       const QLAB = { TP: '정확 GO', FP: '헛 GO', FN: '놓친 기회', TN: '정확 NO-GO' };
       const SLAB = { sold: '매각(낙찰)', failed: '유찰', changed: '변경', withdrawn: '취하', postponed: '연기', unknown: '미확인(변경/취하 추정)' };
-      const rsec = section('🏁 경매 결과 (회고)');
+      const rsec = section('🏁 경매 결과 (회고)', { key: 'result' });
       const box = el('div', { cls: 'result-box ' + (ar.quadrant ? 'q-' + ar.quadrant : 'q-none') });
       const head = el('div', { cls: 'result-head' });
       head.appendChild(el('span', { cls: 'result-status ' + ar.status, text: SLAB[ar.status] || ar.status }));
@@ -1624,7 +1702,7 @@
     }
 
     // Numbers
-    const numSec = section('핵심 수치', { boxed: true });
+    const numSec = section('핵심 수치', { boxed: true, key: 'numbers' });
     const grid = el('div', { cls: 'detail-grid' });
     const marginRaw = (c.kbPrice && c.minimumPrice) ? c.kbPrice - c.minimumPrice : null;
     const marginPct = (marginRaw != null && c.kbPrice) ? marginRaw / c.kbPrice : null;
@@ -1661,7 +1739,7 @@
 
     // 📄 상세 분석 보고서 (deep-dive 케이스) — 같은 디렉토리의 report HTML로 링크
     if (c.reportUrl) {
-      const rpSec = section('📄 상세 분석 보고서');
+      const rpSec = section('📄 상세 분석 보고서', { key: 'report' });
       const a = el('a', { cls: 'report-link', attrs: { href: c.reportUrl, target: '_blank', rel: 'noopener' } });
       a.appendChild(el('span', { cls: 'rp-ico', text: '📄' }));
       a.appendChild(document.createTextNode('심층 분석 보고서 열기'));
@@ -1682,7 +1760,7 @@
         watch:     { t: '◇ Watch (1,500~2,500만)',   cls: 'tier-watch' },
         watchlist: { t: '▷ Watchlist (본전~1,500만)', cls: 'tier-watchlist' },
       };
-      const profSec = section('💰 수익 분석 (세전 · 낙찰확률 70% 기준)', { boxed: true, accent: 'profit' });
+      const profSec = section('💰 수익 분석 (세전 · 낙찰확률 70% 기준)', { boxed: true, accent: 'profit', key: 'profit' });
       if (c.interestTier && tierMap[c.interestTier]) {
         profSec.appendChild(el('span', { cls: 'tier-badge ' + tierMap[c.interestTier].cls, text: tierMap[c.interestTier].t }));
       } else if (ep != null && ep <= -10_000_000) {
@@ -1758,7 +1836,7 @@
         const ar = resultFor(c);
         const actual = (ar && ar.soldPrice != null) ? ar.soldPrice : null;
         const mark = i => (myBids.length > 1 ? ['①', '②'][i] : '');
-        const psec = section('🎯 내 예상 낙찰가', { boxed: true, accent: 'pred' });
+        const psec = section('🎯 내 예상 낙찰가', { boxed: true, accent: 'pred', key: 'pred' });
 
         if (actual != null) {
           // 결과 후 — 후보(내 예상들 + 모델) 일괄 비교
@@ -1806,7 +1884,7 @@
 
     // 판정 사유 (권리 상태 직전 배치) — verdict 헤더 + 문장 단위 정리 + 출처/버전 각주
     {
-      const reasonSec = section('판정 사유');
+      const reasonSec = section('판정 사유', { key: 'reason' });
       const box = el('div', { cls: 'reason-box ' + c.verdict });
       const head = el('div', { cls: 'reason-head' });
       head.appendChild(el('span', { cls: 'verdict-badge ' + c.verdict, text: verdictLabel(c.verdict) }));
@@ -1840,17 +1918,17 @@
     }
 
     // Rights
-    const rightsSec = section('권리 상태');
+    const rightsSec = section('권리 상태', { key: 'rights' });
     rightsSec.appendChild(el('div', { cls: 'value', text: c.rightsStatus || '—' }));
     inner.appendChild(rightsSec);
 
     // Address
-    const addrSec = section('주소');
+    const addrSec = section('주소', { key: 'address' });
     addrSec.appendChild(el('div', { cls: 'value dim', text: c.address || '—' }));
     inner.appendChild(addrSec);
 
     // Naver Real Estate
-    const naverSec = section('🟢 네이버 부동산');
+    const naverSec = section('🟢 시장 시세 (네이버)', { key: 'market' });
     naverSec.classList.add('naver-section');
     const naverLinks = el('div', { cls: 'naver-links' });
     const complexUrl = naverComplexUrl(c);
@@ -1885,34 +1963,40 @@
         srcRow.style.marginBottom = '6px';
         nd.appendChild(srcRow);
       }
-      // 현시점 호가 range 바
+      // 현시점 호가 분포 바 (v9.1 — track + ticks + legend, 라벨 오버플로 없음)
       const ap = c.naverData.askingPrice;
       if (ap && ap.low) {
         const wrap = el('div', { cls: 'hoga-range' });
         const head = el('div', { cls: 'hr-head' });
-        head.appendChild(el('span', { html: `현시점 호가 <b>동일 ${ap.area ? (+ap.area).toFixed(0)+'㎡' : '평형'}</b>` }));
-        head.appendChild(el('span', { text: (ap.count||0) + '건' }));
+        const hl = el('span'); hl.appendChild(document.createTextNode('현시점 호가 ')); hl.appendChild(el('b', { text: '동일 ' + (ap.area ? (+ap.area).toFixed(0) + '㎡' : '평형') }));
+        head.appendChild(hl);
+        head.appendChild(el('span', { text: (ap.count || 0) + '건' }));
         wrap.appendChild(head);
         if (ap.high && ap.high > ap.low) {
-          const bar = el('div', { cls: 'hr-bar' });
-          // 보수 매도 기준(앵커) 위치
-          if (c.neutralSalePrice != null) {
-            const pct = Math.max(0, Math.min(1, (c.neutralSalePrice - ap.low) / (ap.high - ap.low)));
-            const m = el('div', { cls: 'hr-mark anchor' }); m.style.left = (pct*100).toFixed(1) + '%';
-            m.appendChild(el('span', { cls: 'lab', text: '보수기준 ' + fmtMoneyShort(c.neutralSalePrice) }));
-            bar.appendChild(m);
-          }
-          wrap.appendChild(bar);
+          const lt = c.naverData.lastTrade;
+          const span = ap.high - ap.low;
+          const pctOf = v => Math.max(2, Math.min(98, ((v - ap.low) / span) * 100));
+          const track = el('div', { cls: 'hr-track' });
+          if (lt && lt.price != null) { const t = el('div', { cls: 'hr-tick trade' }); t.style.left = pctOf(lt.price).toFixed(1) + '%'; t.title = '최근 실거래 ' + fmtMoney(lt.price); track.appendChild(t); }
+          if (c.neutralSalePrice != null) { const a = el('div', { cls: 'hr-tick anchor' }); a.style.left = pctOf(c.neutralSalePrice).toFixed(1) + '%'; a.title = '보수 매도 기준 ' + fmtMoney(c.neutralSalePrice); track.appendChild(a); }
+          wrap.appendChild(track);
           const ends = el('div', { cls: 'hr-ends' });
-          ends.appendChild(el('span', { text: fmtMoney(ap.low) }));
-          ends.appendChild(el('span', { text: fmtMoney(ap.high) }));
+          { const lo = el('span'); lo.appendChild(el('span', { cls: 'cap', text: '호가 하단' })); lo.appendChild(document.createTextNode(fmtMoney(ap.low))); ends.appendChild(lo); }
+          { const hi = el('span', { cls: 'hi' }); hi.appendChild(el('span', { cls: 'cap', text: '호가 상단' })); hi.appendChild(document.createTextNode(fmtMoney(ap.high))); ends.appendChild(hi); }
           wrap.appendChild(ends);
+          // 범례 (마커 값 — 가장자리 오버플로 없는 일반 흐름)
+          const lg = el('div', { cls: 'hr-legend' });
+          if (lt && lt.price != null) { const e = el('div', { cls: 'lg' }); e.appendChild(el('span', { cls: 'dot trade' })); e.appendChild(document.createTextNode('최근 실거래 ')); e.appendChild(el('b', { text: fmtMoneyShort(lt.price) + (lt.date ? ' (' + lt.date.slice(2) + ')' : '') })); lg.appendChild(e); }
+          if (c.neutralSalePrice != null) { const e = el('div', { cls: 'lg' }); e.appendChild(el('span', { cls: 'dot anchor' })); e.appendChild(document.createTextNode('보수 매도 기준 ')); e.appendChild(el('b', { text: fmtMoneyShort(c.neutralSalePrice) })); lg.appendChild(e); }
+          wrap.appendChild(lg);
         } else {
-          wrap.appendChild(el('div', { cls: 'hr-ends', html: `<span>${fmtMoney(ap.low)}</span><span style="color:var(--text-mute);font-weight:400">단일 매물</span>` }));
+          const single = el('div', { cls: 'hr-ends' });
+          { const lo = el('span'); lo.appendChild(el('span', { cls: 'cap', text: '호가 (단일 매물)' })); lo.appendChild(document.createTextNode(fmtMoney(ap.low))); single.appendChild(lo); }
+          wrap.appendChild(single);
         }
         nd.appendChild(wrap);
       } else {
-        nd.appendChild(el('div', { cls: 'small-note', text: '현시점 동일 평형 매물 0건 (호가 미형성 — 실거래 기준)' }));
+        nd.appendChild(el('div', { cls: 'small-note', text: '현시점 동일 평형 매물 0건 (호가 미형성 — 보수 매도 기준은 최근 실거래 기준)' }));
       }
       // 가장 최근 실거래 강조 (#2)
       const lt = c.naverData.lastTrade || (Array.isArray(c.naverData.recentTrades) && c.naverData.recentTrades[0]);
@@ -1951,80 +2035,12 @@
     }
     inner.appendChild(naverSec);
 
-    // Bid scenario matrix
-    {
-      const derivedRate = deriveSaleRate(c);
-      const baseRate = derivedRate ? derivedRate.value : null;
-      const tradeAvg = c.naverData && c.naverData.recentTradeAvg;
-      const askMid = c.naverData && c.naverData.askingPrice && c.naverData.askingPrice.low && c.naverData.askingPrice.high
-        ? (c.naverData.askingPrice.low + c.naverData.askingPrice.high) / 2 : null;
-      const COST = 30_000_000; // 명도·취득세·수리 가정 ₩30M (v4 보수 기준 — finance.md v4 보수/v5 낙관 2단 정책 중 보수)
-
-      if (c.appraisalPrice && c.minimumPrice && (tradeAvg || askMid)) {
-        const sec = section('입찰가 시나리오 (자동)');
-        const assumptions = el('div', { cls: 'bid-assumptions' });
-        const rates = [];
-        if (baseRate != null) {
-          rates.push({ label: '낙관(-15%p)', val: Math.max(0.5, baseRate - 0.15) });
-          rates.push({ label: '평균', val: baseRate });
-          rates.push({ label: '보수(+5%p)', val: Math.min(1.1, baseRate + 0.05) });
-        } else {
-          rates.push({ label: '70% (최저가)', val: 0.70 });
-          rates.push({ label: '85%', val: 0.85 });
-          rates.push({ label: '95%', val: 0.95 });
-        }
-        // sells
-        const sells = [];
-        if (tradeAvg) sells.push({ label: '실거래 평균', val: tradeAvg });
-        if (askMid) sells.push({ label: '호가 중앙', val: askMid });
-
-        assumptions.appendChild(el('span', { cls: 'a-label', text: '감정가 ' }));
-        assumptions.appendChild(el('span', { cls: 'a-value', text: fmtMoney(c.appraisalPrice) }));
-        assumptions.appendChild(el('span', { cls: 'a-label', text: ' · 명도+취득+수리(v4 보수) ' }));
-        assumptions.appendChild(el('span', { cls: 'a-value', text: '-' + fmtMoney(COST) }));
-        if (derivedRate) {
-          assumptions.appendChild(el('span', { cls: 'a-label', text: ' · 기준 매각가율 ' }));
-          assumptions.appendChild(el('span', { cls: 'a-value', text: fmtPct(baseRate) + ' (' + derivedRate.source + ')' }));
-        }
-        sec.appendChild(assumptions);
-
-        const table = el('table', { cls: 'bid-scenarios' });
-        const thead = el('thead');
-        const headRow = el('tr');
-        headRow.appendChild(el('th', { text: '매각가율 / 매도 가정' }));
-        headRow.appendChild(el('th', { text: '입찰가' }));
-        for (const s of sells) headRow.appendChild(el('th', { text: s.label + ' 매도' }));
-        thead.appendChild(headRow);
-        table.appendChild(thead);
-
-        const tbody = el('tbody');
-        for (const r of rates) {
-          const tr = el('tr');
-          const bid = c.appraisalPrice * r.val;
-          const labelTd = el('td');
-          labelTd.appendChild(document.createTextNode(r.label + ' '));
-          labelTd.appendChild(el('span', { cls: 'small', text: '(' + (r.val * 100).toFixed(0) + '%)' }));
-          tr.appendChild(labelTd);
-          tr.appendChild(el('td', { text: fmtMoney(bid) }));
-          for (const s of sells) {
-            const margin = s.val - COST - bid;
-            const td = el('td', { cls: margin >= 5_000_000 ? 'pos' : margin < 0 ? 'neg' : '' });
-            td.appendChild(document.createTextNode(fmtMoneySigned(margin)));
-            tr.appendChild(td);
-          }
-          tbody.appendChild(tr);
-        }
-        table.appendChild(tbody);
-        sec.appendChild(table);
-        inner.appendChild(sec);
-      }
-    }
 
     // 단지 응집 — 같은 단지의 다른 사건
     {
       const sameComplex = CASES.filter((x) => x.id !== c.id && x.complex === c.complex);
       if (sameComplex.length) {
-        const relSec = section(`같은 단지 다른 사건 (${sameComplex.length}건)`);
+        const relSec = section(`같은 단지 다른 사건 (${sameComplex.length}건)`, { key: 'related' });
         const list = el('div', { cls: 'related-cases' });
         sameComplex.sort((a, b) => (b.saleDate || '').localeCompare(a.saleDate || ''));
         for (const r of sameComplex) {
@@ -2048,7 +2064,7 @@
 
     // Sales history (단지 매각 이력)
     if (Array.isArray(c.salesHistory) && c.salesHistory.length) {
-      const histSec = section('단지 매각 이력 (지지옥션)');
+      const histSec = section('단지 매각 이력 (지지옥션)', { key: 'history' });
       const valid = c.salesHistory.filter((s) => !s.outlier);
       if (valid.length) {
         const avgSoldRate = valid.reduce((a, s) => a + (s.soldRate || 0), 0) / valid.length;
@@ -2105,7 +2121,7 @@
 
     // Tags
     if (c.tags && c.tags.length) {
-      const tagSec = section('태그');
+      const tagSec = section('태그', { key: 'tags' });
       const tagList = el('div', { cls: 'tag-list' });
       for (const t of c.tags) tagList.appendChild(el('span', { cls: 'tag', text: t }));
       tagSec.appendChild(tagList);
@@ -2115,7 +2131,7 @@
     // Rating + breakdown
     const ratingResult = getRating(c);
     const finalRating = c.rating != null ? c.rating : ratingResult.rating;
-    const rateSec = section('추천도 · 채점 (v8 — EP70·수리비·신뢰도)');
+    const rateSec = section('추천도 · 채점 (v8 — EP70·수리비·신뢰도)', { key: 'rating' });
     const stars = el('div', { cls: 'rating-stars' });
     for (let i = 0; i < 5; i++) {
       stars.appendChild(el('span', { cls: 'star' + (finalRating != null && i < finalRating ? ' on' : ''), text: '★' }));
@@ -2167,13 +2183,13 @@
 
     // Notes
     if (c.notes) {
-      const noteSec = section('메모');
+      const noteSec = section('메모', { key: 'notes' });
       noteSec.appendChild(el('div', { cls: 'value dim', text: c.notes }));
       inner.appendChild(noteSec);
     }
 
     // Source / trace
-    const srcSec = section('출처·추적');
+    const srcSec = section('출처·추적', { key: 'source' });
     const srcGrid = el('div', { cls: 'detail-grid' });
     srcGrid.appendChild(field('sourcing 세션', c.sourcingSession || '—'));
     srcGrid.appendChild(field('최초 추가', c.addedAt || '—'));
@@ -2187,6 +2203,28 @@
     if (c.reportPath) srcGrid.appendChild(field('보고서', c.reportPath, { wide: true }));
     srcSec.appendChild(srcGrid);
     inner.appendChild(srcSec);
+
+    // ===== 정보 계층 재배치 (v9.1) — 의사결정 → 근거 → 참고(접기) =====
+    // header·banner는 그대로 최상단. 나머지를 우선순위 순으로 재정렬하고 저우선은 <details>로 수납.
+    {
+      const PRIMARY = ['profit', 'market'];                 // 의사결정 핵심
+      const SECONDARY = ['result', 'pred', 'rights', 'numbers', 'report', 'reason']; // 근거
+      const MORE = ['related', 'history', 'address', 'tags', 'rating', 'notes', 'source']; // 참고(접기)
+      const pick = k => inner.querySelector(':scope > [data-sec="' + k + '"]');
+      // 1) 핵심·근거를 순서대로 맨 끝으로 이동 (header·banner 뒤에 정렬됨)
+      [...PRIMARY, ...SECONDARY].forEach(k => { const n = pick(k); if (n) inner.appendChild(n); });
+      // 2) 참고 정보는 접이식으로 수납
+      const present = MORE.map(pick).filter(Boolean);
+      if (present.length) {
+        const det = document.createElement('details');
+        det.className = 'more-sections';
+        const sm = document.createElement('summary');
+        sm.textContent = '참고 정보 (단지 이력·같은 단지·태그·추천도 채점·출처)';
+        det.appendChild(sm);
+        present.forEach(n => det.appendChild(n));
+        inner.appendChild(det);
+      }
+    }
 
     if (!opts || !opts.skipUrlSync) syncUrl();
     if (state.view === 'list') renderList();
