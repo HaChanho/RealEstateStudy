@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>분석 보고서 · 2026타경10227 아산한라비발디스마트밸리</title>
+<style>
+  :root{
+    --bg:#0f172a; --surface:#1e293b; --surface-2:#273449; --surface-3:#334155;
+    --text:#e2e8f0; --text-mute:#94a3b8; --line:#334155;
+    --amber:#f59e0b; --green:#65a30d; --blue:#0284c7; --red:#ef4444; --purple:#7c3aed;
+    --pos:#22c55e; --neg:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",Segoe UI,Roboto,sans-serif;line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 20px 80px}
+  a{color:#38bdf8}
+  h1{font-size:22px;margin:0 0 4px;letter-spacing:-0.02em}
+  h2{font-size:17px;margin:34px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--line);letter-spacing:-0.01em}
+  h3{font-size:14px;margin:20px 0 8px;color:var(--text-mute);text-transform:none;letter-spacing:0.02em}
+  .sub{color:var(--text-mute);font-size:13px;margin:0 0 18px}
+  .verdict{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:10px;font-weight:700;font-size:15px;margin:14px 0 4px;background:rgba(239,68,68,.12);color:var(--neg);border:1px solid rgba(239,68,68,.3)}
+  .badges{margin:10px 0 0;display:flex;gap:8px;flex-wrap:wrap}
+  .badge{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--surface-2);color:var(--text-mute);border:1px solid var(--line)}
+  .badge.good{color:var(--pos);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
+  .badge.warn{color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08)}
+  .badge.bad{color:var(--neg);border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08)}
+  .lead{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:18px 0}
+  .lead p{margin:0 0 10px} .lead p:last-child{margin:0}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;background:var(--surface);border-radius:10px;overflow:hidden}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:var(--surface-2);color:var(--text-mute);font-weight:600;font-size:12.5px}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:none}
+  .hl{color:var(--amber);font-weight:700}
+  .pos{color:var(--pos);font-weight:600} .neg{color:var(--neg);font-weight:600}
+  .pick{background:rgba(245,158,11,.10)}
+  .note{font-size:12.5px;color:var(--text-mute);margin:8px 0 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .card h4{margin:0 0 6px;font-size:13.5px}
+  .kv{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:13.5px}
+  .kv .k{color:var(--text-mute)} .kv .v{font-variant-numeric:tabular-nums;text-align:right}
+  ul{margin:8px 0;padding-left:20px} li{margin:4px 0}
+  .insight{background:rgba(2,132,199,.08);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:13.5px}
+  .danger{background:rgba(239,68,68,.08);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:13.5px}
+  .foot{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--text-mute)}
+  .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--text-mute);text-decoration:none}
+  .back:hover{color:var(--text)}
+  code{background:var(--surface-2);padding:1px 6px;border-radius:5px;font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 캘린더로</a>
+  <h1>2026타경10227 · 아산한라비발디스마트밸리 204동 703호</h1>
+  <p class="sub">천안지원 · 매각기일 2026-06-09(화) · deep-dive 작성 2026-06-03 · <b style="color:var(--amber)">분석 신뢰도 중 (권리 raw 미검증 · 시세는 네이버 실거래/호가 확인)</b></p>
+
+  <div class="verdict">🔴 NO-GO — 경매 메리트 소멸 (최저가 ≈ 시장가, 경매 할인 없음)</div>
+  <div class="badges">
+    <span class="badge bad">EP70 −1,061만 · 제외 tier</span>
+    <span class="badge bad">신건 최저가=감정가=시장가 상단</span>
+    <span class="badge warn">단지 매각가율 94.8% (과열)</span>
+    <span class="badge warn">권리 raw 미검증 (잠정 등급)</span>
+    <span class="badge good">3년차 신축 · 65.7㎡ 부가세 면세</span>
+  </div>
+
+  <div class="lead">
+    <p><b>경매로 살 이유가 없는 물건입니다.</b> 신건(유찰 0회)이라 최저매각가가 감정가(₩3억)와 같고, 이는 현재 호가 상단(₩3억 3,000만)·KB시세(₩3억)와 사실상 동일선입니다. <b>경매의 이익은 "현재 시장가 대비 낙찰 할인폭"</b>인데, 이 건은 출발선부터 할인폭이 거의 0이라 <b>경매 메리트가 소멸</b>합니다.</p>
+    <p>v9 보수 매도 기준(호가 하단) <b>S = ₩2억 9,500만</b>에 70% 승률 입찰가(B70)를 산정하면 clamp 바닥(최저매각가 ₩3억과 S 사이)에 붙어 <b>B70 = ₩2억 9,500만</b>이 되고, 여기서 비용(취득세·법무·이자·중개·기타)을 빼면 <b>EP70 = −₩1,061만</b> — 예상 적자 1,000만원을 넘겨 <b>제외(fail) tier</b>입니다. 게다가 이 단지는 직전 5건 낙찰가율 평균 94.8%·평균 응찰 8.2명의 <b>과열 단지</b>라, 실제 낙찰가는 감정가 부근 또는 그 위에서 형성될 공산이 큽니다.</p>
+    <p>권리는 <b>raw 미검증(잠정)</b> 상태입니다. 다만 권리가 깨끗하더라도(인수 0 가정) 위 수익 구조 자체가 적자라 결론은 바뀌지 않습니다. <b>이 단지를 원한다면 경매가 아니라 시장에서 직접 매수하는 편이 합리적</b>입니다.</p>
+  </div>
+
+  <h2>1. 물건 개요</h2>
+  <div class="grid2">
+    <div class="card">
+      <h4>기본</h4>
+      <div class="kv"><span class="k">소재지</span><span class="v">충남 아산시 음봉면 산동리 1066 · 204동 703호</span></div>
+      <div class="kv"><span class="k">전용 / 평형</span><span class="v">65.72㎡ (86A · 공급 86.8㎡)</span></div>
+      <div class="kv"><span class="k">준공</span><span class="v">2023.12 · 3년차 신축</span></div>
+      <div class="kv"><span class="k">단지</span><span class="v">아산한라비발디스마트밸리 (complexNo 143364)</span></div>
+      <div class="kv"><span class="k">담당 / 지역</span><span class="v">천안지원 · 아산(priority 2)</span></div>
+      <div class="kv"><span class="k">유찰</span><span class="v">신건(0회) · 1차 매각</span></div>
+    </div>
+    <div class="card">
+      <h4>금액</h4>
+      <div class="kv"><span class="k">감정가</span><span class="v">3억원</span></div>
+      <div class="kv"><span class="k">최저가</span><span class="v"><b>3억원 (100% · 신건)</b></span></div>
+      <div class="kv"><span class="k">입찰보증금</span><span class="v">3,000만원 (최저 10%)</span></div>
+      <div class="kv"><span class="k">보수 매도 기준(S)</span><span class="v"><b class="hl">2억 9,500만</b> (호가 하단)</span></div>
+      <div class="kv"><span class="k">KB시세</span><span class="v">3억원</span></div>
+      <div class="kv"><span class="k">호가</span><span class="v">2억 9,500만 ~ 3억 3,000만 (37건)</span></div>
+    </div>
+  </div>
+  <p class="note">⚠️ 신건이라 최저매각가(₩3억) = 감정가 = KB시세. 보수 매도 기준 S(₩2억 9,500만, 호가 하단)가 최저매각가보다 <b>낮습니다</b> → 최저가로 받아도 시장가 아래로 사는 게 아님. 매각기일 변경·취하 여부는 D-1 재확인 필요.</p>
+
+  <h2>2. 권리분석 — 안전등급 <b style="color:var(--amber)">잠정 (raw 미검증)</b></h2>
+  <div class="danger">
+    <b>⚠️ 권리 raw 미검증.</b> 이 케이스는 지지옥션 등기권리표·법원임차조사·매각물건명세서 raw가 아직 확인되지 않았습니다. 캘린더 메타데이터상 <code>권리 깨끗(인수 없음) · risk=safe</code>로 표기돼 있으나 <b>미검증 잠정값</b>입니다. <b>입찰을 고려한다면 D-day 전 지지옥션에서 등기·임차조사·매각물건명세서를 직접 확인해야 합니다.</b> 아래 곡선·수익 수치는 모두 <b>"인수금 0" 가정 위에서만 성립</b>합니다.
+  </div>
+  <ul>
+    <li>잠정 등급: <b>safe 표기(미검증)</b> — 말소기준권리·등기 명세·임차인 대항력·명도 난이도 모두 <b>raw 확인 필요</b>.</li>
+    <li>3년차 신축(2023.12 준공) → 통상 선순위 임차인·장기 점유 분쟁 가능성은 낮으나, <b>분양 잔금 미상환·전세 임차인(대항력) 인수 위험</b>은 신축 단지에서 흔하므로 반드시 확인.</li>
+    <li>인수금이 0이 아니면(예: 대항력 임차인 보증금 인수) EP70은 그만큼 더 악화 → NO-GO 결론은 강화될 뿐입니다.</li>
+  </ul>
+
+  <h2>3. 시장 시세 &amp; 보수 매도 기준 (v9)</h2>
+  <div class="insight">
+    <b>왜 호가 하단을 쓰나.</b> 매매사업자의 단기 매도는 시장 호가가 아니라 <b>시장가 아래에서 빠르게 체결</b>됩니다. 그래서 수익계산 앵커 S는 <b>호가 하단(₩2억 9,500만)</b>을 씁니다. 이 단지는 호가 37건이 형성돼 있어 thin하지 않으나, <b>최저가(₩3억)가 이미 S(₩2억 9,500만)보다 높아</b> 경매 출발선부터 시장 대비 불리합니다.
+  </div>
+  <h3>현시점 호가 (전용 65.72㎡ · 37건)</h3>
+  <table>
+    <tr><th>구분</th><th class="num">가격</th><th>비고</th></tr>
+    <tr><td>호가 하단(low)</td><td class="num"><b>2억 9,500만</b></td><td>저층/27 · 2026-05-24 등록 · <b>S 앵커</b></td></tr>
+    <tr><td>호가 중앙(median)</td><td class="num">3억 1,500만</td><td>37건 중앙</td></tr>
+    <tr><td>호가 상단(high)</td><td class="num">3억 3,000만</td><td>고층/24 · 2026-06-03 등록</td></tr>
+  </table>
+  <p class="note">호가 표본(최신): 2억 9,500만(저/27) · 3억(1/26) · 3억 1,000만(5/24) · 3억 1,000만(고/24) · 3억 3,000만(고/24). 매물 37건으로 유동성은 양호하나 가격대가 최저매각가 위에 두텁게 깔려 있음.</p>
+
+  <h3>가장 최근 실거래 (#2 강조)</h3>
+  <div class="card" style="margin:8px 0 4px">
+    <div class="kv"><span class="k">최근 실거래</span><span class="v"><b class="hl">3억 1,600만</b> · 2026-02-21 · 9층</span></div>
+    <p class="note" style="margin-top:6px">매각기일(2026-06-09) 기준 약 4개월 전 거래로 <b>6개월 이내(계산 반영 가능)</b>. 단, S 앵커는 호가 하단(2억 9,500만)이 실거래 median(≤6mo)보다 낮아 그대로 사용.</p>
+  </div>
+  <table>
+    <tr><th>거래일</th><th class="num">가격</th><th class="num">층</th><th>비고</th></tr>
+    <tr><td>2026-02-21</td><td class="num">3억 1,600만</td><td class="num">9</td><td>최근 1건(≤6mo)</td></tr>
+    <tr><td>2026-01-20</td><td class="num">3억 1,700만</td><td class="num">11</td><td>≤6mo</td></tr>
+    <tr><td>2025-10-27</td><td class="num" style="color:var(--text-mute)">3억 2,000만</td><td class="num">19</td><td style="color:var(--text-mute)">참고(6mo 초과)</td></tr>
+    <tr><td>2025-09-28</td><td class="num" style="color:var(--text-mute)">3억</td><td class="num">16</td><td style="color:var(--text-mute)">참고(6mo 초과)</td></tr>
+    <tr><td>2025-08-13</td><td class="num" style="color:var(--text-mute)">2억 8,000만</td><td class="num">2</td><td style="color:var(--text-mute)">참고(저층·6mo 초과)</td></tr>
+    <tr><td>2025-08-02</td><td class="num" style="color:var(--text-mute)">3억 500만</td><td class="num">18</td><td style="color:var(--text-mute)">참고(6mo 초과)</td></tr>
+  </table>
+
+  <h3>보수 매도 기준 S 및 비용 분리</h3>
+  <table>
+    <tr><th>항목</th><th class="num">금액</th><th>근거</th></tr>
+    <tr><td>보수 매도 기준 S</td><td class="num"><b>2억 9,500만</b></td><td>호가 하단(v9.basis = "호가 하단") · 단기매도 = 시장가 아래 체결</td></tr>
+    <tr><td>70% 승률 입찰가 B70</td><td class="num"><b>2억 9,500만</b></td><td>clamp(S×k70, 최저 3억, 상한 S) → 바닥 S에 붙음(k70=0.90)</td></tr>
+    <tr><td>취득세 + 법무등기</td><td class="num">388만 9,050</td><td>법무통식 (B70 기준)</td></tr>
+    <tr><td>중개비(매도)</td><td class="num">118만</td><td>S × 0.4%</td></tr>
+    <tr><td>기타</td><td class="num">200만</td><td>고정</td></tr>
+    <tr><td>고정비용 합</td><td class="num">706만 9,050</td><td>취득·법무 + 중개 + 기타</td></tr>
+    <tr class="pick"><td><b>EP70 (세전 기대수익 · 4개월 기준)</b></td><td class="num"><b class="neg">−1,061만</b></td><td>S − B70 − 고정비용 − 이자(4개월). <b>제외 tier</b></td></tr>
+  </table>
+  <p class="note">B70(₩2억 9,500만) ≈ S(₩2억 9,500만)이라 매도차익(S−B70) 자체가 거의 0 → 비용만큼 그대로 적자. <b>경매 할인폭이 없어 비용이 그대로 손실</b>이 되는 구조.</p>
+
+  <h3>대출이자 — 보유 기간별 (LTV 80% · 금리 4.5%, B70 기준)</h3>
+  <table>
+    <tr><th>보유 기간</th><th class="num">이자</th><th>비고</th></tr>
+    <tr><td>3개월</td><td class="num">265만 5,000</td><td></td></tr>
+    <tr class="pick"><td><b>4개월 (EP70 기준)</b></td><td class="num"><b>354만</b></td><td>EP70 산정 앵커</td></tr>
+    <tr><td>5개월</td><td class="num">442만 5,000</td><td></td></tr>
+    <tr><td>6개월</td><td class="num">531만</td><td></td></tr>
+  </table>
+  <p class="note">EP70은 <b>4개월 보유</b> 기준입니다. 보유가 길어질수록 이자가 늘어 적자가 더 깊어집니다(6개월이면 −1,238만 수준).</p>
+
+  <h2>4. 입찰가별 기대수익 곡선</h2>
+  <p class="note">세전이익 = S(2억 9,500만) − 입찰가 − 비용. 명도·수리·세금 별도. 인수금 0 가정. <b>신건이라 입찰 하한이 최저매각가(₩3억) = S 위</b>여서 곡선이 단일 지점에 갇힘.</p>
+  <table>
+    <tr><th>입찰가</th><th class="num">낙찰확률</th><th class="num">세전이익(명도·수리·세금 前)</th><th>tier</th></tr>
+    <tr class="pick"><td>3억 (최저매각가)</td><td class="num">~30%</td><td class="num neg"><b>−1,061만</b></td><td>제외</td></tr>
+  </table>
+  <p class="note"><b>★ 2,500만선·본전선 모두 도달 불가.</b> 최저매각가(₩3억)가 이미 S(₩2억 9,500만)를 ₩500만 초과 → 어떤 입찰가에서도 세전이익이 양(+)이 될 수 없음. 입찰가를 올릴수록 적자만 깊어짐. <b>세전 본전선(BEP)은 S − 비용 ≈ 2억 8,800만으로, 입찰 가능 하한(₩3억)보다 낮아 도달 불가.</b></p>
+
+  <h2>5. 입찰 3안 비교</h2>
+  <p class="note">신건이라 마진형·균형·낙찰형 입찰가가 모두 입찰 하한(최저매각가 ₩3억 = B70 clamp 결과)으로 수렴 → 3안이 동일 지점.</p>
+  <table>
+    <tr><th>지표</th><th class="num">🟢 마진형</th><th class="num">🟡 균형</th><th class="num">🔴 낙찰형</th></tr>
+    <tr><td>입찰가</td><td class="num">2억 9,500만</td><td class="num">2억 9,500만</td><td class="num">2억 9,500만</td></tr>
+    <tr><td>들어간 내 돈(자기자본)</td><td class="num">6,738만 9,050</td><td class="num">6,738만 9,050</td><td class="num">6,738만 9,050</td></tr>
+    <tr><td>세전이익(EP)</td><td class="num neg">−1,061만</td><td class="num neg">−1,061만</td><td class="num neg">−1,061만</td></tr>
+  </table>
+  <p class="note">번들 threeBid 기준 세 안의 입찰가·자기자본·세전이익이 동일(신건 단일 지점). 실제 입찰 가능 최저가는 ₩3억이며, 그 경우 적자는 더 깊어집니다.</p>
+
+  <h3>매도가 민감도 — 세후 순이익</h3>
+  <table>
+    <tr><th>매도 시나리오</th><th class="num">매도가</th><th class="num">세전(biz)</th><th class="num">종소세</th><th class="num">세후(after)</th></tr>
+    <tr><td>보수</td><td class="num">2억 8,025만</td><td class="num neg">−2,980만</td><td class="num">0</td><td class="num neg"><b>−2,980만</b></td></tr>
+    <tr class="pick"><td>중립</td><td class="num">2억 9,500만</td><td class="num neg">−1,511만</td><td class="num">0</td><td class="num neg"><b>−1,511만</b></td></tr>
+    <tr><td>낙관</td><td class="num">3억 3,000만</td><td class="num pos">+1,975만</td><td class="num">326만</td><td class="num pos"><b>+1,649만</b></td></tr>
+  </table>
+  <div class="danger">
+    <b>흑자는 호가 상단(₩3억 3,000만)에 정확히 팔아야만 가능.</b> 보수·중립 매도에서는 모두 적자(−2,980만 / −1,511만). 낙관(호가 최상단) 매도에서만 세후 +1,649만인데, 이는 "최저가에 낙찰 + 단기에 시장 최상단가에 매도"라는 <b>거의 불가능한 양끝 조합</b>을 동시에 충족해야 합니다. 과열 단지(낙찰가율 94.8%)에서 최저가 낙찰 자체가 비현실적이라 사실상 적자 시나리오만 남습니다.
+  </div>
+
+  <h2>6. 수익화 전략</h2>
+  <ul>
+    <li><b>권장 출구: 없음(입찰 비권장).</b> A 즉시전매는 매도차익이 비용을 덮지 못해 적자, B/C 임대도 진입원가가 시장가와 동일해 자본차익 기대 불가.</li>
+    <li>65.72㎡ ≤ 85㎡ → 건물분 부가세 면세이고 3년차 신축이라 물건 자체는 깨끗하나, <b>진입가 메리트가 없어</b> 수익화 전략을 논할 단계가 아닙니다.</li>
+    <li>대안: 이 단지·평형을 원한다면 <b>경매 대신 네이버 호가 하단(₩2억 9,500만) 직접 매수</b>가 더 합리적 — 경매 비용(취득세 차이 미미하나 명도 리스크·기간 비용)을 피할 수 있음.</li>
+  </ul>
+
+  <h2>6.5 종합소득세 &amp; 세후이익 (배우자 합산 누진)</h2>
+  <table>
+    <tr><th>항목</th><th class="num">금액</th><th>비고</th></tr>
+    <tr><td>실현 세전이익 (과세표준 base)</td><td class="num neg"><b>−1,511만</b></td><td>EP70(−1,061만) − 실수리(150만) − 명도추정(300만)</td></tr>
+    <tr><td>종합소득세 (지방세 포함)</td><td class="num">0</td><td>실현이익이 음수(손실) → 추가 종소세 없음</td></tr>
+    <tr><td>한계세율</td><td class="num">—</td><td>손실 구간 (과세 대상 아님)</td></tr>
+    <tr class="pick"><td><b>세후이익</b></td><td class="num neg"><b>−1,511만</b></td><td>실현 세전이익 − 종소세 = 손실 확정</td></tr>
+  </table>
+  <div class="insight">
+    <b>종소세 산정 구조(참고).</b> 본 하네스는 실현이익을 <b>배우자 근로소득 ₩3,600만에 사업소득으로 합산</b>해 누진 한계세율을 적용합니다. 근로만 과세표준 ₩2,385만(산출세액 ₩232만) 위에 사업소득(P)을 얹어 합산 산출세액에서 ₩232만을 뺀 차액 ×1.1(지방세)이 추가 종소세입니다. 사업소득이 커지면 15%→24%→35% 구간이 자동 이동합니다. <b>다만 이 건은 실현이익이 음수라 과세 자체가 발생하지 않습니다</b>(손실). 흑자 낙관 시나리오(세전 +1,975만)에서만 한계 16.5%로 ₩326만이 과세됩니다.
+  </div>
+  <p class="note">매도가(S) ₩2억 9,500만 ≤ ₩3억 5,500만 → 배우자 명의(24% 이하 구간) 안전, 본인 명의(35%) 비교 불필요. ※ 수리비(리모델링 참고 상한 ₩300만)는 EP70·과세에서 제외되며, 위 실현이익에는 매도용 실수리 ₩150만·명도추정 ₩300만만 반영됨.</p>
+
+  <h2>7. D-day 액션 플랜</h2>
+  <div class="danger">
+    <b>🔴 입찰 비권장.</b> 수익 구조가 적자(EP70 −1,061만, 제외 tier)이고 과열 단지라 메리트가 없습니다. 아래 액션은 "그래도 검토한다면" 최소 확인 사항입니다.
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h4>입찰 전 필수 검증 (권리 미검증)</h4>
+      <ul style="margin:0">
+        <li><b>지지옥션 등기권리표 직접 확인</b> — 말소기준·인수권리</li>
+        <li><b>법원임차조사·전입세대</b> — 대항력 임차인 여부</li>
+        <li><b>매각물건명세서 PDF</b> — 인수조건·특별매각조건</li>
+        <li>분양 잔금/전세 인수 위험(신축 단지 특유) 점검</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>경제성 재확인</h4>
+      <ul style="margin:0">
+        <li>네이버 호가 하단 재확인 → S=2억 9,500만 검증</li>
+        <li>최저가(₩3억) &gt; S 구조 = 경매 메리트 없음 재인지</li>
+        <li>단지 직접 매수(시장) 옵션과 비교</li>
+        <li>매각기일 변경·취하 여부 D-1 확인</li>
+      </ul>
+    </div>
+  </div>
+  <p class="note">권리가 깨끗하더라도(인수 0) 수익 구조 자체가 적자이므로 결론(NO-GO)은 바뀌지 않습니다. 다음 후보(천안·아산 유찰 물건 중 시장가 대비 할인폭 있는 건)로 이동 권장.</p>
+
+  <h2>8. 최종 의견</h2>
+  <div class="lead">
+    <p><b>🔴 NO-GO.</b> 신건이라 최저매각가(₩3억)가 감정가·KB시세와 동일하고, 보수 매도 기준 S(호가 하단 ₩2억 9,500만)보다도 ₩500만 높습니다. <b>경매의 본질인 "시장가 대비 할인폭"이 0 이하</b>라, 어떤 입찰가에서도 세전이익이 양(+)이 될 수 없습니다. EP70 −1,061만으로 <b>제외(예상 적자 1,000만↑) tier</b>입니다.</p>
+    <p>게다가 이 단지는 직전 5건 낙찰가율 평균 <b>94.8%·평균 응찰 8.2명의 과열 단지</b>라, 실제 낙찰가는 감정가 부근 또는 그 위에서 형성될 가능성이 높습니다 — 적자 폭은 더 커질 수 있습니다. 흑자는 "최저가 낙찰 + 호가 최상단 단기 매도"라는 비현실적 양끝 조합에서만 가능합니다.</p>
+    <ul style="margin:6px 0">
+      <li><b>권리는 raw 미검증(잠정)</b> — 위 수치는 모두 인수금 0 가정 위 성립. 인수금이 있으면 적자만 심화.</li>
+      <li><b>이 평형을 원한다면 경매가 아니라 시장 직접 매수</b>(호가 하단 ₩2억 9,500만)가 합리적.</li>
+      <li>경매 메리트가 있는 다음 후보(유찰로 최저가가 시장가 아래로 내려온 건)로 이동 권장.</li>
+    </ul>
+    <p><b>결론: 입찰하지 않습니다.</b></p>
+  </div>
+
+  <div class="foot">
+    출처: 네이버 fin.land 단지 2026타경10227 호가·실거래(번들 complexNo 143364) + v9 cases.js + bid-price-engine §0.5 v9 / monetization §10 · 작성 2026-06-03<br>
+    분석 신뢰도: <b>중</b> — 시세(네이버 호가 37건·실거래 ≤6mo)는 확인됐으나 <b>권리 raw 미검증(잠정 등급)</b>. 곡선·수익·세금은 "인수금 0" 가정 위 성립. 입찰 검토 시 지지옥션 등기·임차조사·매각물건명세서 직접 확인 필수.<br>
+    ※ 법원 공시자료·추정치 기반으로 오류·변경 가능. 투자 책임은 이용자에게 있습니다.
+  </div>
+</div>
+</body>
+</html>

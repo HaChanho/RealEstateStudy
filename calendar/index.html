@@ -425,6 +425,38 @@
   .naver-data .trade-item .floor { color: var(--text-mute); }
   .naver-data .empty { color: var(--text-mute); font-size: 11px; font-style: italic; }
   .naver-updated { color: var(--text-mute); font-size: 10px; margin-top: 6px; text-align: right; }
+  /* 호가 range 바 (v9) */
+  .hoga-range { margin: 8px 0 4px; }
+  .hoga-range .hr-head { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-mute); margin-bottom: 5px; }
+  .hoga-range .hr-head b { color: var(--text-dim); }
+  .hoga-range .hr-bar { position: relative; height: 8px; background: linear-gradient(90deg, rgba(96,165,250,.25), rgba(96,165,250,.55)); border-radius: 999px; }
+  .hoga-range .hr-ends { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; margin-top: 5px; }
+  .hoga-range .hr-mark { position: absolute; top: -3px; width: 2px; height: 14px; background: var(--text); border-radius: 1px; }
+  .hoga-range .hr-mark.anchor { background: var(--price); width: 3px; }
+  .hoga-range .hr-mark .lab { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 9px; white-space: nowrap; color: var(--text-mute); }
+  .hoga-range .hr-mark.anchor .lab { color: var(--price); font-weight: 700; }
+  .last-trade { display: flex; align-items: baseline; gap: 8px; padding: 8px 10px; background: rgba(16,185,129,.08); border-left: 3px solid var(--positive); border-radius: 6px; margin: 8px 0 4px; }
+  .last-trade .lt-date { font-size: 11px; color: var(--text-dim); }
+  .last-trade .lt-price { font-size: 16px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
+  .last-trade .lt-meta { font-size: 10px; color: var(--text-mute); margin-left: auto; }
+  .trade-item.stale { opacity: .45; }
+  .trade-sep { font-size: 9.5px; color: var(--text-mute); text-align: center; padding: 4px 0 2px; letter-spacing: .04em; }
+  /* 이자 보유개월 표 (v9) */
+  .int-table { width: 100%; border-collapse: collapse; font-size: 11px; margin: 4px 0 2px; }
+  .int-table th, .int-table td { padding: 4px 6px; text-align: right; font-variant-numeric: tabular-nums; border-top: 1px solid var(--border); }
+  .int-table th { color: var(--text-mute); font-weight: 600; font-size: 10px; }
+  .int-table td.lbl, .int-table th.lbl { text-align: left; color: var(--text-dim); }
+  .int-table td.anchor { color: var(--price); font-weight: 700; background: rgba(245,158,11,.08); }
+  /* 세금 서브박스 (v9) */
+  .tax-box { margin-top: 10px; padding: 9px 11px; background: rgba(99,102,241,.07); border-left: 3px solid #6366f1; border-radius: 6px; }
+  .tax-box .tb-title { font-size: 10.5px; font-weight: 700; color: #818cf8; margin-bottom: 6px; }
+  .tax-box .tb-row { display: flex; justify-content: space-between; font-size: 12px; padding: 2px 0; font-variant-numeric: tabular-nums; }
+  .tax-box .tb-row .k { color: var(--text-dim); }
+  .tax-box .tb-row .v { color: var(--text); font-weight: 600; }
+  .tax-box .tb-row.after { border-top: 1px solid var(--border); margin-top: 3px; padding-top: 5px; }
+  .tax-box .tb-row.after .v { color: var(--positive); font-weight: 800; }
+  .cost-line { display: flex; justify-content: space-between; font-size: 11.5px; padding: 2px 0; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+  .cost-line .v { color: var(--text); }
 
   /* Bid scenario matrix */
   .bid-scenarios { width: 100%; border-collapse: collapse; font-size: 11px; background: var(--panel-bg-2); border-radius: 6px; overflow: hidden; }
@@ -820,6 +852,7 @@
     if (opts) {
       if (opts.cls) node.className = opts.cls;
       if (opts.text != null) node.textContent = opts.text;
+      if (opts.html != null) node.innerHTML = opts.html; // 내부 통제 콘텐츠 전용 (사용자 입력 금지)
       if (opts.title) node.title = opts.title;
       if (opts.attrs) for (const k of Object.keys(opts.attrs)) node.setAttribute(k, opts.attrs[k]);
       if (opts.onClick) node.addEventListener('click', opts.onClick);
@@ -1313,7 +1346,7 @@
     { key: 'areaSqm',    label: '전용',    width: '60px',  align: 'right' },
     { key: 'minimumPrice', label: '최저가', width: '110px',  align: 'right' },
     { key: 'kbPrice',    label: 'KB시세',  width: '105px',  align: 'right' },
-    { key: 'neutralSalePrice', label: '기대매도가', width: '110px', align: 'right' },
+    { key: 'neutralSalePrice', label: '보수매도', width: '110px', align: 'right' },
     { key: 'bid70',      label: '입찰권장(70%)', width: '115px', align: 'right' },
     { key: 'expectedProfit70', label: '예상수익', width: '100px', align: 'right' },
     { key: 'saleRate',   label: '매각가율', width: '70px', align: 'right' },
@@ -1430,7 +1463,7 @@
       // kbPrice
       { const td = el('td', { cls: 'col-num' + (!c.kbPrice ? ' dim' : '') }); td.style.textAlign = 'right'; td.textContent = c.kbPrice ? fmtMoney(c.kbPrice) : '—'; if (c.kbPrice) td.title = fmtMoney(c.kbPrice); tr.appendChild(td); }
       // 기대매도가 (neutralSalePrice = 최근 실거래)
-      { const td = el('td', { cls: 'col-num' + (c.neutralSalePrice == null ? ' dim' : '') }); td.style.textAlign = 'right'; td.textContent = c.neutralSalePrice ? fmtMoneyShort(c.neutralSalePrice) : '—'; if (c.neutralSalePrice) td.title = '기대 매도가(최근 실거래) ' + fmtMoney(c.neutralSalePrice); tr.appendChild(td); }
+      { const td = el('td', { cls: 'col-num' + (c.neutralSalePrice == null ? ' dim' : '') }); td.style.textAlign = 'right'; td.textContent = c.neutralSalePrice ? fmtMoneyShort(c.neutralSalePrice) : '—'; if (c.neutralSalePrice) td.title = '보수 매도 기준(호가 하단) ' + fmtMoney(c.neutralSalePrice); tr.appendChild(td); }
       // 입찰권장가 (낙찰확률 70%)
       { const td = el('td', { cls: 'col-num' + (c.bid70 == null ? ' dim' : '') }); td.style.textAlign = 'right'; td.textContent = c.bid70 ? fmtMoneyShort(c.bid70) : '—'; if (c.bid70) td.title = '입찰 권장가(낙찰확률 70%) ' + fmtMoney(c.bid70); tr.appendChild(td); }
       // 예상수익 (세전 EP70, short form; 전액 hover)
@@ -1638,14 +1671,16 @@
       inner.appendChild(rpSec);
     }
 
-    // 💰 수익 분석 (v6.1) — 기대 매도가·입찰권장가(70%)·예상비용·예상수익
+    // 💰 수익 분석 (v9) — 보수 매도 기준·입찰권장가(70%)·고정비용·이자 band·EP70·종소세·세후
     if (c.expectedProfit70 != null || c.bid70 != null || c.neutralSalePrice != null) {
       const ep = (c.expectedProfit70 != null) ? c.expectedProfit70 : null;
-      const cost = (c.neutralSalePrice != null && c.bid70 != null && ep != null) ? (c.neutralSalePrice - c.bid70 - ep) : null;
+      const cb = c.costBreakdown || null;
+      const cost = cb ? (cb.fixedTotal + (cb.interest ? cb.interest['m'+(cb.anchorMonths||4)] : 0))
+                      : ((c.neutralSalePrice != null && c.bid70 != null && ep != null) ? (c.neutralSalePrice - c.bid70 - ep) : null);
       const tierMap = {
         primary:   { t: '★ Primary (세전 ≥2,500만)', cls: 'tier-star' },
         watch:     { t: '◇ Watch (1,500~2,500만)',   cls: 'tier-watch' },
-        watchlist: { t: '▷ Watchlist (본전권)',       cls: 'tier-watchlist' },
+        watchlist: { t: '▷ Watchlist (본전~1,500만)', cls: 'tier-watchlist' },
       };
       const profSec = section('💰 수익 분석 (세전 · 낙찰확률 70% 기준)', { boxed: true, accent: 'profit' });
       if (c.interestTier && tierMap[c.interestTier]) {
@@ -1654,17 +1689,63 @@
         profSec.appendChild(el('span', { cls: 'tier-badge tier-excl', text: '제외 (예상 적자 ≥1,000만)' }));
       }
       const pgrid = el('div', { cls: 'detail-grid' });
-      if (c.neutralSalePrice != null) pgrid.appendChild(field('기대 매도가 (최근 실거래)', fmtMoney(c.neutralSalePrice), { mono: true, price: true }));
+      if (c.neutralSalePrice != null) {
+        const sNode = el('span');
+        sNode.appendChild(document.createTextNode(fmtMoney(c.neutralSalePrice)));
+        if (c.marketAnchorBasis) sNode.appendChild(el('div', { cls: 'small-note', text: c.marketAnchorBasis }));
+        pgrid.appendChild(field('보수 매도 기준', sNode, { mono: true, price: true }));
+      }
       if (c.bid70 != null) pgrid.appendChild(field('입찰 권장가 (낙찰확률 70%)', fmtMoney(c.bid70), { mono: true, price: true, tone: 'positive' }));
-      if (cost != null) pgrid.appendChild(field('예상 비용', fmtMoney(cost), { mono: true, price: true }));
+      profSec.appendChild(pgrid);
+
+      // 비용 내역 (고정비용 + 이자 보유개월 band)
+      if (cb) {
+        const cwrap = el('div'); cwrap.style.marginTop = '8px';
+        cwrap.appendChild(el('div', { cls: 'small-note', text: '예상 비용 (수리·명도 제외)' }));
+        const cl = (k, v) => { const d = el('div', { cls: 'cost-line' }); d.appendChild(el('span', { text: k })); d.appendChild(el('span', { cls: 'v', text: fmtMoney(v) })); return d; };
+        cwrap.appendChild(cl('취득세·법무등기 (법무통)', cb.acq));
+        cwrap.appendChild(cl('중개비 (매도 0.4%)', cb.brokerage));
+        cwrap.appendChild(cl('기타 (관리비·잡비)', cb.etc));
+        // 이자 표 3~6개월
+        if (cb.interest) {
+          const t = el('table', { cls: 'int-table' });
+          const hr = el('tr'); hr.appendChild(el('th', { cls:'lbl', text: '대출이자 (보유)' }));
+          [3,4,5,6].forEach(m => hr.appendChild(el('th', { text: m + '개월' })));
+          const th = el('thead'); th.appendChild(hr); t.appendChild(th);
+          const br = el('tr'); br.appendChild(el('td', { cls:'lbl', text: `LTV ${Math.round((cb.ltv||0.8)*100)}%·${((cb.rate||0.045)*100).toFixed(1)}%` }));
+          [3,4,5,6].forEach(m => { const td = el('td', { cls: (m===(cb.anchorMonths||4)?'anchor':''), text: fmtMoney(cb.interest['m'+m]) }); br.appendChild(td); });
+          const tb = el('tbody'); tb.appendChild(br); t.appendChild(tb);
+          cwrap.appendChild(t);
+          cwrap.appendChild(el('div', { cls: 'small-note', text: `EP70은 ${cb.anchorMonths||4}개월 기준(앰버 강조). 보유기간 가정에 따라 이자만큼 수익 변동.` }));
+        }
+        profSec.appendChild(cwrap);
+      }
+
+      // EP70 (세전, 수리·명도 제외)
+      const epgrid = el('div', { cls: 'detail-grid' }); epgrid.style.marginTop = '8px';
       if (ep != null) {
         const epTone = ep >= 25_000_000 ? 'positive' : ep <= -10_000_000 ? 'negative' : null;
-        pgrid.appendChild(field('예상 수익 (세전 · EP70)', fmtMoneySigned(ep), { mono: true, price: true, tone: epTone }));
+        epgrid.appendChild(field('예상 수익 (세전 · EP70)', fmtMoneySigned(ep), { mono: true, price: true, tone: epTone }));
       }
-      // 수리비는 변동성이 크고 사용자가 임의 조절 가능 → EP70·예상비용에서 제외, 별도 참고치로 노출.
-      if (c.repairCost != null) pgrid.appendChild(field('예상 수리비 (참고 · EP70 제외)', fmtMoney(c.repairCost), { mono: true, muted: true }));
-      profSec.appendChild(pgrid);
-      profSec.appendChild(el('div', { cls: 'small-note', text: '세전 = 종합소득세·명도비·인수금·수리비 제외 / 비용 = 취득세·법무등기(법무통)·대출이자(2~6개월)·중개비. 수리비는 변동성이 커 EP70에서 빼고 별도 참고치로 표기(사용자 직접 가감). 매도가는 실거래 기준. 정본: bid-price-engine §0.5 v8' }));
+      if (c.repairCost != null) epgrid.appendChild(field('예상 수리비 (참고·리모델링 시)', fmtMoney(c.repairCost), { mono: true, muted: true }));
+      profSec.appendChild(epgrid);
+
+      // 💵 종합소득세·세후 (실현이익 기준, 배우자 합산 누진)
+      if (c.taxableProfit != null && c.incomeTax != null) {
+        const tb = el('div', { cls: 'tax-box' });
+        const ownerTxt = (c.taxOwner === 'self') ? '본인' : '배우자';
+        tb.appendChild(el('div', { cls: 'tb-title', text: `💵 실현이익 기준 세금 (${ownerTxt} 연봉 합산 누진)` }));
+        const trow = (k, v, cls) => { const d = el('div', { cls: 'tb-row' + (cls?' '+cls:'') }); d.appendChild(el('span', { cls:'k', text:k })); d.appendChild(el('span', { cls:'v', text:v })); return d; };
+        tb.appendChild(trow('실현 세전이익 (EP70 − 실수리 − 명도)', fmtMoneySigned(c.taxableProfit)));
+        const mr = c.marginalRate != null ? ` (한계 ${(c.marginalRate*100).toFixed(1)}%)` : '';
+        tb.appendChild(trow('종합소득세' + mr, '−' + fmtMoney(c.incomeTax)));
+        if (c.afterTaxProfit != null) tb.appendChild(trow('세후 이익', fmtMoneySigned(c.afterTaxProfit), 'after'));
+        profSec.appendChild(tb);
+        const fr = (c.flipRepair!=null?`실수리 ${fmtMoney(c.flipRepair)}`:'') + (c.evictionEst!=null?` · 명도 ${fmtMoney(c.evictionEst)}`:'');
+        profSec.appendChild(el('div', { cls: 'small-note', text: `과세표준 = 실현 세전이익(${fr} 차감, as-is 매도 가정). 배우자 근로 ₩36M 합산 한계세율(지방세 포함). 매도가>₩355M이면 본인 명의 비교. 정본: bid-price-engine §0.5 v9` }));
+      } else {
+        profSec.appendChild(el('div', { cls: 'small-note', text: '세전 = 종소세·명도·인수금·수리 제외. 보수 매도 기준=호가 하단(시세 range는 아래 시세 섹션). 정본: bid-price-engine §0.5 v9' }));
+      }
       inner.appendChild(profSec);
     }
 
@@ -1795,44 +1876,72 @@
 
     if (c.naverData) {
       const nd = el('div', { cls: 'naver-data' });
+      // 6개월 컷오프 (오늘 − 6개월)
+      const cut6 = (() => { const d = new Date(); d.setMonth(d.getMonth() - 6); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })();
       if (c.naverData.source) {
         const srcLabels = { naver: '🟢 네이버 부동산', molit_public: '📊 국토부 공공 실거래', user: '✋ 사용자 입력' };
         const srcLabel = srcLabels[c.naverData.source] || c.naverData.source;
-        const srcRow = el('div', { cls: 'k', text: '출처: ' + srcLabel });
+        const srcRow = el('div', { cls: 'k', text: '출처: ' + srcLabel + (c.naverData.pyeong ? ` · 전용 ${(+c.naverData.pyeong.exc).toFixed(0)}㎡` : '') });
         srcRow.style.marginBottom = '6px';
         nd.appendChild(srcRow);
       }
-      if (c.naverData.askingPrice) {
-        const ap = c.naverData.askingPrice;
-        const row = el('div', { cls: 'row' });
-        row.appendChild(el('span', { cls: 'k', text: `현재 호가 (${c.areaSqm ? c.areaSqm.toFixed(0) + '㎡' : '동급'})` }));
-        const v = ap.low && ap.high ? `${fmtMoney(ap.low)} ~ ${fmtMoney(ap.high)}` : (ap.median ? fmtMoney(ap.median) : '—');
-        row.appendChild(el('span', { cls: 'v', text: v + (ap.count ? ` · ${ap.count}건` : '') }));
-        nd.appendChild(row);
+      // 현시점 호가 range 바
+      const ap = c.naverData.askingPrice;
+      if (ap && ap.low) {
+        const wrap = el('div', { cls: 'hoga-range' });
+        const head = el('div', { cls: 'hr-head' });
+        head.appendChild(el('span', { html: `현시점 호가 <b>동일 ${ap.area ? (+ap.area).toFixed(0)+'㎡' : '평형'}</b>` }));
+        head.appendChild(el('span', { text: (ap.count||0) + '건' }));
+        wrap.appendChild(head);
+        if (ap.high && ap.high > ap.low) {
+          const bar = el('div', { cls: 'hr-bar' });
+          // 보수 매도 기준(앵커) 위치
+          if (c.neutralSalePrice != null) {
+            const pct = Math.max(0, Math.min(1, (c.neutralSalePrice - ap.low) / (ap.high - ap.low)));
+            const m = el('div', { cls: 'hr-mark anchor' }); m.style.left = (pct*100).toFixed(1) + '%';
+            m.appendChild(el('span', { cls: 'lab', text: '보수기준 ' + fmtMoneyShort(c.neutralSalePrice) }));
+            bar.appendChild(m);
+          }
+          wrap.appendChild(bar);
+          const ends = el('div', { cls: 'hr-ends' });
+          ends.appendChild(el('span', { text: fmtMoney(ap.low) }));
+          ends.appendChild(el('span', { text: fmtMoney(ap.high) }));
+          wrap.appendChild(ends);
+        } else {
+          wrap.appendChild(el('div', { cls: 'hr-ends', html: `<span>${fmtMoney(ap.low)}</span><span style="color:var(--text-mute);font-weight:400">단일 매물</span>` }));
+        }
+        nd.appendChild(wrap);
+      } else {
+        nd.appendChild(el('div', { cls: 'small-note', text: '현시점 동일 평형 매물 0건 (호가 미형성 — 실거래 기준)' }));
       }
-      if (c.naverData.recentTradeAvg) {
-        const row = el('div', { cls: 'row' });
-        row.appendChild(el('span', { cls: 'k', text: '최근 실거래 평균' }));
-        row.appendChild(el('span', { cls: 'v', text: fmtMoney(c.naverData.recentTradeAvg) }));
-        nd.appendChild(row);
+      // 가장 최근 실거래 강조 (#2)
+      const lt = c.naverData.lastTrade || (Array.isArray(c.naverData.recentTrades) && c.naverData.recentTrades[0]);
+      if (lt) {
+        const box = el('div', { cls: 'last-trade' });
+        box.appendChild(el('span', { cls: 'lt-date', text: '최근 실거래 ' + (lt.date||'—') }));
+        box.appendChild(el('span', { cls: 'lt-price', text: fmtMoney(lt.price) }));
+        box.appendChild(el('span', { cls: 'lt-meta', text: (lt.floor? lt.floor+'층':'') }));
+        nd.appendChild(box);
       }
-      if (Array.isArray(c.naverData.recentTrades) && c.naverData.recentTrades.length) {
+      // 실거래 리스트 (6개월 초과는 흐리게 + 구분선)
+      if (Array.isArray(c.naverData.recentTrades) && c.naverData.recentTrades.length > 1) {
         const list = el('div', { cls: 'trade-list' });
-        const hdr = el('div', { cls: 'k', text: '최근 실거래 (네이버)' });
-        hdr.style.marginTop = '6px';
-        nd.appendChild(hdr);
-        for (const t of c.naverData.recentTrades.slice(0, 6)) {
-          const item = el('div', { cls: 'trade-item' });
+        nd.appendChild(el('div', { cls: 'k', text: '실거래 내역 (네이버)' }));
+        let sepShown = false;
+        for (const t of c.naverData.recentTrades.slice(0, 8)) {
+          const stale = t.date && t.date < cut6;
+          if (stale && !sepShown) { list.appendChild(el('div', { cls: 'trade-sep', text: '─── 6개월 초과 (참고) ───' })); sepShown = true; }
+          const item = el('div', { cls: 'trade-item' + (stale ? ' stale' : '') });
           item.appendChild(el('span', { cls: 'date', text: t.date || '—' }));
           item.appendChild(el('span', { cls: 'price', text: fmtMoney(t.price) }));
-          item.appendChild(el('span', { cls: 'area', text: t.area ? t.area.toFixed(1) + '㎡' : '—' }));
+          item.appendChild(el('span', { cls: 'area', text: (t.area != null) ? (+t.area).toFixed(0) + '㎡' : '—' }));
           item.appendChild(el('span', { cls: 'floor', text: t.floor ? t.floor + '층' : '' }));
           list.appendChild(item);
         }
         nd.appendChild(list);
       }
       if (c.naverData.updatedAt) {
-        nd.appendChild(el('div', { cls: 'naver-updated', text: '네이버 데이터 갱신: ' + c.naverData.updatedAt }));
+        nd.appendChild(el('div', { cls: 'naver-updated', text: '시세 갱신: ' + c.naverData.updatedAt }));
       }
       naverSec.appendChild(nd);
     } else {

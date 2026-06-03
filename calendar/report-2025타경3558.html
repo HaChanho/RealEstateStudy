@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>분석 보고서 · 2025타경3558 계룡(세종 조치원)</title>
+<style>
+  :root{
+    --bg:#0f172a; --surface:#1e293b; --surface-2:#273449; --surface-3:#334155;
+    --text:#e2e8f0; --text-mute:#94a3b8; --line:#334155;
+    --amber:#f59e0b; --green:#65a30d; --blue:#0284c7; --red:#ef4444; --purple:#7c3aed;
+    --pos:#22c55e; --neg:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",Segoe UI,Roboto,sans-serif;line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 20px 80px}
+  a{color:#38bdf8}
+  h1{font-size:22px;margin:0 0 4px;letter-spacing:-0.02em}
+  h2{font-size:17px;margin:34px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--line);letter-spacing:-0.01em}
+  h3{font-size:14px;margin:20px 0 8px;color:var(--text-mute);text-transform:none;letter-spacing:0.02em}
+  .sub{color:var(--text-mute);font-size:13px;margin:0 0 18px}
+  .verdict{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:10px;font-weight:700;font-size:15px;margin:14px 0 4px;background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+  .badges{margin:10px 0 0;display:flex;gap:8px;flex-wrap:wrap}
+  .badge{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--surface-2);color:var(--text-mute);border:1px solid var(--line)}
+  .badge.good{color:var(--pos);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
+  .badge.warn{color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08)}
+  .badge.bad{color:var(--neg);border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08)}
+  .lead{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:18px 0}
+  .lead p{margin:0 0 10px} .lead p:last-child{margin:0}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;background:var(--surface);border-radius:10px;overflow:hidden}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:var(--surface-2);color:var(--text-mute);font-weight:600;font-size:12.5px}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:none}
+  .hl{color:var(--amber);font-weight:700}
+  .pos{color:var(--pos);font-weight:600} .neg{color:var(--neg);font-weight:600}
+  .pick{background:rgba(245,158,11,.10)}
+  .note{font-size:12.5px;color:var(--text-mute);margin:8px 0 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .card h4{margin:0 0 6px;font-size:13.5px}
+  .kv{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:13.5px}
+  .kv .k{color:var(--text-mute)} .kv .v{font-variant-numeric:tabular-nums;text-align:right}
+  ul{margin:8px 0;padding-left:20px} li{margin:4px 0}
+  .insight{background:rgba(2,132,199,.08);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:13.5px}
+  .danger{background:rgba(239,68,68,.08);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:13.5px}
+  .foot{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--text-mute)}
+  .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--text-mute);text-decoration:none}
+  .back:hover{color:var(--text)}
+  code{background:var(--surface-2);padding:1px 6px;border-radius:5px;font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 캘린더로</a>
+  <h1>2025타경3558 · 계룡(세종 조치원) 2동 12층1203호</h1>
+  <p class="sub">대전지방법원 · 매각기일 2026-06-10(수) · deep-dive 작성 2026-06-03 · <b style="color:var(--amber)">분석 신뢰도 중하 (권리 raw 미검증 · 시세 thin)</b></p>
+
+  <div class="verdict">⚪ 관망 / 마진형 저가 한정 입찰 — 권리 검증 전제, 70%승률가는 세후 적자</div>
+  <div class="badges">
+    <span class="badge warn">권리 잠정(A) · raw 미검증</span>
+    <span class="badge warn">EP70 +1,067만 · ▷ Watchlist</span>
+    <span class="badge bad">세후 −33만 (4개월·중립매도)</span>
+    <span class="badge good">자금 OK (자기자본 ~4,474만)</span>
+    <span class="badge bad">호가 2건·실거래 6개월내 0건</span>
+    <span class="badge">36년차 구도심 · 80.85㎡</span>
+  </div>
+
+  <div class="lead">
+    <p><b>경매 메리트가 얇고 시세 근거가 빈약한 관망형 물건입니다.</b> 최저매각가(1억 5,120만)에서 EP70(세전 기대수익)은 +1,067만으로 ▷ Watchlist tier에 머물고, <b>권장 70%승률가(1억 5,750만)로 받으면 매도용 실수리·명도까지 반영한 세후이익은 −33만으로 적자</b>입니다. ★ 기준(2,500만@70%)에 한참 못 미칩니다.</p>
+    <p>수익이 얇은 첫째 이유는 <b>시세 근거가 thin</b>하다는 점입니다 — 현시점 동일 평형 호가는 <b>1억 7,500만 단 2건</b>, 가장 최근 실거래는 <b>2021-04 (5년 전)</b>으로 6개월 내 거래가 전무합니다. 보수 매도 기준 S=1억 7,500만(호가 하단)을 쓰지만, 36년차 조치원 구도심이라 실제 단기 매도가가 이보다 낮을 위험이 큽니다. 둘째, <b>권리 raw가 미검증</b>입니다(번들 hasRightsDir=false). 곡선·수익은 모두 "인수금 0 가정" 위에서만 성립합니다.</p>
+    <p>그래도 <b>마진형 저가(최저가 1억 5,120만, 낙찰확률 ~30%)로 한정 입찰</b>하면 중립 매도(1억 7,500만)에서 세후 +511만이 나옵니다. 다만 보수 매도(1억 6,625만)에서는 이마저도 −259만 적자 — 매도가 민감도가 매우 큰 얇은 마진 구조입니다. 결론: <b>관망이 기본, 진행한다면 최저가 한정 입찰 + D-day 전 권리 직접 검증 필수.</b></p>
+  </div>
+
+  <h2>1. 물건 개요</h2>
+  <div class="grid2">
+    <div class="card">
+      <h4>기본</h4>
+      <div class="kv"><span class="k">소재지</span><span class="v">세종 조치원읍 교리 11-1 · 2동 1203호</span></div>
+      <div class="kv"><span class="k">전용 / 평형</span><span class="v">80.85㎡ (24평) · 80B형</span></div>
+      <div class="kv"><span class="k">준공</span><span class="v">1989.05 · <b>36년차 구도심</b></span></div>
+      <div class="kv"><span class="k">단지</span><span class="v">계룡 (complexNo 7145)</span></div>
+      <div class="kv"><span class="k">담당법원</span><span class="v">대전지방법원</span></div>
+      <div class="kv"><span class="k">유찰</span><span class="v">1회 (신건 기준 1회차)</span></div>
+    </div>
+    <div class="card">
+      <h4>금액</h4>
+      <div class="kv"><span class="k">감정가</span><span class="v">2억 1,600만</span></div>
+      <div class="kv"><span class="k">최저가</span><span class="v"><b>1억 5,120만 (70%)</b></span></div>
+      <div class="kv"><span class="k">입찰보증금</span><span class="v">1,512만 (최저 10%)</span></div>
+      <div class="kv"><span class="k">보수 매도 기준(S)</span><span class="v"><b class="hl">1억 7,500만</b> (호가 하단)</span></div>
+      <div class="kv"><span class="k">KB시세</span><span class="v">1억 8,400만</span></div>
+      <div class="kv"><span class="k">호가</span><span class="v">1억 7,500만 (2건뿐)</span></div>
+    </div>
+  </div>
+  <p class="note">최저가 70%(1회 유찰). 감정가 2.16억 대비 호가 하단 1.75억 = 감정가가 시장 위(−19%). 매각기일 2026-06-10 수요일.</p>
+
+  <h2>2. 권리분석 — 안전등급 <span style="color:var(--amber);font-size:13px">잠정 A (raw 미검증 · 신뢰도 하)</span></h2>
+  <div class="danger">
+    <b>⚠️ 권리 raw 미검증.</b> 이 사건은 권리 원천 자료(지지옥션 등기권리표·법원임차조사·매각물건명세서)를 <b>직접 검증하지 않았습니다</b>(번들 <code>hasRightsDir=false</code>). 아래 등급은 캘린더 1차 분류치(<code>safe</code>)에 근거한 <b>잠정</b> 평가이며, <b>D-day 전 지지옥션에서 등기·임차조사·매각물건명세서를 직접 확인</b>해야 합니다. 아래 곡선·수익·세금은 모두 <b>"인수금 0" 가정 위에서만 성립</b>합니다 — 선순위 임차인·인수권리가 드러나면 판정이 NO-GO로 전환됩니다.
+  </div>
+  <ul>
+    <li><b>1차 분류</b>: "권리 안전(A) — 임차인 없음·소유자 점유, 인수 0" (캘린더 <code>rights.status</code>, risk=safe). <b>verified 플래그 없음 → 잠정.</b></li>
+    <li><b>D-day 전 직접 확인 필수 항목</b>: ① 말소기준권리 종류·일자 ② 선순위 임차인(전입·확정·배당요구) 유무 ③ 등기부 인수권리(가등기·가처분·지상권 등) ④ 매각물건명세서 비고란 특수사항 ⑤ 점유자·관리비 연체.</li>
+    <li><b>36년차 구도심 특이 점검</b>: 노후 단지는 대지권 미등기·재건축/리모델링 분쟁·미납관리비 누적 가능성 → 등기부와 관리사무소 직접 확인 권고.</li>
+  </ul>
+
+  <h2>3. 시장 시세 &amp; 보수 매도 기준 (v9)</h2>
+  <div class="danger">
+    <b>시세 근거가 빈약합니다(thin).</b> 현시점 동일 평형 호가는 <b>1억 7,500만 단 2건</b>, <b>가장 최근 실거래는 2021-04 (약 5년 전)</b> — 6개월 내 거래가 한 건도 없습니다. 보수 매도 기준 S는 호가 하단으로 잡았으나, 36년차 조치원 구도심이라 단기 매도 시 호가 하단보다 더 낮게 체결될 위험이 큽니다.
+  </div>
+
+  <h3>현시점 호가 (동일 평형 80.85㎡ · 2건)</h3>
+  <table>
+    <tr><th>호가</th><th>층</th><th>확인일</th></tr>
+    <tr><td class="num">1억 7,500만</td><td>저/12</td><td>2026-06-03</td></tr>
+    <tr><td class="num">1억 7,500만</td><td>2/12</td><td>2026-05-27</td></tr>
+  </table>
+  <p class="note">호가 range = 1억 7,500만 ~ 1억 7,500만 (low=high, 매물 2건뿐). 매물이 얇아 호가가 곧 매도 실현가라는 보장은 약함.</p>
+
+  <h3>최근 실거래 (6개월 내 0건 — 전부 참고)</h3>
+  <table>
+    <tr><th>거래일</th><th class="num">거래가</th><th>층</th><th>구분</th></tr>
+    <tr class="pick"><td><b>2021-04-08</b></td><td class="num"><b>1억 9,000만</b></td><td>12층</td><td><b>가장 최근(5년 전·참고)</b></td></tr>
+    <tr><td>2020-11-02</td><td class="num">1억 2,500만</td><td>11층</td><td>참고</td></tr>
+    <tr><td>2018-02-20</td><td class="num">1억 0,000만</td><td>10층</td><td>참고</td></tr>
+    <tr><td>2017-05-09</td><td class="num">1억 0,000만</td><td>9층</td><td>참고</td></tr>
+    <tr><td>2014-10-06</td><td class="num">1억 1,500만</td><td>3층</td><td>참고</td></tr>
+  </table>
+  <p class="note">가장 최근 실거래(2021-04, 1.9억)는 <b>5년 전이라 계산에서 제외</b>(6개월 초과). 거래 빈도 자체가 매우 낮아(2021 이후 거래 없음) 매도 유동성 리스크가 큰 단지.</p>
+
+  <h3>보수 매도 기준 S = 1억 7,500만</h3>
+  <table>
+    <tr><th>항목</th><th class="num">값</th><th>근거</th></tr>
+    <tr><td>보수 매도 기준 S</td><td class="num"><b>175,000,000</b></td><td>호가 하단 (최근 실거래 6개월내 없음)</td></tr>
+    <tr><td>k70 (시장 대비 낙찰비율)</td><td class="num">0.90</td><td>보통 경쟁 tier (단지 매각사례 0건)</td></tr>
+    <tr><td>권장 입찰가 B70 = clamp(S×k70, 최저)</td><td class="num"><b>157,500,000</b></td><td>S×0.90 (최저 1.512억 &lt; 1.575억 &lt; 상한 S)</td></tr>
+    <tr><td>경매 엣지 = S×(1−k70)</td><td class="num">17,500,000</td><td>시장 대비 10% 할인폭 (얇음)</td></tr>
+  </table>
+  <p class="note"><b>왜 호가 하단을 S로 쓰는가</b>: 매매사업자 단기 매도는 시장가(호가 중앙·KB) 아래에서 빨리 체결되므로 보수적으로 호가 하단을 매도 기준으로 잡습니다. 단, 본 건은 호가가 2건뿐이라 이 앵커조차 신뢰가 낮습니다.</p>
+
+  <h3>비용 항목 분리 (B70=1.575억 기준)</h3>
+  <table>
+    <tr><th>비용 항목</th><th class="num">금액</th><th>근거</th></tr>
+    <tr><td>취득세 + 법무등기 (법무통)</td><td class="num">2,240,425</td><td>B70×1.1% + 법무통 환산식</td></tr>
+    <tr><td>중개비 (매도)</td><td class="num">700,000</td><td>S × 0.4%</td></tr>
+    <tr><td>기타</td><td class="num">2,000,000</td><td>이전·잡비</td></tr>
+    <tr><td><b>고정비용 소계</b></td><td class="num"><b>4,940,425</b></td><td>이자 제외</td></tr>
+  </table>
+
+  <h3>대출이자 — 보유기간별 (LTV 80% · 금리 4.5%)</h3>
+  <table>
+    <tr><th>보유기간</th><th class="num">대출이자</th><th>비고</th></tr>
+    <tr><td>3개월</td><td class="num">1,417,500</td><td></td></tr>
+    <tr class="pick"><td><b>4개월</b></td><td class="num"><b>1,890,000</b></td><td><b>★ EP70 기준</b></td></tr>
+    <tr><td>5개월</td><td class="num">2,362,500</td><td></td></tr>
+    <tr><td>6개월</td><td class="num">2,835,000</td><td></td></tr>
+  </table>
+  <p class="note"><b>EP70은 4개월 보유 기준</b>입니다 (대출이자 189만 반영). 매도가 길어질수록 이자가 늘어 마진이 더 얇아집니다. <b>EP70 = S − B70 − 고정비용 − 이자(4개월) = +1,066만 9,575원 (▷ Watchlist)</b>.</p>
+
+  <h2>4. 입찰가별 기대수익 곡선</h2>
+  <p class="note">세전이익 = S(1.75억) − 입찰가 − 비용(고정비용 + 이자 4개월). 명도·수리·세금 별도. 낙찰확률은 추정(당일 응찰자 수에 편차 큼). <b>인수금 0 가정 위 성립 — 권리 미검증.</b></p>
+  <table>
+    <tr><th>입찰가</th><th class="num">낙찰확률</th><th class="num">세전이익(명도·수리·세금 前)</th><th>tier</th></tr>
+    <tr class="pick"><td>151,200,000 (최저·마진형)</td><td class="num">~30%</td><td class="num pos">+1,712만</td><td>▷</td></tr>
+    <tr class="pick"><td>157,500,000 (권장·B70)</td><td class="num"><b>~70%</b></td><td class="num"><b>+1,067만</b></td><td>▷</td></tr>
+    <tr><td>164,500,000 (낙찰형·B85)</td><td class="num">~85%</td><td class="num">+350만</td><td>▷</td></tr>
+    <tr><td>168,000,000 (세전 본전·Walk-away 근사)</td><td class="num">~93%</td><td class="num">≈0 (−8만)</td><td>본전선</td></tr>
+    <tr><td>175,000,000 (=S 상한)</td><td class="num">~97%</td><td class="num neg">−725만</td><td>경매 메리트 소멸</td></tr>
+  </table>
+  <p class="note"><b>★지점(EP70 ≥2,500만)은 곡선 어디에도 없습니다</b> — 최저가에서조차 세전 +1,712만으로 ★ 기준 미달. <b>세전 본전선 ≈ 1억 6,800만</b>이 절대 상한이며, 명도·수리까지 반영하면 실질 본전선은 더 낮아집니다(섹션 6.5 참조).</p>
+
+  <h2>5. 입찰 3안 비교</h2>
+  <table>
+    <tr><th>지표</th><th class="num">🟢 마진형 1.512억</th><th class="num">🟡 균형 1.575억</th><th class="num">🔴 낙찰형 1.645억</th></tr>
+    <tr><td>입찰가</td><td class="num">151,200,000</td><td class="num">157,500,000</td><td class="num">164,500,000</td></tr>
+    <tr><td>낙찰확률</td><td class="num">~30%</td><td class="num">~70%</td><td class="num">~85%</td></tr>
+    <tr><td>들어간 내 돈(자기자본)</td><td class="num">~4,340만</td><td class="num">~4,474만</td><td class="num">~4,622만</td></tr>
+    <tr><td>낙찰 시 세전이익(EP)</td><td class="num pos">+1,712만</td><td class="num">+1,067만</td><td class="num">+350만</td></tr>
+  </table>
+
+  <h3>매도가 민감도 — 세후 순이익 (만원)</h3>
+  <table>
+    <tr><th>입찰가 \ 매도가</th><th class="num">보수 1.6625억</th><th class="num">중립 1.75억</th><th class="num">낙관 1.75억</th></tr>
+    <tr class="pick"><td>마진형 1.512억</td><td class="num neg">−259</td><td class="num pos">+511</td><td class="num pos">+511</td></tr>
+    <tr><td>균형 1.575억</td><td class="num neg">−905</td><td class="num neg">−33</td><td class="num neg">−33</td></tr>
+    <tr><td>낙찰형 1.645억</td><td class="num neg">−1,621</td><td class="num neg">−750</td><td class="num neg">−750</td></tr>
+  </table>
+  <div class="danger">
+    <b>핵심: 균형·낙찰형은 중립 매도에서도 세후 적자.</b> 권장 70%승률가(균형 1.575억)조차 중립 매도(1.75억)에서 세후 <b>−33만</b>, 보수 매도(1.6625억)에서 <b>−905만</b>입니다. <b>오직 마진형(최저가 1.512억) × 중립 매도</b>에서만 세후 +511만이 나오며, 그마저 보수 매도에서는 −259만으로 무너집니다. 보수·중립 매도가가 단 875만(호가 thin) 차이인데 이익 부호가 뒤집힐 만큼 마진이 얇습니다. (낙관 매도가는 상한 S에 막혀 중립과 동일)
+  </div>
+
+  <h2>6. 수익화 — 단기회전 (배우자 명의 매매사업자)</h2>
+  <ul>
+    <li><b>권장 출구 = A 즉시전매(단기회전, 중앙 4개월)</b>. 다만 본 건은 마진이 얇아 회전 자체의 기대수익이 낮습니다.</li>
+    <li>80.85㎡ ≤ 85㎡ → <b>건물분 부가세 면세</b>. 무주택 첫 진입 → 종부세·다주택 중과 무영향.</li>
+    <li>매도 S=1.75억 &lt; 3.55억 → <b>배우자 명의 안전</b>(본인 명의 35% 비교 불필요, 배우자 24% 이하 구간).</li>
+    <li><b>매도 유동성 리스크 ★★★</b>: 2021 이후 실거래 0건·호가 2건뿐 → 4개월 내 매도 보장이 약함. 보유가 길어지면 이자가 늘어 마진 추가 잠식(섹션 3 이자표).</li>
+    <li>대안 출구 — B 단기임대 후 매도·C 장기보유 임대: 36년차 구도심이라 임대수익률은 가능하나(저가 매수 시) 시세차익형 출구는 비추천. 임대 전환은 매도 막힐 때의 fallback.</li>
+    <li>전제: <b>혼인신고 완료</b>(배우자 명의 자금출처 합법화) — 잔금 전 필수.</li>
+  </ul>
+
+  <h2>6.5 종합소득세 &amp; 세후이익</h2>
+  <p class="note">캘린더 tier 산정과 동일 기준(권장 B70=1.575억 · 중립 매도 1.75억 · 4개월 보유). 실현 세전이익 = EP70 − 매도용 실수리 − 명도추정.</p>
+  <table>
+    <tr><th>항목</th><th class="num">금액</th><th>설명</th></tr>
+    <tr><td>EP70 (세전 기대수익)</td><td class="num pos">+10,669,575</td><td>S − B70 − 고정비용 − 이자(4개월)</td></tr>
+    <tr><td>− 매도용 실수리 (flipRepair)</td><td class="num neg">−8,000,000</td><td>36년차 단기매도용 최소 수리</td></tr>
+    <tr><td>− 명도 추정 (evictionEst)</td><td class="num neg">−3,000,000</td><td>점유자 명도 협상비</td></tr>
+    <tr><td><b>= 실현 세전이익 (과세표준 base)</b></td><td class="num neg"><b>−330,425</b></td><td><b>손실 — 과세 대상 아님</b></td></tr>
+    <tr><td>종합소득세 (지방세 포함)</td><td class="num">0</td><td>실현이익 음수 → 추가 종소세 0</td></tr>
+    <tr><td>한계세율</td><td class="num">0%</td><td>합산 과세표준 증가분 없음</td></tr>
+    <tr><td><b>= 세후이익</b></td><td class="num neg"><b>−330,425</b></td><td><b>세후 약 −33만 (적자)</b></td></tr>
+  </table>
+  <div class="insight">
+    <b>종소세 산정 방식 (배우자 명의 합산 누진).</b> 종합소득세는 평면세율이 아니라 <b>배우자 근로소득 ₩36,000,000에 매매사업소득(실현이익)을 합산한 누진 한계세율</b>로 매겨집니다.
+    <ul style="margin:6px 0">
+      <li>근로소득만: 과세표준 2,385만 → 산출세액 232만(15% 구간).</li>
+      <li>여기에 실현이익(P)을 더해 <b>합산 산출세액 − 232만 = 추가 종소세</b>(×1.1 지방세).</li>
+      <li>본 건은 실현이익이 <b>−33만(손실)</b>이라 합산 과세표준이 늘지 않아 <b>추가 종소세 0</b>.</li>
+      <li>참고: 실현이익이 흑자로 커지면 합산 과세표준이 5,000만·8,800만 구간을 넘어 한계세율이 <b>15%→24%→35%</b>로 자동 상향됩니다. 본 건은 그 이전에 손실이라 해당 없음.</li>
+    </ul>
+    매도가(S=1.75억) &lt; ₩355,000,000이므로 본인 명의(35%) 비교는 불필요 — 흑자였더라도 배우자 24% 이하 구간에 안전.
+  </div>
+  <p class="note">※ <b>리모델링 시 참고 상한 수리비 = 2,500만</b>은 전면 리모델링 출구를 택할 때의 참고치이며, <b>EP70·과세 계산에서는 제외</b>됩니다(위 표의 flipRepair 800만은 단기매도용 최소 실수리 별도 항목).</p>
+
+  <h2>7. D-day 액션 플랜</h2>
+  <div class="danger">
+    <b>⚠️ 권리 미검증 — D-day 전 직접 확인이 최우선.</b> 이 물건은 권리 raw를 검증하지 않았습니다. 인수권리·선순위 임차인이 드러나면 즉시 NO-GO입니다. 입찰가 결정보다 <b>권리 검증이 선행</b>되어야 합니다.
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h4>D-7 ~ D-3 (권리 검증 · 최우선)</h4>
+      <ul style="margin:0">
+        <li><b>지지옥션 등기권리표</b> — 말소기준권리·인수권리 확인</li>
+        <li><b>법원 임차조사</b> — 선순위 임차인·전입·확정·배당요구</li>
+        <li><b>매각물건명세서 PDF</b> — 비고란 특수사항</li>
+        <li>36년차 점검: 대지권·미납관리비·재건축 분쟁</li>
+        <li>네이버 호가·체결 재확인 → S=1.75억 재검증</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>D-2 ~ D-1 (입찰 결정)</h4>
+      <ul style="margin:0">
+        <li>권리 클린 확정 시에만 진행</li>
+        <li>입찰가 결정 — <b>최저가 1.512억 한정 권고</b></li>
+        <li>혼인신고 완료 확인</li>
+        <li>취하·변경 재확인</li>
+        <li>입찰보증금 1,512만 준비</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>낙찰 후 (D+0 ~ D+30)</h4>
+      <ul style="margin:0">
+        <li>잔금 전 매매사업자 등록(배우자·면세)</li>
+        <li>경락잔금대출 실행(LTV80%)</li>
+        <li>점유자 명도 협상(보수 ~300만)</li>
+        <li>소유권 이전</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>매도 (D+90 ~ D+120)</h4>
+      <ul style="margin:0">
+        <li>네이버부동산 등록, 중립 1.75억 타겟</li>
+        <li>4개월 내 체결 목표 (유동성 리스크 大)</li>
+        <li>매도 지연 시 단기임대 fallback 검토</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>8. 최종 의견</h2>
+  <div class="lead">
+    <p><b>판정: ⚪ 관망 / 마진형 저가 한정 입찰 (권리 검증 전제).</b> 이 물건은 ① 경매 엣지가 얇고(1,750만), ② 시세 근거가 빈약하며(호가 2건·실거래 5년 전), ③ 권리 raw가 미검증입니다. 권장 70%승률가(1.575억)로 받으면 매도용 실수리·명도까지 반영한 <b>세후이익이 −33만으로 적자</b>입니다.</p>
+    <ul style="margin:6px 0">
+      <li><b>기본 권고</b> → <b>관망</b>. ★ 기준(2,500만@70%)에 크게 미달, 세후 흑자 폭이 매도가에 극도로 민감.</li>
+      <li><b>그래도 진행한다면</b> → <b>마진형 최저가 1.512억 한정 입찰</b>(낙찰확률 ~30%, 중립 매도 시 세후 +511만). 균형·낙찰형은 중립 매도에서도 적자라 비권장.</li>
+      <li><b>절대 전제</b> → D-day 전 <b>권리 직접 검증</b>(인수금 0 확인). 인수권리 발견 시 NO-GO.</li>
+      <li><b>절대 상한</b> → 세전 본전선 ≈ 1억 6,800만 초과 금지(명도·수리 반영 시 실질 상한은 더 낮음).</li>
+    </ul>
+    <p>요약: 깔끔한 구조이지만 <b>마진이 너무 얇아 다음 물건이 더 나을 가능성</b>이 큽니다. 미낙찰 시 보증금은 즉시 반환되므로 무리한 추격 입찰의 실익이 없습니다.</p>
+  </div>
+
+  <div class="foot">
+    출처: 네이버 fin.land 단지 2025타경3558 호가·실거래(complexNo 7145) + v9 cases.js + bid-price-engine §0.5 v9 / monetization-scenarios §10 · 작성 2026-06-03<br>
+    분석 신뢰도: <b style="color:var(--amber)">중하</b> — <b>권리 raw 미검증</b>(지지옥션 등기·임차조사 직접 확인 필요) + <b>시세 thin</b>(호가 2건·6개월내 실거래 0건). 곡선·수익·세금은 모두 "인수금 0" 가정 위 성립. D-day 전 권리 검증이 판정 유효성의 전제.<br>
+    ※ 법원 공시자료 기반 추정치로 오류·변경 가능. 투자 책임은 이용자에게 있습니다.
+  </div>
+</div>
+</body>
+</html>
