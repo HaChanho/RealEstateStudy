@@ -332,7 +332,7 @@ window.AUCTION_CASES = [
     "saleRate": 0.768,
     "rating": null,
     "verdict": "hold",
-    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 1.73억(최근 실거래 (현 호가 0건)) · 입찰권장 1.56억(70%) · 세전 EP70 1052만원(watchlist) · 세후 -48만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
+    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 1.73억(최근 실거래 (현 호가 0건)) · 입찰권장 1.56억(70%) · 세전 EP70 1052만원(watchlist) · 세후 878만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
     "tags": [
       "천안동남",
       "모드니에",
@@ -375,10 +375,10 @@ window.AUCTION_CASES = [
       "rate": 0.045
     },
     "taxOwner": "spouse",
-    "taxableProfit": -479243,
-    "incomeTax": 0,
-    "marginalRate": 0,
-    "afterTaxProfit": -479243,
+    "taxableProfit": 10520757,
+    "incomeTax": 1735925,
+    "marginalRate": 0.165,
+    "afterTaxProfit": 8784832,
     "naverData": {
       "source": "naver",
       "complexNo": "25835",
@@ -1268,7 +1268,7 @@ window.AUCTION_CASES = [
     "expectedProfit70": 12366100,
     "rating": null,
     "verdict": "hold",
-    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 1.98억(호가 하단) · 입찰권장 1.78억(70%) · 세전 EP70 1237만원(watchlist) · 세후 532만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
+    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 1.98억(호가 하단) · 입찰권장 1.78억(70%) · 세전 EP70 1237만원(watchlist) · 세후 1033만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
     "tags": [
       "아산",
       "이지더원",
@@ -1302,10 +1302,10 @@ window.AUCTION_CASES = [
       "rate": 0.045
     },
     "taxOwner": "spouse",
-    "taxableProfit": 6366100,
-    "incomeTax": 1050407,
+    "taxableProfit": 12366100,
+    "incomeTax": 2040407,
     "marginalRate": 0.165,
-    "afterTaxProfit": 5315693,
+    "afterTaxProfit": 10325693,
     "naverData": {
       "source": "naver",
       "complexNo": "109384",
@@ -2310,7 +2310,7 @@ window.AUCTION_CASES = [
     "expectedProfit70": -10609050,
     "rating": null,
     "verdict": "fail",
-    "verdictReason": "NO-GO — 경매 메리트 소멸(최저가≈시세) — 보수 매도 기준 2.95억(호가 하단) · 입찰권장 2.95억(70%) · 세전 EP70 -1061만원(제외) · 세후 -1511만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
+    "verdictReason": "NO-GO — 경매 메리트 소멸(최저가≈시세) — 보수 매도 기준 2.95억(호가 하단) · 입찰권장 2.95억(70%) · 세전 EP70 -1061만원(제외) · 세후 -1061만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
     "tags": [
       "아산",
       "아산한라비발디스마트밸리",
@@ -2342,10 +2342,10 @@ window.AUCTION_CASES = [
       "rate": 0.045
     },
     "taxOwner": "spouse",
-    "taxableProfit": -15109050,
+    "taxableProfit": -10609050,
     "incomeTax": 0,
     "marginalRate": 0,
-    "afterTaxProfit": -15109050,
+    "afterTaxProfit": -10609050,
     "naverData": {
       "source": "naver",
       "complexNo": "143364",
@@ -2477,7 +2477,7 @@ window.AUCTION_CASES = [
     "expectedProfit70": 10669575,
     "rating": null,
     "verdict": "hold",
-    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 1.75억(호가 하단 (최근 실거래 6개월내 없음)) · 입찰권장 1.57억(70%) · 세전 EP70 1067만원(watchlist) · 세후 -33만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
+    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 1.75억(호가 하단 (최근 실거래 6개월내 없음)) · 입찰권장 1.57억(70%) · 세전 EP70 1067만원(watchlist) · 세후 891만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
     "tags": [
       "★◇미달",
       "노후36년",
@@ -2513,10 +2513,10 @@ window.AUCTION_CASES = [
       "rate": 0.045
     },
     "taxOwner": "spouse",
-    "taxableProfit": -330425,
-    "incomeTax": 0,
-    "marginalRate": 0,
-    "afterTaxProfit": -330425,
+    "taxableProfit": 10669575,
+    "incomeTax": 1760480,
+    "marginalRate": 0.165,
+    "afterTaxProfit": 8909095,
     "naverData": {
       "source": "naver",
       "complexNo": "7145",
@@ -2616,7 +2616,7 @@ window.AUCTION_CASES = [
     "expectedProfit70": 13943571,
     "rating": null,
     "verdict": "hold",
-    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 2.19억(최근 실거래(호가보다 낮음)) · 입찰권장 1.97억(70%) · 세전 EP70 1394만원(watchlist) · 세후 663만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
+    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 2.19억(최근 실거래(호가보다 낮음)) · 입찰권장 1.97억(70%) · 세전 EP70 1394만원(watchlist) · 세후 1164만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
     "tags": [
       "아산",
       "이지더원2단지",
@@ -2652,10 +2652,10 @@ window.AUCTION_CASES = [
       "rate": 0.045
     },
     "taxOwner": "spouse",
-    "taxableProfit": 7943571,
-    "incomeTax": 1310689,
+    "taxableProfit": 13943571,
+    "incomeTax": 2300689,
     "marginalRate": 0.165,
-    "afterTaxProfit": 6632882,
+    "afterTaxProfit": 11642882,
     "naverData": {
       "source": "naver",
       "complexNo": "107732",
@@ -2791,7 +2791,7 @@ window.AUCTION_CASES = [
     "expectedProfit70": 21915562,
     "rating": null,
     "verdict": "candidate",
-    "verdictReason": "조건부 GO (수익 ◇) — 보수 매도 기준 1.93억(호가 하단) · 입찰권장 1.64억(70%) · 세전 EP70 2192만원(watch) · 세후 1162만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
+    "verdictReason": "조건부 GO (수익 ◇) — 보수 매도 기준 1.93억(호가 하단) · 입찰권장 1.64억(70%) · 세전 EP70 2192만원(watch) · 세후 1830만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
     "tags": [
       "아산",
       "용화마을신도브래뉴",
@@ -2826,10 +2826,10 @@ window.AUCTION_CASES = [
       "rate": 0.045
     },
     "taxOwner": "spouse",
-    "taxableProfit": 13915562,
-    "incomeTax": 2296068,
+    "taxableProfit": 21915562,
+    "incomeTax": 3616068,
     "marginalRate": 0.165,
-    "afterTaxProfit": 11619494,
+    "afterTaxProfit": 18299494,
     "naverData": {
       "source": "naver",
       "complexNo": "26912",
@@ -2992,7 +2992,7 @@ window.AUCTION_CASES = [
     "expectedProfit70": 15878205,
     "rating": null,
     "verdict": "candidate",
-    "verdictReason": "조건부 GO (수익 ◇) — 보수 매도 기준 2.45억(최근 실거래(호가보다 낮음)) · 입찰권장 2.21억(70%) · 세전 EP70 1588만원(watch) · 세후 407만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
+    "verdictReason": "조건부 GO (수익 ◇) — 보수 매도 기준 2.45억(최근 실거래(호가보다 낮음)) · 입찰권장 2.21억(70%) · 세전 EP70 1588만원(watch) · 세후 1326만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
     "tags": [
       "보령",
       "정은스카이빌",
@@ -3027,10 +3027,10 @@ window.AUCTION_CASES = [
       "rate": 0.045
     },
     "taxOwner": "spouse",
-    "taxableProfit": 4878205,
-    "incomeTax": 804904,
+    "taxableProfit": 15878205,
+    "incomeTax": 2619904,
     "marginalRate": 0.165,
-    "afterTaxProfit": 4073301,
+    "afterTaxProfit": 13258301,
     "naverData": {
       "source": "naver",
       "complexNo": "19098",
@@ -3131,7 +3131,7 @@ window.AUCTION_CASES = [
     "expectedProfit70": 20923135,
     "rating": null,
     "verdict": "candidate",
-    "verdictReason": "조건부 GO (수익 ◇) — 보수 매도 기준 3.13억(호가 하단) · 입찰권장 2.82억(70%) · 세전 EP70 2092만원(watch) · 세후 1371만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
+    "verdictReason": "조건부 GO (수익 ◇) — 보수 매도 기준 3.13억(호가 하단) · 입찰권장 2.82억(70%) · 세전 EP70 2092만원(watch) · 세후 1747만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
     "tags": [
       "아산",
       "이지더원9단지",
@@ -3166,10 +3166,10 @@ window.AUCTION_CASES = [
       "rate": 0.045
     },
     "taxOwner": "spouse",
-    "taxableProfit": 16423135,
-    "incomeTax": 2709817,
+    "taxableProfit": 20923135,
+    "incomeTax": 3452317,
     "marginalRate": 0.165,
-    "afterTaxProfit": 13713318,
+    "afterTaxProfit": 17470818,
     "naverData": {
       "source": "naver",
       "complexNo": "143440",
@@ -3310,7 +3310,7 @@ window.AUCTION_CASES = [
     "expectedProfit70": 14762070,
     "rating": null,
     "verdict": "hold",
-    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 2.30억(호가 하단) · 입찰권장 2.07억(70%) · 세전 EP70 1476만원(watchlist) · 세후 732만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
+    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 2.30억(호가 하단) · 입찰권장 2.07억(70%) · 세전 EP70 1476만원(watchlist) · 세후 1233만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
     "tags": [
       "아산",
       "온천미소지움",
@@ -3480,10 +3480,10 @@ window.AUCTION_CASES = [
       "rate": 0.045
     },
     "taxOwner": "spouse",
-    "taxableProfit": 8762070,
-    "incomeTax": 1445742,
+    "taxableProfit": 14762070,
+    "incomeTax": 2435742,
     "marginalRate": 0.165,
-    "afterTaxProfit": 7316328
+    "afterTaxProfit": 12326328
   },
   {
     "id": "2025타경12295",
@@ -3514,7 +3514,7 @@ window.AUCTION_CASES = [
     "expectedProfit70": 11339256,
     "rating": null,
     "verdict": "hold",
-    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 1.84억(호가 하단) · 입찰권장 1.66억(70%) · 세전 EP70 1134만원(watchlist) · 세후 446만원. 권리 A 검증·인수 0. (2026-06-03 v9 재분석)",
+    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 1.84억(호가 하단) · 입찰권장 1.66억(70%) · 세전 EP70 1134만원(watchlist) · 세후 947만원. 권리 A 검증·인수 0. (2026-06-03 v9 재분석)",
     "tags": [
       "아산",
       "이지더원2단지",
@@ -3647,10 +3647,10 @@ window.AUCTION_CASES = [
       "rate": 0.045
     },
     "taxOwner": "spouse",
-    "taxableProfit": 5339256,
-    "incomeTax": 880977,
+    "taxableProfit": 11339256,
+    "incomeTax": 1870977,
     "marginalRate": 0.165,
-    "afterTaxProfit": 4458279
+    "afterTaxProfit": 9468279
   },
   {
     "id": "2025타경12974",
@@ -3681,7 +3681,7 @@ window.AUCTION_CASES = [
     "expectedProfit70": 20193927,
     "rating": null,
     "verdict": "candidate",
-    "verdictReason": "조건부 GO (수익 ◇) — 보수 매도 기준 3.03억(최근 실거래(호가보다 낮음)) · 입찰권장 2.73억(70%) · 세전 EP70 2019만원(watch) · 세후 1310만원. 권리 A 검증·인수 0. (2026-06-03 v9 재분석)",
+    "verdictReason": "조건부 GO (수익 ◇) — 보수 매도 기준 3.03억(최근 실거래(호가보다 낮음)) · 입찰권장 2.73억(70%) · 세전 EP70 2019만원(watch) · 세후 1686만원. 권리 A 검증·인수 0. (2026-06-03 v9 재분석)",
     "tags": [
       "천안동남",
       "신부디이스트",
@@ -3719,10 +3719,10 @@ window.AUCTION_CASES = [
       "rate": 0.045
     },
     "taxOwner": "spouse",
-    "taxableProfit": 15693927,
-    "incomeTax": 2589498,
+    "taxableProfit": 20193927,
+    "incomeTax": 3331998,
     "marginalRate": 0.165,
-    "afterTaxProfit": 13104429,
+    "afterTaxProfit": 16861929,
     "naverData": {
       "source": "naver",
       "complexNo": "109735",
@@ -3884,7 +3884,7 @@ window.AUCTION_CASES = [
     "expectedProfit70": 13392944,
     "rating": null,
     "verdict": "hold",
-    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 2.12억(호가 하단) · 입찰권장 1.90억(70%) · 세전 EP70 1339만원(watchlist) · 세후 450만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
+    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 2.12억(호가 하단) · 입찰권장 1.90억(70%) · 세전 EP70 1339만원(watchlist) · 세후 1118만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
     "tags": [
       "아산",
       "대우푸르지오",
@@ -3918,10 +3918,10 @@ window.AUCTION_CASES = [
       "rate": 0.045
     },
     "taxOwner": "spouse",
-    "taxableProfit": 5392944,
-    "incomeTax": 889836,
+    "taxableProfit": 13392944,
+    "incomeTax": 2209836,
     "marginalRate": 0.165,
-    "afterTaxProfit": 4503108,
+    "afterTaxProfit": 11183108,
     "naverData": {
       "source": "naver",
       "complexNo": "22534",
@@ -4051,6 +4051,7 @@ window.AUCTION_CASES = [
     "reportUrl": "report-2025타경12815.html"
   }
 ];
+
 
 
 

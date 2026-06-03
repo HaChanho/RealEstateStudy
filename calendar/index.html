@@ -1808,19 +1808,25 @@
       if (c.repairCost != null) epgrid.appendChild(field('예상 수리비 (참고·리모델링 시)', fmtMoney(c.repairCost), { mono: true, muted: true }));
       profSec.appendChild(epgrid);
 
-      // 💵 종합소득세·세후 (실현이익 기준, 배우자 합산 누진)
+      // 💵 종합소득세·세후 (과세표준 = EP70, 배우자 합산 누진). 실수리·명도는 참고치(과세 제외)
       if (c.taxableProfit != null && c.incomeTax != null) {
         const tb = el('div', { cls: 'tax-box' });
         const ownerTxt = (c.taxOwner === 'self') ? '본인' : '배우자';
-        tb.appendChild(el('div', { cls: 'tb-title', text: `💵 실현이익 기준 세금 (${ownerTxt} 연봉 합산 누진)` }));
+        tb.appendChild(el('div', { cls: 'tb-title', text: `💵 세금 · 세후 (${ownerTxt} 연봉 합산 누진)` }));
         const trow = (k, v, cls) => { const d = el('div', { cls: 'tb-row' + (cls?' '+cls:'') }); d.appendChild(el('span', { cls:'k', text:k })); d.appendChild(el('span', { cls:'v', text:v })); return d; };
-        tb.appendChild(trow('실현 세전이익 (EP70 − 실수리 − 명도)', fmtMoneySigned(c.taxableProfit)));
+        tb.appendChild(trow('세전이익 (EP70 · 과세표준)', fmtMoneySigned(c.taxableProfit)));
         const mr = c.marginalRate != null ? ` (한계 ${(c.marginalRate*100).toFixed(1)}%)` : '';
         tb.appendChild(trow('종합소득세' + mr, '−' + fmtMoney(c.incomeTax)));
         if (c.afterTaxProfit != null) tb.appendChild(trow('세후 이익', fmtMoneySigned(c.afterTaxProfit), 'after'));
         profSec.appendChild(tb);
-        const fr = (c.flipRepair!=null?`실수리 ${fmtMoney(c.flipRepair)}`:'') + (c.evictionEst!=null?` · 명도 ${fmtMoney(c.evictionEst)}`:'');
-        profSec.appendChild(el('div', { cls: 'small-note', text: `과세표준 = 실현 세전이익(${fr} 차감, as-is 매도 가정). 배우자 근로 ₩36M 합산 한계세율(지방세 포함). 매도가>₩355M이면 본인 명의 비교. 정본: bid-price-engine §0.5 v9` }));
+        // 참고 변동비 (과세·세후에서 제외 — 실제 지출 시 별도 차감)
+        if (c.flipRepair != null || c.evictionEst != null) {
+          const refParts = [];
+          if (c.flipRepair != null) refParts.push('실수리 ~' + fmtMoney(c.flipRepair));
+          if (c.evictionEst != null) refParts.push('명도 ~' + fmtMoney(c.evictionEst));
+          profSec.appendChild(el('div', { cls: 'small-note', text: `📌 참고 변동비(과세·세후 제외): ${refParts.join(' · ')} — 유동적이라 EP70·세금엔 미반영, 실제 지출 시 직접 차감하세요.` }));
+        }
+        profSec.appendChild(el('div', { cls: 'small-note', text: `과세표준 = EP70(세전 기대수익). 배우자 근로 ₩36M 합산 한계세율(지방세 포함). 매도가>₩355M이면 본인 명의 비교. 정본: bid-price-engine §0.5 v9` }));
       } else {
         profSec.appendChild(el('div', { cls: 'small-note', text: '세전 = 종소세·명도·인수금·수리 제외. 보수 매도 기준=호가 하단(시세 range는 아래 시세 섹션). 정본: bid-price-engine §0.5 v9' }));
       }
