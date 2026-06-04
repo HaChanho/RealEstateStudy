@@ -264,6 +264,12 @@
   .detail-section.boxed > h3 { color: var(--text-dim); font-size: 11.5px; font-weight: 700; margin-bottom: 11px; }
   .detail-section.boxed.acc-profit { border-left-color: var(--price); }
   .detail-section.boxed.acc-pred   { border-left-color: #6366f1; }
+  /* 대시보드 레이아웃 (넓은 상세뷰, ≥901px) — 머니 로우(수익|시세 2-up) + 근거 머손리(2컬럼).
+     v9.1 위계(의사결정→근거→참고)는 DOM 순서로 유지하고, 가로 공간만 2컬럼으로 활용. */
+  .detail-money { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; align-items: start; }
+  .detail-money > :only-child { grid-column: 1 / -1; } /* 수익분석 없는 과거/낙찰 사건은 시세만 전체폭 (반쪽 빈칸 방지) */
+  .detail-evidence { columns: 2; column-gap: 16px; }
+  .detail-evidence > * { break-inside: avoid; -webkit-column-break-inside: avoid; }
   .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
   .detail-grid .field .k { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-mute); margin-bottom: 2px; }
   .detail-grid .field .v { font-size: 13px; color: var(--text); }
@@ -583,6 +589,9 @@
     .detail-panel { margin-left: 0; border-left: none; }
     .detail-panel.open { width: 100vw; position: fixed; top: 0; left: 0; right: auto; bottom: 0; z-index: 20; }
     .detail-inner { width: 100%; padding: 16px 14px; overflow-x: hidden; }  /* 모바일 가로 오버플로 차단 */
+    /* 모바일: 대시보드 2컬럼 → 1컬럼 복귀 (좁은 화면 잘림 방지) */
+    .detail-money { grid-template-columns: 1fr; }
+    .detail-evidence { columns: 1; }
     /* 모바일: 2컬럼 그리드 → 1컬럼 (가격 숫자 잘림 방지) */
     .detail-grid { grid-template-columns: 1fr; gap: 8px; }
     .detail-grid .field.wide { grid-column: span 1; }
@@ -884,10 +893,10 @@
   function saveVerdictHidden(set) {
     try { localStorage.setItem(LS_VERDICT_HIDDEN, JSON.stringify([...set])); } catch (e) {}
   }
-  const LS_PANEL_W = 'calendar.panelWidth.v3'; // v3: 기본폭을 뷰포트 비율(상세 70% = 캘린더:상세 3:7)로 전환. 구 키 저장값 무시.
+  const LS_PANEL_W = 'calendar.panelWidth.v3'; // v3: 기본폭을 뷰포트 비율(캘린더:상세 35:65)로 전환. 구 키 저장값 무시.
   const PANEL_W_MIN = 380;
   const PANEL_W_MAX_RATIO = 0.85; // up to 85% of viewport
-  const PANEL_W_DEFAULT_RATIO = 0.7; // 기본 분할 = 캘린더:상세 ≈ 3:7 (상세뷰가 화면의 70%)
+  const PANEL_W_DEFAULT_RATIO = 0.65; // 기본 분할 = 캘린더:상세 ≈ 35:65 (상세뷰가 화면의 65%)
   function clampPanelW(w) {
     return Math.max(PANEL_W_MIN, Math.min(Math.round(window.innerWidth * PANEL_W_MAX_RATIO), w));
   }
@@ -2257,13 +2266,27 @@
     // ===== 정보 계층 재배치 (v9.1) — 의사결정 → 근거 → 참고(접기) =====
     // header·banner는 그대로 최상단. 나머지를 우선순위 순으로 재정렬하고 저우선은 <details>로 수납.
     {
-      const PRIMARY = ['profit', 'market'];                 // 의사결정 핵심
-      const SECONDARY = ['result', 'pred', 'rights', 'numbers', 'report', 'reason']; // 근거
+      const PRIMARY = ['profit', 'market'];                 // 의사결정 핵심 (머니 로우 2-up)
+      const SECONDARY = ['result', 'pred', 'rights', 'numbers', 'report', 'reason']; // 근거 (머손리 2컬럼)
       const MORE = ['related', 'history', 'address', 'tags', 'rating', 'notes', 'source']; // 참고(접기)
       const pick = k => inner.querySelector(':scope > [data-sec="' + k + '"]');
-      // 1) 핵심·근거를 순서대로 맨 끝으로 이동 (header·banner 뒤에 정렬됨)
-      [...PRIMARY, ...SECONDARY].forEach(k => { const n = pick(k); if (n) inner.appendChild(n); });
-      // 2) 참고 정보는 접이식으로 수납
+      // 1) 머니 로우 — 💰수익·🟢시세를 2컬럼으로 나란히 (CSS .detail-money). 모바일은 CSS로 1컬럼 복귀.
+      const moneyNodes = PRIMARY.map(pick).filter(Boolean);
+      if (moneyNodes.length) {
+        const money = document.createElement('div');
+        money.className = 'detail-money';
+        moneyNodes.forEach(n => money.appendChild(n));
+        inner.appendChild(money);
+      }
+      // 2) 근거 머손리 — 결과·내예상·권리·수치·보고서·판정사유를 2컬럼 흐름 (CSS .detail-evidence, break-inside avoid).
+      const evidenceNodes = SECONDARY.map(pick).filter(Boolean);
+      if (evidenceNodes.length) {
+        const ev = document.createElement('div');
+        ev.className = 'detail-evidence';
+        evidenceNodes.forEach(n => ev.appendChild(n));
+        inner.appendChild(ev);
+      }
+      // 3) 참고 정보는 접이식으로 수납
       const present = MORE.map(pick).filter(Boolean);
       if (present.length) {
         const det = document.createElement('details');
