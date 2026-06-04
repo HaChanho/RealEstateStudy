@@ -24,9 +24,22 @@
  */
 
 window.AUCTION_PREDICTIONS_VERSION = "0.1.0";
-window.AUCTION_PREDICTIONS_UPDATED = "2026-06-02";
+window.AUCTION_PREDICTIONS_UPDATED = "2026-06-04";
 
 window.AUCTION_PREDICTIONS = {
+  "2025타경12295": {
+    predictedAt: "2026-06-04",
+    bids: [
+      { value: 165000000, memo: "차노픽" }
+    ]
+  },
+  "2025타경12815": {
+    predictedAt: "2026-06-04",
+    bids: [
+      { value: 185000000, memo: "차노픽" },
+      { value: 190000000, memo: "써니픽" }
+    ]
+  },
   "2025타경12974": {
     predictedAt: "2026-06-02",
     bids: [
