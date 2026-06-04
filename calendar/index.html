@@ -262,8 +262,13 @@
      좌측 accent 색으로 단계 구분: 파랑(원시수치)→앰버(모델수익)→인디고(내 베팅) */
   .detail-section.boxed { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 13px 15px; margin-bottom: 14px; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
   .detail-section.boxed > h3 { color: var(--text-dim); font-size: 11.5px; font-weight: 700; margin-bottom: 11px; }
-  .detail-section.boxed.acc-profit { border-left-color: var(--price); }
-  .detail-section.boxed.acc-pred   { border-left-color: #6366f1; }
+  .detail-section.boxed.acc-profit { border-left-color: var(--price); }   /* 💰 수익·입찰 */
+  .detail-section.boxed.acc-pred   { border-left-color: #6366f1; }         /* 🎯 예측·결과 (내예상) */
+  .detail-section.boxed.acc-market { border-left-color: #10b981; }         /* 🟢 시장 시세 */
+  .detail-section.boxed.acc-num    { border-left-color: #64748b; }         /* 🔢 경매 수치 */
+  .detail-section.boxed.acc-rights { border-left-color: var(--accent); }   /* ⚖️ 권리·판정 (권리+판정사유 공유) */
+  .detail-section.boxed.acc-result { border-left-color: #6366f1; }         /* 🎯 예측·결과 (경매결과 — pred와 동일 색) */
+  .detail-section.boxed.acc-report { border-left-color: #94a3b8; }         /* 📄 보고서 */
   /* 대시보드 레이아웃 (넓은 상세뷰, ≥901px) — 머니 로우(수익|시세 2-up) + 근거 머손리(2컬럼).
      v9.1 위계(의사결정→근거→참고)는 DOM 순서로 유지하고, 가로 공간만 2컬럼으로 활용. */
   .detail-money { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; align-items: start; }
@@ -1722,7 +1727,7 @@
     if (ar) {
       const QLAB = { TP: '정확 GO', FP: '헛 GO', FN: '놓친 기회', TN: '정확 NO-GO' };
       const SLAB = { sold: '매각(낙찰)', failed: '유찰', changed: '변경', withdrawn: '취하', postponed: '연기', unknown: '미확인(변경/취하 추정)' };
-      const rsec = section('🏁 경매 결과 (회고)', { key: 'result' });
+      const rsec = section('🏁 경매 결과 (회고)', { boxed: true, accent: 'result', key: 'result' });
       const box = el('div', { cls: 'result-box ' + (ar.quadrant ? 'q-' + ar.quadrant : 'q-none') });
       const head = el('div', { cls: 'result-head' });
       head.appendChild(el('span', { cls: 'result-status ' + ar.status, text: SLAB[ar.status] || ar.status }));
@@ -1755,7 +1760,7 @@
     }
 
     // Numbers
-    const numSec = section('핵심 수치', { boxed: true, key: 'numbers' });
+    const numSec = section('핵심 수치', { boxed: true, accent: 'num', key: 'numbers' });
     const grid = el('div', { cls: 'detail-grid' });
     const marginRaw = (c.kbPrice && c.minimumPrice) ? c.kbPrice - c.minimumPrice : null;
     const marginPct = (marginRaw != null && c.kbPrice) ? marginRaw / c.kbPrice : null;
@@ -1792,7 +1797,7 @@
 
     // 📄 상세 분석 보고서 (deep-dive 케이스) — 같은 디렉토리의 report HTML로 링크
     if (c.reportUrl) {
-      const rpSec = section('📄 상세 분석 보고서', { key: 'report' });
+      const rpSec = section('📄 상세 분석 보고서', { boxed: true, accent: 'report', key: 'report' });
       const a = el('a', { cls: 'report-link', attrs: { href: c.reportUrl, target: '_blank', rel: 'noopener' } });
       a.appendChild(el('span', { cls: 'rp-ico', text: '📄' }));
       a.appendChild(document.createTextNode('심층 분석 보고서 열기'));
@@ -1943,7 +1948,7 @@
 
     // 판정 사유 (권리 상태 직전 배치) — verdict 헤더 + 문장 단위 정리 + 출처/버전 각주
     {
-      const reasonSec = section('판정 사유', { key: 'reason' });
+      const reasonSec = section('판정 사유', { boxed: true, accent: 'rights', key: 'reason' });
       const box = el('div', { cls: 'reason-box ' + c.verdict });
       const head = el('div', { cls: 'reason-head' });
       head.appendChild(el('span', { cls: 'verdict-badge ' + c.verdict, text: verdictLabel(c.verdict) }));
@@ -1977,7 +1982,7 @@
     }
 
     // Rights
-    const rightsSec = section('권리 상태', { key: 'rights' });
+    const rightsSec = section('권리 상태', { boxed: true, accent: 'rights', key: 'rights' });
     rightsSec.appendChild(el('div', { cls: 'value', text: c.rightsStatus || '—' }));
     inner.appendChild(rightsSec);
 
@@ -1987,7 +1992,7 @@
     inner.appendChild(addrSec);
 
     // Naver Real Estate
-    const naverSec = section('🟢 시장 시세 (네이버)', { key: 'market' });
+    const naverSec = section('🟢 시장 시세 (네이버)', { boxed: true, accent: 'market', key: 'market' });
     naverSec.classList.add('naver-section');
     const naverLinks = el('div', { cls: 'naver-links' });
     const complexUrl = naverComplexUrl(c);
