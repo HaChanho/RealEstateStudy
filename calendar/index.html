@@ -884,18 +884,23 @@
   function saveVerdictHidden(set) {
     try { localStorage.setItem(LS_VERDICT_HIDDEN, JSON.stringify([...set])); } catch (e) {}
   }
-  const LS_PANEL_W = 'calendar.panelWidth.v2'; // v2: 기본폭 460→560(캘린더 압축으로 상세 공간 확대). 구 v1 저장값 무시.
+  const LS_PANEL_W = 'calendar.panelWidth.v3'; // v3: 기본폭을 뷰포트 비율(상세 70% = 캘린더:상세 3:7)로 전환. 구 키 저장값 무시.
   const PANEL_W_MIN = 380;
   const PANEL_W_MAX_RATIO = 0.85; // up to 85% of viewport
+  const PANEL_W_DEFAULT_RATIO = 0.7; // 기본 분할 = 캘린더:상세 ≈ 3:7 (상세뷰가 화면의 70%)
   function clampPanelW(w) {
     return Math.max(PANEL_W_MIN, Math.min(Math.round(window.innerWidth * PANEL_W_MAX_RATIO), w));
+  }
+  // 미저장(기본값)일 때만 비율 적용 — 사용자가 핸들로 조절한 px는 그대로 존중.
+  function defaultPanelWidth() {
+    return clampPanelW(Math.round(window.innerWidth * PANEL_W_DEFAULT_RATIO));
   }
   function loadPanelWidth() {
     try {
       const v = parseInt(localStorage.getItem(LS_PANEL_W), 10);
       if (Number.isFinite(v)) return clampPanelW(v);
     } catch (e) {}
-    return 560;
+    return defaultPanelWidth();
   }
   function applyPanelWidth(w) {
     const panel = document.getElementById('detail-panel');
@@ -2453,8 +2458,9 @@
     handle.addEventListener('pointercancel', endDrag);
     // Double-click handle → reset to default width
     handle.addEventListener('dblclick', () => {
-      applyPanelWidth(560);
-      savePanelWidth(560);
+      const d = defaultPanelWidth();
+      applyPanelWidth(d);
+      savePanelWidth(d);
     });
     // Re-clamp on viewport resize so user can't get stuck wider than the window
     window.addEventListener('resize', () => {
