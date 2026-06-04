@@ -83,7 +83,7 @@
 
   /* Calendar view */
   .calendar-wrap { padding: 16px 20px; }
-  .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .calendar { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 4px; row-gap: 9px; } /* JS가 칼럼 수 덮어씀. 세로 간격↑ = 주 행 경계 강조(요일 압축으로 생기는 주간 점프 완화) */
   .calendar .weekday { padding: 8px 6px; text-align: center; color: var(--text-mute); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
   .calendar .weekday.sun { color: #dc2626; }
   .calendar .weekday.sat { color: #2563eb; }
@@ -761,6 +761,19 @@
   function main() {
   const CASES = (window.AUCTION_CASES || []).slice();
   const RESULTS = window.AUCTION_RESULTS || {};  // 회고 실측 (results.js, id로 join)
+  // 활성 매각 요일 — 전체 데이터에 실제 등장하는 요일(월~금)만 칼럼으로 표시.
+  // 토·일은 법원 매각기일에 구조적으로 없음(가드로 1~5만). 데이터에 목/금 사건이
+  // 유입되면 해당 칼럼이 자동 부활. 현재 충남+세종 = [1,2,3](월·화·수). 빈 데이터 폴백 [1,2,3].
+  const ACTIVE_DOWS = (() => {
+    const set = new Set();
+    for (const c of CASES) {
+      if (!c.saleDate) continue;
+      const dow = new Date(c.saleDate + 'T00:00:00').getDay();
+      if (dow >= 1 && dow <= 5) set.add(dow);
+    }
+    const arr = [...set].sort((a, b) => a - b);
+    return arr.length ? arr : [1, 2, 3];
+  })();
   const PREDICTIONS = window.AUCTION_PREDICTIONS || {};  // 내 예상 낙찰가 (predictions.js, id로 join · 사건당 최대 2개)
 
   // ===== Utilities =====
@@ -871,7 +884,7 @@
   function saveVerdictHidden(set) {
     try { localStorage.setItem(LS_VERDICT_HIDDEN, JSON.stringify([...set])); } catch (e) {}
   }
-  const LS_PANEL_W = 'calendar.panelWidth.v1';
+  const LS_PANEL_W = 'calendar.panelWidth.v2'; // v2: 기본폭 460→560(캘린더 압축으로 상세 공간 확대). 구 v1 저장값 무시.
   const PANEL_W_MIN = 380;
   const PANEL_W_MAX_RATIO = 0.85; // up to 85% of viewport
   function clampPanelW(w) {
@@ -882,7 +895,7 @@
       const v = parseInt(localStorage.getItem(LS_PANEL_W), 10);
       if (Number.isFinite(v)) return clampPanelW(v);
     } catch (e) {}
-    return 460;
+    return 560;
   }
   function applyPanelWidth(w) {
     const panel = document.getElementById('detail-panel');
@@ -1292,8 +1305,10 @@
     cal.replaceChildren();
 
     const weekdays = ['일','월','화','수','목','금','토'];
-    weekdays.forEach((w, i) => {
-      cal.appendChild(el('div', { cls: 'weekday' + (i === 0 ? ' sun' : i === 6 ? ' sat' : ''), text: w }));
+    // 활성 요일 칼럼만 — 그리드 칼럼 수도 동적으로 맞춘다(7 → ACTIVE_DOWS.length).
+    cal.style.gridTemplateColumns = 'repeat(' + ACTIVE_DOWS.length + ', 1fr)';
+    ACTIVE_DOWS.forEach((dow) => {
+      cal.appendChild(el('div', { cls: 'weekday' + (dow === 0 ? ' sun' : dow === 6 ? ' sat' : ''), text: weekdays[dow] }));
     });
 
     const byDate = new Map();
@@ -1304,8 +1319,9 @@
     }
 
     for (let i = 0; i < totalCells; i++) {
-      const dayCell = el('div', { cls: 'day' });
       const weekdayIdx = i % 7;
+      if (!ACTIVE_DOWS.includes(weekdayIdx)) continue; // 비활성 요일(목·금·토·일 등) 칼럼은 그리지 않음
+      const dayCell = el('div', { cls: 'day' });
       if (weekdayIdx === 0) dayCell.classList.add('sun');
       if (weekdayIdx === 6) dayCell.classList.add('sat');
 
@@ -1567,6 +1583,29 @@
     if (v === 'list' || v === 'calendar') state.view = v;
     const id = params.get('case');
     if (id) state.selectedId = id;
+  }
+
+  // 자동선택 대상 — 딥링크 없을 때 데스크톱 로드 시 가장 임박한 '관심' 물건을 연다.
+  // 우선순위: 다가오는(saleDate>=today) ★(primary)/◇(watch) 중 D-day 최소
+  //          → 동률이면 tier(★먼저) → 별점 높은 순.
+  // 폴백: ▷(watchlist) 최임박 → 아무 다가오는 사건 최임박. 다가오는 게 없으면 null(상세 비움).
+  function pickAutoSelectId() {
+    const upcoming = CASES.filter((c) => c.saleDate && c.saleDate >= todayStr);
+    if (!upcoming.length) return null;
+    const tierRank = { primary: 0, watch: 1 };
+    const byNearest = (a, b) => {
+      const da = daysUntil(a.saleDate), db = daysUntil(b.saleDate);
+      if (da !== db) return da - db;
+      const ra = (tierRank[a.interestTier] != null) ? tierRank[a.interestTier] : 9;
+      const rb = (tierRank[b.interestTier] != null) ? tierRank[b.interestTier] : 9;
+      if (ra !== rb) return ra - rb;
+      return (effectiveRating(b) || 0) - (effectiveRating(a) || 0);
+    };
+    let pool = upcoming.filter((c) => c.interestTier === 'primary' || c.interestTier === 'watch');
+    if (!pool.length) pool = upcoming.filter((c) => c.interestTier === 'watchlist');
+    if (!pool.length) pool = upcoming;
+    pool.sort(byNearest);
+    return pool.length ? pool[0].id : null;
   }
 
   // ===== Detail panel =====
@@ -2414,8 +2453,8 @@
     handle.addEventListener('pointercancel', endDrag);
     // Double-click handle → reset to default width
     handle.addEventListener('dblclick', () => {
-      applyPanelWidth(460);
-      savePanelWidth(460);
+      applyPanelWidth(560);
+      savePanelWidth(560);
     });
     // Re-clamp on viewport resize so user can't get stuck wider than the window
     window.addEventListener('resize', () => {
@@ -2430,7 +2469,14 @@
   updateStats();
   applyUrl();
   setView(state.view);
-  if (state.selectedId) openDetail(state.selectedId, { skipUrlSync: true });
+  if (state.selectedId) {
+    // 딥링크(?case=) 우선 — 자동선택보다 항상 먼저.
+    openDetail(state.selectedId, { skipUrlSync: true });
+  } else if (window.innerWidth > 900 && state.view === 'calendar') {
+    // 데스크톱·캘린더 뷰: 가장 임박한 관심 물건 자동 선택(모바일은 패널이 화면을 가려 제외).
+    const autoId = pickAutoSelectId();
+    if (autoId) openDetail(autoId, { skipUrlSync: true });
+  }
   } // end main()
 
   // cases-loaded 이벤트로 진입 (cases.js 동적 로드 완료 시점)
