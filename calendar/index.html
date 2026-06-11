@@ -774,7 +774,7 @@
 (function () {
   function main() {
   const CASES = (window.AUCTION_CASES || []).slice();
-  const RESULTS = window.AUCTION_RESULTS || {};  // 회고 실측 (results.js, id로 join)
+  const RESULTS = window.AUCTION_RESULTS || {};  // 회고 실측 (results.js, 복합키 사건번호@saleDate → 레거시 id 폴백)
   // 활성 매각 요일 — 전체 데이터에 실제 등장하는 요일(월~금)만 칼럼으로 표시.
   // 토·일은 법원 매각기일에 구조적으로 없음(가드로 1~5만). 데이터에 목/금 사건이
   // 유입되면 해당 칼럼이 자동 부활. 현재 충남+세종 = [1,2,3](월·화·수). 빈 데이터 폴백 [1,2,3].
@@ -832,10 +832,12 @@
   const todayDate = new Date(todayStr + 'T00:00:00');
 
   // 회고 결과(results.js)를 사건에 join — 단 "현재 매각기일에 해당하는 결과"만 반환.
+  // 키: 복합키 `사건번호@saleDate` 우선 → 레거시 id-only 폴백(2026-06-02 백필 90건 하위호환).
+  //   복합키 도입으로 한 사건의 여러 회차(변경→재일정 후 매각)가 results.js에 공존 가능.
   // (1) 매각기일 미도래(미래)면 숨김 — 아직 결과가 없는 사건  (2) 결과의 실제 매각일이
-  // 현재 매각기일과 다르면(유찰·변경 후 다른 회차로 재지정) 숨김 — 회차 충돌 방지.
+  // 현재 매각기일과 다르면(유찰·변경 후 다른 회차로 재지정) 숨김 — 회차 충돌 방지(레거시 폴백 보호막).
   function resultFor(c) {
-    const ar = RESULTS[c.id];
+    const ar = RESULTS[c.id + '@' + c.saleDate] || RESULTS[c.id];
     if (!ar) return null;
     if (c.saleDate && c.saleDate > todayStr) return null;
     if (ar.saleDateActual && c.saleDate && ar.saleDateActual !== c.saleDate) return null;

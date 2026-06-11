@@ -1,17 +1,24 @@
 /**
  * 경매 낙찰 결과 — 회고(weekly-retrospective / monthly) 전용 저장소
  *
- * cases.js(예측·sourcing 소유)와 물리 분리. 사건번호 id로 join.
+ * cases.js(예측·sourcing 소유)와 물리 분리. 사건번호로 join.
  * 2026-06-02 백필: 지지옥션 구독 로그인으로 5/12~6/1 매각결과 25건 실낙찰가 확보
  *                 (행크옥션 시절 마스킹 레코드 정정 + 신규). 캘리브레이션 quadrant/saleRateError 산출.
  *
+ * ── 키 스키마 (v0.3.0~) : 복합키 `사건번호@saleDate` ──────────────────────────
+ * 한 사건이 변경(연기)·재일정으로 여러 매각기일에 등장 → 기일마다 별도 회고가 필요.
+ * id 단위 append-only는 "변경" 기록 후 새 기일 실매각 회고를 영구 스킵하는 함정이 있었다.
+ * → 신규 엔트리는 `사건번호@매각기일`(예: "2025타경3558@2026-06-10")로 키잉한다.
+ * → 레거시 id-only 키(2026-06-02 백필 90건)는 그대로 보존. 렌더(resultFor)·회고 Step 0가
+ *   "복합키 우선 → 레거시 id 폴백"으로 하위호환 → 일괄 마이그레이션 불필요.
+ *
  * 필드: status(sold|failed|changed|withdrawn|postponed|unknown), soldPrice, soldRate,
  *       bidderCount, secondBid, quadrant(TP|FP|FN|TN|null), predictedSaleRate/Verdict,
- *       saleRateError, priceMasked, lesson, source(ggi-chrome|user-assist|hauction-*),
+ *       saleRateError, saleDateActual, priceMasked, lesson, source(ggi-chrome|user-assist|hauction-*),
  *       retrospectedAt.
  */
 
-window.AUCTION_RESULTS_VERSION = "0.2.1";
+window.AUCTION_RESULTS_VERSION = "0.3.0";
 window.AUCTION_RESULTS_UPDATED = "2026-06-11";
 
 window.AUCTION_RESULTS = {
@@ -105,5 +112,5 @@ window.AUCTION_RESULTS = {
   "2025타경51182": {"predictedSaleRate":null,"predictedVerdict":"fail","saleRateError":null,"bidGapPct":null,"priceMasked":false,"secondBid":null,"source":"ggi-chrome","retrospectedAt":"2026-06-02","status":"failed","soldPrice":null,"soldRate":null,"bidderCount":null,"saleDateActual":"2026-06-02","quadrant":null,"lesson":"NO-GO(fail·先임차권 대항력 인수함정) — 당진 파크빌2차 6/2 유찰, 2026-07-14 3회차 최저 34.3% 재일정 · 인수위험 단지 수요 부재(방향 일치)"},
   "2025타경11651": {"predictedSaleRate":null,"predictedVerdict":"fail","saleRateError":null,"bidGapPct":null,"priceMasked":false,"secondBid":null,"source":"ggi-chrome","retrospectedAt":"2026-06-02","status":"failed","soldPrice":null,"soldRate":null,"bidderCount":null,"saleDateActual":"2026-06-02","quadrant":null,"lesson":"NO-GO(fail·先임차권 대항력 인수함정) — 아산풍기이지더원1차 6/2 유찰, 2026-07-07 3회차 최저 34.3% 재일정 · 인수위험 단지 수요 부재(방향 일치)"},
   "2026타경10227": {"predictedSaleRate":0.948,"predictedVerdict":"fail","saleRateError":null,"bidGapPct":null,"priceMasked":false,"secondBid":null,"source":"ggi-chrome","retrospectedAt":"2026-06-09","status":"failed","soldPrice":null,"soldRate":null,"bidderCount":null,"saleDateActual":"2026-06-09","quadrant":null,"lesson":"NO-GO(fail·경매 메리트 소멸 — 신건 최저가 3억≈시세) — 아산한라비발디스마트밸리 6/9 신건(100%·3억) 유찰, 2026-07-14 2회차 최저 70%(2.1억) 재진행 · 감정가에 응찰자 0명(방향 일치). 단 7/14 2.1억 vs 시세~3억은 경매 메리트 재발생 가능 → 70% 라운드 재평가 후보"},
-  "2025타경3558": {"predictedSaleRate":0.80,"predictedVerdict":"hold","saleRateError":null,"bidGapPct":null,"priceMasked":false,"secondBid":null,"source":"ggi-chrome","retrospectedAt":"2026-06-11","status":"changed","soldPrice":null,"soldRate":null,"bidderCount":null,"saleDateActual":"2026-06-10","quadrant":null,"lesson":"변경 — 세종 조치원 계룡(대전9계·2동 1203호) 6/10 매각기일 변경(연기), 응찰 전 변경 · 조회수 149(관심 대리지표) · 최저가율 70%(151.2M/216M) · ⚠️ append-only 한계: 새 기일 실매각 시 회고 누락 위험(id 보정 필요)"},
+  "2025타경3558@2026-06-10": {"predictedSaleRate":0.80,"predictedVerdict":"hold","saleRateError":null,"bidGapPct":null,"priceMasked":false,"secondBid":null,"source":"ggi-chrome","retrospectedAt":"2026-06-11","status":"changed","soldPrice":null,"soldRate":null,"bidderCount":null,"saleDateActual":"2026-06-10","quadrant":null,"lesson":"변경 — 세종 조치원 계룡(대전9계·2동 1203호) 6/10 매각기일 변경(연기), 응찰 전 변경 · 조회수 149(관심 대리지표) · 최저가율 70%(151.2M/216M) · 복합키 전환(v0.3.0) 계기 — 새 기일 재일정 시 별도 회고 가능(id@saleDate)"},
 };
