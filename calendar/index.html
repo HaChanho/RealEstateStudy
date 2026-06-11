@@ -788,7 +788,7 @@
     const arr = [...set].sort((a, b) => a - b);
     return arr.length ? arr : [1, 2, 3];
   })();
-  const PREDICTIONS = window.AUCTION_PREDICTIONS || {};  // 내 예상 낙찰가 (predictions.js, id로 join · 사건당 최대 2개)
+  const PREDICTIONS = window.AUCTION_PREDICTIONS || {};  // 내 예상 낙찰가 (predictions.js, 복합키 사건번호@saleDate → 레거시 id 폴백 · 사건당 최대 2개)
 
   // ===== Utilities =====
   // Korean money format — "2억 7,700만원" / "5,000만원" / "—"
@@ -845,8 +845,10 @@
   }
 
   // 내 예상 낙찰가(predictions.js) — 사건당 최대 2개. value 있는 것만, 상한 2개로 잘라 반환.
+  // 키: 복합키 `사건번호@saleDate` 우선 → 레거시 id-only 폴백. 사건이 유찰·변경 후 새 회차로
+  //   재일정되면 최저가가 바뀌어 예상도 달라지므로 회차별로 예상을 분리(results.js와 동일 축).
   function predictionBids(c) {
-    const p = PREDICTIONS[c.id];
+    const p = PREDICTIONS[c.id + '@' + c.saleDate] || PREDICTIONS[c.id];
     if (!p || !Array.isArray(p.bids)) return [];
     const at = p.predictedAt || null;
     return p.bids

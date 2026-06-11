@@ -14,11 +14,11 @@ _workspace/calendar/
 ├── index.html        # 뷰 + 로직 (단일 페이지)
 ├── cases.js          # 모델 예측·sourcing 데이터 (window.AUCTION_CASES = [...])
 ├── results.js        # 낙찰 실측·회고 (window.AUCTION_RESULTS = {...}, id로 join)
-├── predictions.js    # 내 예상 낙찰가·사용자 베팅 (window.AUCTION_PREDICTIONS = {...}, id로 join)
+├── predictions.js    # 내 예상 낙찰가·사용자 베팅 (window.AUCTION_PREDICTIONS = {...}, 복합키 사건번호@saleDate → 레거시 id 폴백)
 └── README.md         # 이 문서
 ```
 
-**3-layer 소유권 분리**: `cases.js`(모델 예측) · `results.js`(현실) · `predictions.js`(내 주관 베팅). 셋 다 사건번호 id로 join되며 서로 다른 주체가 write → 머지 충돌 구조적 제거.
+**3-layer 소유권 분리**: `cases.js`(모델 예측) · `results.js`(현실) · `predictions.js`(내 주관 베팅). 서로 다른 주체가 write → 머지 충돌 구조적 제거. cases.js는 사건번호 id, **results.js·predictions.js는 복합키 `사건번호@saleDate`(v0.3.0/0.2.0~, 레거시 id 폴백)** 로 join — 한 사건의 여러 회차(변경→재일정 후 매각)를 분리 기록.
 
 ## 기능
 
@@ -202,26 +202,27 @@ window.AUCTION_RESULTS = {
 ## 내 예상 낙찰가 — `predictions.js` (사용자 베팅, 제3 계층)
 
 `cases.js`(모델 예측)·`results.js`(실측)와 **물리 분리된** 제3의 소유권 계층 — **사용자의 주관적 낙찰가 베팅**.
-사건당 **최대 2개**(예: 보수/공격 밴드). 같은 사건번호 id로 join.
+사건당 **최대 2개**(예: 보수/공격 밴드). **복합키 `사건번호@saleDate`로 join**(v0.2.0~, results.js와 동일 축 · 레거시 id-only 폴백).
 매각 결과(`results.js` soldPrice)가 도래하면 디테일 패널 "🎯 내 예상 낙찰가" 섹션에서
 **[내 예상 N개 + 모델 예측 vs 실측]** 3자 오차를 자동 비교하고 최소 |오차%|를 🏆로 강조한다.
 
 ```js
 // _workspace/calendar/predictions.js
-window.AUCTION_PREDICTIONS_VERSION = "0.1.0";
-window.AUCTION_PREDICTIONS_UPDATED = "2026-06-02";
+window.AUCTION_PREDICTIONS_VERSION = "0.2.0";
+window.AUCTION_PREDICTIONS_UPDATED = "2026-06-11";
 window.AUCTION_PREDICTIONS = {
-  "2025타경11474": {
+  "2025타경11474@2026-06-16": {        // 복합키: 사건번호@매각기일 (회차별 분리)
     predictedAt: "2026-06-02",        // 최초 입력일(엔트리 기준). bid별 at 없으면 이 값 사용
     bids: [                            // 최대 2개
       { value: 220000000, memo: "보수 — 저경쟁(≤6명) 가정" },
       { value: 240000000, memo: "공격 — 27평 수요 강세 시" }   // at: "YYYY-MM-DD" (선택)
     ]
   }
+  // 레거시 "id"-only 키(폴백 호환)도 계속 읽힘 — 일괄 마이그레이션 불필요
 };
 ```
 
-- **입력 방식**: 채팅으로 LLM에게 지시 → LLM이 이 파일에 기록·push. 예) `"11474 예상낙찰가 2.2억 보수, 2.4억 공격"` / 둘째 칸 추가는 `"11474 예상낙찰가 추가 2.4억 공격"`. 이미 2개면 3번째 입력 시 어느 칸(①/②)을 교체할지 확인 후 기록.
+- **입력 방식**: 채팅으로 LLM에게 지시 → LLM이 **cases.js에서 해당 사건의 saleDate를 조회**해 복합키로 기록·push. 예) `"11474 예상낙찰가 2.2억 보수, 2.4억 공격"` / 둘째 칸 추가는 `"11474 예상낙찰가 추가 2.4억 공격"`. 이미 2개면 3번째 입력 시 어느 칸(①/②)을 교체할지 확인 후 기록.
 - **모델 예측 낙찰가** = `감정가 × 예측 매각가율`(`saleRateMu → saleRate → deriveSaleRate`). bid70(권장 입찰가)이 아니라 **낙찰가 점추정** — 기존 회고 캘리브레이션(predictedSaleRate→soldRate)과 동일 축.
 - **소유권 분할**: 사용자(쓰기) 전용. 회고 routine·sourcing이 건드리지 않음 → 머지 충돌 구조적 제거.
 - index.html 로드 체인: results.js → **predictions.js** → cases.js. predictions.js 없거나 비어 있어도 캘린더는 정상 동작(예측 없으면 🎯 섹션 자체가 숨김).
@@ -254,3 +255,4 @@ window.AUCTION_PREDICTIONS = {
 | 0.7.0 | 2026-05-17 | **라이트 테마 전환** — 캘린더를 흰색 working surface로, 디테일 패널을 옅은 lavender(`#faf5ff`)로 차별화. (1) 팔레트 전면 교체: `--bg`(pale cool gray)·`--surface`(white day cells)·`--panel-bg`(pale lavender)·다크 텍스트(`#1a1f2e`). (2) Verdict/Risk/D-Day 배지 색상 라이트 대응 — 알파 18~22%, foreground 텍스트를 어두운 shade로 변환(0369a1·6d28d9·047857·b45309·b91c1c). (3) Selected chip outline을 `--accent-strong`(`#1e40af`)로, glow도 라이트에 맞게 톤다운. (4) 패널 그림자도 light theme 관례에 맞춰 부드럽게(rgba(31,41,55,.10/.07)). (5) 별점 dot·rating chip도 흰색 위 가독 가능한 채도로 재배치. 다크 모드는 git history에 보존(v0.6.1) |
 | 0.8.0 | 2026-06-02 | **내 예상 낙찰가 트래킹 — `predictions.js` 제3 계층 신설.** 사건당 최대 2개(보수/공격 밴드) 사용자 주관 베팅. 매각 결과 도래 시 디테일 패널 "🎯 내 예상 낙찰가" 섹션에서 [내 예상 N + 모델 예측(감정가×예측매각가율) vs 실측] 3자 오차 자동 비교 + 최소 |오차%| 🏆 강조. 입력은 채팅으로 LLM에게 지시 → predictions.js 기록. 로드 체인 results.js→predictions.js→cases.js. 예측 없으면 🎯 섹션 숨김(무손상) |
 | 0.7.1 | 2026-05-17 | **라이트 톤 가다듬기** — chip과 패널을 modern light-admin 스타일로 통일. (a) **Outlined soft chip**: 사건 chip 알파 .20~.22 → .08~.12로 거의 흰색에 가깝게, 보더는 verdict 색 .55~.60 유지, 텍스트를 verdict별 darker shade(`#075985`·`#5b21b6`·`#065f46`·`#92400e`)로 명시 — Notion·Linear 톤. (b) **패널 hue 중화**: `--panel-bg`를 lavender(`#faf5ff`) → neutral cool gray(`#f7f8fc`)로, 보라 hue는 좌측 3px stripe(이전 4px)와 hairline shadow에만 남김. (c) 패널 그림자 더 부드럽게(rgba .08/.05) — 캘린더 흰 표면과 자연스럽게 어우러짐 |
+| 0.9.0 | 2026-06-11 | **results.js·predictions.js 복합키 `사건번호@saleDate` 전환** (results v0.3.0 · predictions v0.2.0). 한 사건이 변경(연기)·재일정으로 여러 매각기일에 등장 → 기일마다 별도 회고·예상. 구 id-only append-only가 "변경" 기록 후 새 기일 실매각 회고를 영구 스킵하던 함정 해소(6/10 회고 2025타경3558 계룡 세종조치원 변경 발견 계기). 렌더(`resultFor`·`predictionBids`)·회고 Step 0를 "복합키 우선 → 레거시 id 폴백"으로 하위호환 → 마이그레이션 불필요(레거시 90/5건 무변경). 단일 join 지점이라 회귀 위험 0 |
