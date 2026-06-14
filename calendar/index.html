@@ -386,6 +386,8 @@
   .pred-cmp .perr.neg { background: rgba(220,38,38,.14); color: #b91c1c; }
   .pred-cmp .perr.pos { background: rgba(16,185,129,.14); color: #047857; }
   .pred-winner { margin-top: 8px; font-size: 12px; font-weight: 700; color: #4338ca; }
+  .pred-winner.win { color: #047857; }
+  .pred-winner.neg { color: #b91c1c; }
   /* 칩 결과 배지 (캘린더 한눈 가시성) */
   .chip-result-badge { font-size: 9.5px; font-weight: 700; padding: 0 4px; border-radius: 4px; margin-left: 3px; line-height: 1.55; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .chip-result-badge.sold   { background: rgba(16,185,129,.18); color: #047857; }
@@ -855,6 +857,13 @@
       .filter(b => b && b.value != null)
       .slice(0, 2)
       .map(b => ({ value: b.value, memo: b.memo || null, at: b.at || at }));
+  }
+
+  // 실제 입찰 여부 — predictions.js 엔트리의 actual 플래그(v0.3.0). 복합키 우선 → 레거시 id 폴백.
+  // true면 🎯 섹션이 "내 예상"이 아니라 "내 입찰가(실제)"로 렌더되고, 결과 후 내 입찰가 vs 낙찰가(낙찰/패찰)를 비교.
+  function isActualBidEntry(c) {
+    const p = PREDICTIONS[c.id + '@' + c.saleDate] || PREDICTIONS[c.id];
+    return !!(p && p.actual);
   }
 
   // 모델 예측 낙찰가 = 감정가 × 예측 매각가율(μ → saleRate → 자동도출). 비교의 '모델' 축.
@@ -1904,10 +1913,27 @@
         const ar = resultFor(c);
         const actual = (ar && ar.soldPrice != null) ? ar.soldPrice : null;
         const mark = i => (myBids.length > 1 ? ['①', '②'][i] : '');
-        const psec = section('🎯 내 예상 낙찰가', { boxed: true, accent: 'pred', key: 'pred' });
+        const isActual = isActualBidEntry(c);
+        const psec = section(isActual ? '🎯 내 입찰가 (실제)' : '🎯 내 예상 낙찰가', { boxed: true, accent: 'pred', key: 'pred' });
 
-        if (actual != null) {
-          // 결과 후 — 후보(내 예상들 + 모델) 일괄 비교
+        if (actual != null && isActual) {
+          // 결과 후 (실제 입찰) — 내 입찰가 vs 낙찰가 (낙찰/패찰)
+          const myBid = myBids[0].value;
+          const gap = myBid - actual;                 // ≥0 → 낙찰(내가 낙찰가 이상) · <0 → 패찰
+          const won = gap >= 0;
+          const pct = actual ? (gap / actual * 100) : null;
+          const box = el('div', { cls: 'pred-box' });
+          const line = el('div', { cls: 'pred-cmp' + (won ? ' best' : '') });
+          line.appendChild(el('span', { cls: 'pk', text: '내 입찰가' }));
+          line.appendChild(el('span', { cls: 'pv', text: fmtMoney(myBid) }));
+          line.appendChild(el('span', { cls: 'arrow', text: '→' }));
+          line.appendChild(el('span', { cls: 'pa', text: '낙찰가 ' + fmtMoney(actual) }));
+          box.appendChild(line);
+          box.appendChild(el('div', { cls: 'pred-winner ' + (won ? 'win' : 'neg'), text: won ? '🏆 낙찰 성공' : '패찰 ' + fmtMoney(gap) + (pct != null ? ' (' + pct.toFixed(1) + '%)' : '') }));
+          psec.appendChild(box);
+          { const b = myBids[0]; const sub = [b.at ? b.at + ' 입찰' : null, b.memo].filter(Boolean).join(' · '); if (sub) psec.appendChild(el('div', { cls: 'small-note', text: sub })); }
+        } else if (actual != null) {
+          // 결과 후 (예상) — 후보(내 예상들 + 모델) 일괄 비교
           const rows = myBids.map((b, i) => ({ label: ('내 예상 ' + mark(i)).trim(), value: b.value, isModel: false }));
           if (modelBid != null) rows.push({ label: '모델 예측', value: modelBid, isModel: true });
           rows.forEach(r => { r.err = actual - r.value; r.errPct = r.value ? r.err / r.value : null; });
@@ -1930,8 +1956,22 @@
           if (best) box.appendChild(el('div', { cls: 'pred-winner', text: '🏆 가장 정확: ' + best.label + ' (' + (best.errPct > 0 ? '+' : '') + (best.errPct * 100).toFixed(1) + '%)' }));
           psec.appendChild(box);
           myBids.forEach((b, i) => { if (b.memo) psec.appendChild(el('div', { cls: 'small-note', text: (mark(i) ? mark(i) + ' ' : '') + b.memo })); });
+        } else if (isActual) {
+          // 결과 전 (실제 입찰) — 내 입찰가 단독 + 모델 참고
+          const b = myBids[0];
+          const grid = el('div', { cls: 'detail-grid' });
+          const node = el('span');
+          node.appendChild(document.createTextNode(fmtMoney(b.value)));
+          const sub = [];
+          if (b.at) sub.push(b.at + ' 입찰');
+          if (b.memo) sub.push(b.memo);
+          if (sub.length) node.appendChild(el('div', { cls: 'small-note', text: sub.join(' · ') }));
+          grid.appendChild(field('내 입찰가', node, { mono: true, price: true, tone: 'positive' }));
+          if (modelBid != null) grid.appendChild(field('모델 예측 (참고)', fmtMoney(modelBid), { mono: true, price: true, muted: true }));
+          psec.appendChild(grid);
+          psec.appendChild(el('div', { cls: 'small-note', text: '매각 결과가 나오면 내 입찰가와 낙찰가를 비교해 낙찰/패찰을 표시합니다.' }));
         } else {
-          // 결과 전 — 내 예상(들) + 모델 참고
+          // 결과 전 (예상) — 내 예상(들) + 모델 참고
           const grid = el('div', { cls: 'detail-grid' });
           myBids.forEach((b, i) => {
             const node = el('span');

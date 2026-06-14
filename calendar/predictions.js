@@ -21,7 +21,9 @@
  * 스키마:
  *   "<id>@<saleDate>": {              // 신규. 레거시는 "<id>" (폴백 호환)
  *     predictedAt: "YYYY-MM-DD",        // 최초 입력일(엔트리 기준). bid별 at 없으면 이 값 사용
- *     bids: [                            // 최대 2개
+ *     actual: true,                     // (선택, v0.3.0) 실제 입찰한 사건 — index.html이 "내 입찰가(실제)"로 렌더,
+ *                                       //   결과 도래 시 내 입찰가 vs 낙찰가(낙찰/패찰) 비교. 미지정이면 "내 예상" 동작.
+ *     bids: [                            // 최대 2개 (actual이면 1개 = 실제 입찰가)
  *       { value: <원>, memo: "<한 줄 근거>", at: "YYYY-MM-DD"(선택) },
  *       ...
  *     ]
@@ -31,8 +33,8 @@
  * 회고 자동 비교는 별도 routine 변경 없이 index.html 렌더 시점 join으로 처리.
  */
 
-window.AUCTION_PREDICTIONS_VERSION = "0.2.0";
-window.AUCTION_PREDICTIONS_UPDATED = "2026-06-11";
+window.AUCTION_PREDICTIONS_VERSION = "0.3.0";
+window.AUCTION_PREDICTIONS_UPDATED = "2026-06-14";
 
 window.AUCTION_PREDICTIONS = {
   "2025타경12295": {
@@ -61,10 +63,11 @@ window.AUCTION_PREDICTIONS = {
       { value: 150000000, memo: "차노픽" }
     ]
   },
-  "2025타경11474": {
-    predictedAt: "2026-06-02",
+  "2025타경11474@2026-06-15": {
+    predictedAt: "2026-06-14",
+    actual: true,
     bids: [
-      { value: 200000000, memo: "차노픽" }
+      { value: 207219743, memo: "실제 입찰가", at: "2026-06-15" }
     ]
   }
 };
