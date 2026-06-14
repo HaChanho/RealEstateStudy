@@ -3299,6 +3299,7 @@ window.AUCTION_CASES = [
     "regionPriority": 2,
     "rightsStatus": "권리 안전(A) — 등기 전부 말소·인수 0·소유자 점유·임차인 없음 (GG TIP '인수사항 없음')",
     "rightsRisk": "safe",
+    "rightsVerified": true,
     "saleRate": 0.845,
     "saleRateNote": "단지 매각사례 n=2: 105동 22.7평 87%/7명(2024.12) + 106동 동일평형(20.9평) 82%/4명(2022.11). v7.1 약세보정(stale −3pp) 적용 μ≈0.845. ※v7은 매각가율 보조 — S=실거래 230M 1차 앵커",
     "interestTier": "watchlist",
@@ -3307,10 +3308,10 @@ window.AUCTION_CASES = [
     "saleRateN": 2,
     "bid70": 207000000,
     "neutralSalePrice": 230000000,
-    "expectedProfit70": 14762070,
+    "expectedProfit70": 14141070,
     "rating": null,
     "verdict": "hold",
-    "verdictReason": "관망 / 마진형 저가 한정 — 보수 매도 기준 2.30억(호가 하단) · 입찰권장 2.07억(70%) · 세전 EP70 1476만원(watchlist) · 세후 1233만원. 권리 raw 미검증(D-day 등기·임차조사 확인 필요). (2026-06-03 v9 재분석)",
+    "verdictReason": "권리 A 최종 검증 완료 — 등기부·매각물건명세서·감정평가서 3종 교차(전체 매각·인수 0·임차인 없음·부부 공동소유 점유). 본인 명의·100% 대출 기준: 보수 매도 2.30억(호가 하단) · 입찰권장 2.07억(70%) · 세전 EP70 1414만 · 세후 약 1041만(본인 24% 구간, 4개월 이자). 사용자 입찰 확정 207,219,743원(2026-06-15). (2026-06-14 v10 본인명의·100%대출 재계산)",
     "tags": [
       "아산",
       "온천미소지움",
@@ -3318,11 +3319,12 @@ window.AUCTION_CASES = [
       "감정오염",
       "v7재계산",
       "▷watchlist",
-      "조건부★"
+      "권리검증완료",
+      "본인명의입찰"
     ],
-    "sourcingSession": "2026-06-01 v3 전수Tier2 + 2026-06-01 v4 v7재계산 + 2026-06-02 deep-dive",
+    "sourcingSession": "2026-06-01 v3 전수Tier2 + 2026-06-01 v4 v7재계산 + 2026-06-02 deep-dive + 2026-06-14 권리검증·본인명의 재계산",
     "addedAt": "2026-06-01",
-    "updatedAt": "2026-06-02",
+    "updatedAt": "2026-06-14",
     "hauctionUrl": "https://www.hauction.co.kr/search/auction?unique_year=2025&unique_number=11474",
     "reportUrl": "report-2025타경11474.html",
     "k70": 0.9,
@@ -3469,21 +3471,22 @@ window.AUCTION_CASES = [
       "etc": 2000000,
       "fixedTotal": 5753930,
       "interest": {
-        "m3": 1863000,
-        "m4": 2484000,
-        "m5": 3105000,
-        "m6": 3726000
+        "m3": 2328750,
+        "m4": 3105000,
+        "m5": 3881250,
+        "m6": 4657500
       },
       "anchorMonths": 4,
       "k70": 0.9,
-      "ltv": 0.8,
-      "rate": 0.045
+      "ltv": 1.0,
+      "rate": 0.045,
+      "ltvNote": "2026-06-14: 보유현금 0 → 낙찰가 100% 대출(70% 경락+30% 신용, 이자 동일)"
     },
-    "taxOwner": "spouse",
-    "taxableProfit": 14762070,
-    "incomeTax": 2435742,
-    "marginalRate": 0.165,
-    "afterTaxProfit": 12326328
+    "taxOwner": "self",
+    "taxableProfit": 14141070,
+    "incomeTax": 3733242,
+    "marginalRate": 0.264,
+    "afterTaxProfit": 10407828
   },
   {
     "id": "2025타경12295",
