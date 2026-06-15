@@ -19,7 +19,7 @@
  */
 
 window.AUCTION_RESULTS_VERSION = "0.3.0";
-window.AUCTION_RESULTS_UPDATED = "2026-06-11";
+window.AUCTION_RESULTS_UPDATED = "2026-06-15";
 
 window.AUCTION_RESULTS = {
   "2025타경12066": {"predictedSaleRate":0.876,"predictedVerdict":"fail","saleRateError":0.028,"bidGapPct":null,"priceMasked":false,"secondBid":null,"source":"ggi-chrome","retrospectedAt":"2026-06-02","status":"sold","soldPrice":298309990,"soldRate":0.904,"bidderCount":11,"saleDateActual":"2026-05-13","quadrant":"FN","lesson":"fail 거절(단지 매각가율 87.6% > 78% 기준) 했으나 낙찰 90% 11명 · 예측 88%→실측 90% (+2.8pp)"},
@@ -113,4 +113,5 @@ window.AUCTION_RESULTS = {
   "2025타경11651": {"predictedSaleRate":null,"predictedVerdict":"fail","saleRateError":null,"bidGapPct":null,"priceMasked":false,"secondBid":null,"source":"ggi-chrome","retrospectedAt":"2026-06-02","status":"failed","soldPrice":null,"soldRate":null,"bidderCount":null,"saleDateActual":"2026-06-02","quadrant":null,"lesson":"NO-GO(fail·先임차권 대항력 인수함정) — 아산풍기이지더원1차 6/2 유찰, 2026-07-07 3회차 최저 34.3% 재일정 · 인수위험 단지 수요 부재(방향 일치)"},
   "2026타경10227": {"predictedSaleRate":0.948,"predictedVerdict":"fail","saleRateError":null,"bidGapPct":null,"priceMasked":false,"secondBid":null,"source":"ggi-chrome","retrospectedAt":"2026-06-09","status":"failed","soldPrice":null,"soldRate":null,"bidderCount":null,"saleDateActual":"2026-06-09","quadrant":null,"lesson":"NO-GO(fail·경매 메리트 소멸 — 신건 최저가 3억≈시세) — 아산한라비발디스마트밸리 6/9 신건(100%·3억) 유찰, 2026-07-14 2회차 최저 70%(2.1억) 재진행 · 감정가에 응찰자 0명(방향 일치). 단 7/14 2.1억 vs 시세~3억은 경매 메리트 재발생 가능 → 70% 라운드 재평가 후보"},
   "2025타경3558@2026-06-10": {"predictedSaleRate":0.80,"predictedVerdict":"hold","saleRateError":null,"bidGapPct":null,"priceMasked":false,"secondBid":null,"source":"ggi-chrome","retrospectedAt":"2026-06-11","status":"changed","soldPrice":null,"soldRate":null,"bidderCount":null,"saleDateActual":"2026-06-10","quadrant":null,"lesson":"변경 — 세종 조치원 계룡(대전9계·2동 1203호) 6/10 매각기일 변경(연기), 응찰 전 변경 · 조회수 149(관심 대리지표) · 최저가율 70%(151.2M/216M) · 복합키 전환(v0.3.0) 계기 — 새 기일 재일정 시 별도 회고 가능(id@saleDate)"},
+  "2025타경11474@2026-06-15": {"predictedSaleRate":0.845,"predictedVerdict":"hold","saleRateError":0.036,"bidGapPct":-0.062,"priceMasked":false,"secondBid":218000000,"myBid":207219743,"myResult":"lost","source":"user-assist","retrospectedAt":"2026-06-15","status":"sold","soldPrice":221000000,"soldRate":0.881,"bidderCount":null,"quadrant":null,"saleDateActual":"2026-06-15","lesson":"⚠️ 실제 입찰·패찰 — 내 입찰 207.2M(균형 70%승률안)으로 응찰, 낙찰 221M(감정 88.1%)·2순위 218M(86.9%) 모두 절대상한 214M·세전BEP 221.5M 초과 → 규율상 '안 받기로 한' 가격대(플립 마진 소멸, 낙찰자 실거주 추정). 캘리브레이션: 매각가율 예측 84.5%→실측 88.1%(+3.6pp) — v7.1 약세보정(−3pp) 고수요 신축단지 과보정 / k70 0.90 vs 실측 0.96 — 신축 인기 27평 실거주 경쟁 과소평가 / 2·3순위 근접(218·207.2)"},
 };
