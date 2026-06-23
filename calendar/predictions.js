@@ -69,5 +69,12 @@ window.AUCTION_PREDICTIONS = {
     bids: [
       { value: 207219743, memo: "실제 입찰가", at: "2026-06-15" }
     ]
+  },
+  "2025타경12815@2026-06-22": {
+    predictedAt: "2026-06-22",
+    actual: true,
+    bids: [
+      { value: 185510000, memo: "실제 입찰가 (최저가+1만)", at: "2026-06-22" }
+    ]
   }
 };
