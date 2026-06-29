@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>분석 보고서 · 2025타경12522 천안한양수자인에코시티 103동 1104호</title>
+<style>
+  :root{
+    --bg:#0f172a; --surface:#1e293b; --surface-2:#273449; --surface-3:#334155;
+    --text:#e2e8f0; --text-mute:#94a3b8; --line:#334155;
+    --amber:#f59e0b; --green:#65a30d; --blue:#0284c7; --red:#ef4444; --purple:#7c3aed;
+    --pos:#22c55e; --neg:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",Segoe UI,Roboto,sans-serif;line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 20px 80px}
+  a{color:#38bdf8}
+  h1{font-size:22px;margin:0 0 4px;letter-spacing:-0.02em}
+  h2{font-size:17px;margin:34px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--line);letter-spacing:-0.01em}
+  h3{font-size:14px;margin:20px 0 8px;color:var(--text-mute);text-transform:none;letter-spacing:0.02em}
+  .sub{color:var(--text-mute);font-size:13px;margin:0 0 18px}
+  .verdict{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:10px;font-weight:700;font-size:15px;margin:14px 0 4px;background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+  .badges{margin:10px 0 0;display:flex;gap:8px;flex-wrap:wrap}
+  .badge{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--surface-2);color:var(--text-mute);border:1px solid var(--line)}
+  .badge.good{color:var(--pos);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
+  .badge.warn{color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08)}
+  .badge.bad{color:var(--neg);border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08)}
+  .lead{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:18px 0}
+  .lead p{margin:0 0 10px} .lead p:last-child{margin:0}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;background:var(--surface);border-radius:10px;overflow:hidden}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:var(--surface-2);color:var(--text-mute);font-weight:600;font-size:12.5px}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:none}
+  .hl{color:var(--amber);font-weight:700}
+  .pos{color:var(--pos);font-weight:600} .neg{color:var(--neg);font-weight:600}
+  .pick{background:rgba(245,158,11,.10)}
+  .note{font-size:12.5px;color:var(--text-mute);margin:8px 0 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .card h4{margin:0 0 6px;font-size:13.5px}
+  .kv{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:13.5px}
+  .kv .k{color:var(--text-mute)} .kv .v{font-variant-numeric:tabular-nums;text-align:right}
+  ul{margin:8px 0;padding-left:20px} li{margin:4px 0}
+  .insight{background:rgba(2,132,199,.08);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:13.5px}
+  .danger{background:rgba(239,68,68,.08);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:13.5px}
+  .foot{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--text-mute)}
+  .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--text-mute);text-decoration:none}
+  .back:hover{color:var(--text)}
+  code{background:var(--surface-2);padding:1px 6px;border-radius:5px;font-size:12.5px}
+  .hoga-bar{display:flex;align-items:center;gap:10px;margin:10px 0 4px;font-size:13px}
+  .hoga-track{flex:1;height:8px;background:linear-gradient(90deg,var(--green),var(--amber));border-radius:6px;position:relative}
+  .hoga-end{font-variant-numeric:tabular-nums;color:var(--text-mute)}
+  .trade-hero{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:10px 0}
+  .trade-hero .big{font-size:20px;font-weight:700;color:var(--amber);font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 캘린더로</a>
+  <h1>2025타경12522 · 천안한양수자인에코시티 103동 1104호</h1>
+  <p class="sub">천안지원 · 매각기일 2026-07-20(월) · deep-dive 작성 2026-06-29 · v10 시장앵커 기준 · <b style="color:var(--pos)">분석 신뢰도 상 (권리 검증 완료)</b></p>
+
+  <div class="verdict">🟡 조건부 GO — 권리 A 검증·인수 0, 수익 watch(◇). 신축 매물 과다로 매도 경쟁 = 입찰가 성향 선택</div>
+  <div class="badges">
+    <span class="badge good">권리 A 검증 · 인수 0</span>
+    <span class="badge good">EP70 +1,678만 · 세후 +1,221만</span>
+    <span class="badge good">자금 OK (100% 대출 DSR ~18.5%)</span>
+    <span class="badge good">3년차 신축 · 대단지</span>
+    <span class="badge">84.98㎡ 부가세 면세</span>
+    <span class="badge warn">★기준(2,500만@70%) 822만 부족</span>
+    <span class="badge warn">호가 158건 과다 → 매도 경쟁</span>
+  </div>
+
+  <div class="lead">
+    <p><b>구조는 완전 안전하고, 수익은 watch(◇) 등급입니다.</b> 권리는 인수 0·임차인 없음·특수권리 전무로 <b>완전 클린(A 검증 완료, 지지옥션 rightsVerified=true)</b>, 자금력도 100% 대출 가정 DSR ~18.5%로 여유입니다. <b>구조적 NO-GO 사유(권리 결손·인수 위험·Walk-away &lt; 최저가·자금 불가)는 하나도 없습니다.</b></p>
+    <p>v10 시장앵커 기준으로 봅니다. 2023년 준공 3년차 신축·대단지·전용 84.98㎡(85㎡ 이하 부가세 면세)라 단지 자체는 우량하나, <b>호가 매물이 158건으로 과다</b>합니다(240~328만 광범위 분포). 단기 전매 시 이 매물 풀과 경쟁해 시장가 아래에서 체결되므로 <b>보수 매도 기준 S = 2억 6,680만(호가 하단)</b>으로 잡습니다. 70%승률 입찰가(2억 4,012만)로 받으면 <b>세전 기대수익 EP70 +1,678만(watch ◇)</b>, 종합소득세 차감 후 <b>세후 +1,221만</b>입니다. ★기준(세전 2,500만@70%)에 822만 부족합니다.</p>
+    <p>남은 건 <b>입찰가 성향 선택</b>뿐입니다. 마진형(2억 2,678만·승률 ~50%)으로 받으면 보수 매도(2억 6,680만)에도 세후 +2,064만, 중립 매도(2억 8,500만 실거래)면 +3,179만으로 크게 뛰지만 승률이 낮고, 균형형(2억 4,012만·승률 ~70%)은 세후 +1,221만(보수)~+2,336만(중립)으로 안정적입니다. <b>EP70·세후는 매도용 수리·명도를 뺀 세전이익(EP70)을 그대로 과세표준으로 본 v10 기준</b>이며, 수리(~300만, 3년차 신축)·명도(임차인 없음 ~0)는 유동적이라 별도 참고 변동비로만 둡니다. <b>신축 매물 과다로 매도 경쟁이 예상되므로 마진형 저가 입찰이 안전마진 확보에 유리</b>합니다.</p>
+  </div>
+
+  <h2>1. 물건 개요</h2>
+  <div class="grid2">
+    <div class="card">
+      <h4>기본</h4>
+      <div class="kv"><span class="k">소재지</span><span class="v">천안 동남구 풍세면 보성리 772 · 103동 1104호</span></div>
+      <div class="kv"><span class="k">전용 / 평형</span><span class="v">84.98㎡ (약 25.7평) · 25평형</span></div>
+      <div class="kv"><span class="k">준공</span><span class="v">2023 · 3년차 신축</span></div>
+      <div class="kv"><span class="k">단지</span><span class="v">천안풍세 한양수자인에코시티 · 대단지</span></div>
+      <div class="kv"><span class="k">입지</span><span class="v">풍세산단로 290 · 풍세일반산업단지 배후</span></div>
+      <div class="kv"><span class="k">점유</span><span class="v">임차인 없음 (소유자 점유/공실)</span></div>
+    </div>
+    <div class="card">
+      <h4>금액</h4>
+      <div class="kv"><span class="k">감정가</span><span class="v">3억 1,000만</span></div>
+      <div class="kv"><span class="k">최저가</span><span class="v"><b>2억 1,700만 (70%, 1회유찰)</b></span></div>
+      <div class="kv"><span class="k">입찰보증금</span><span class="v">2,170만 (최저 10%)</span></div>
+      <div class="kv"><span class="k">보수 매도 기준(S)</span><span class="v"><b class="hl">2억 6,680만</b> (호가 하단)</span></div>
+      <div class="kv"><span class="k">최근 실거래(≤6mo)</span><span class="v">2억 8,500만 (2026-05)</span></div>
+      <div class="kv"><span class="k">호가</span><span class="v">2억 4,000만~3억 2,800만 (158건)</span></div>
+    </div>
+  </div>
+  <p class="note">✅ 1회 유찰 → 최저가 70%. 조회수 67(demand proxy). 청구채권 정상 임의경매. 매각기일 2026-07-20(월) — D-1 취하·변경 재확인 권고.</p>
+
+  <h2>2. 권리분석 — 안전등급 A <span style="color:var(--pos);font-size:13px">(검증 완료 · 신뢰도 상)</span></h2>
+  <p>지지옥션 사건상세 권리검증 결과 <b>인수권리 0 · 인수금 0 · 임차인 없음</b> 확정(<code>rightsVerified=true</code>). 말소기준권리(근저당, 임의경매 기반) 이후 등기 전부 말소, 말소기준보다 앞선 선순위 권리 없음. <code>trapFlag=false</code> — 함정 사건 아님.</p>
+  <table>
+    <tr><th>항목</th><th>판정</th></tr>
+    <tr class="pick"><td><b>인수금액</b></td><td><b>₩0 (인수 0 — clean)</b></td></tr>
+    <tr><td>임차인</td><td>없음 (지지옥션 임차조사)</td></tr>
+    <tr><td>대항력 임차인</td><td>부존재</td></tr>
+    <tr><td>특수권리 (유치권·법정지상권·분묘·선순위 가처분/가등기)</td><td>전무</td></tr>
+    <tr><td>위반건축물</td><td>없음 (신축 2023)</td></tr>
+    <tr><td>함정 사건 (trapFlag)</td><td>false</td></tr>
+  </table>
+  <ul>
+    <li><b>임차인 없음</b> → 인수 케이스 해당 없음. 명도는 소유자 자진/공실 시나리오(명도비 참고 ~₩0~300만, <b>EP70·과세·세후 제외 변동비</b>).</li>
+    <li>구분소유 아파트라 법정지상권 무관. 신축 3년차로 위반건축물·미납관리비 누적 정황 없음.</li>
+    <li>권리는 Tier2 지지옥션 검증으로 확정. <b>매수인 인수 추가 부담 없음(등급 A).</b></li>
+  </ul>
+  <div class="insight">
+    <b>잔여 D-1 확인(만전 차원).</b> 매각물건명세서 PDF 본문에서 "인수 0·임차인 없음" 최종 확인 + 취하·변경 재확인. 권리는 이미 확정이라 D-1은 확인 절차일 뿐입니다.
+  </div>
+
+  <h2>3. 시장 시세 &amp; 보수 매도 기준 (v10)</h2>
+  <div class="insight">
+    <b>v10은 "기대 매도가" 단일 숫자를 쓰지 않습니다.</b> 현시점 호가 range와 최근 실거래를 있는 그대로 보여주고, 수익계산에는 보수적인 매도 기준(S)만 명시합니다. <b>이 단지는 호가 매물이 158건으로 과다</b>해 단기 매도 시 공급 경쟁이 강합니다 → 호가 하단을 앵커로 채택합니다.
+  </div>
+
+  <h3>현시점 호가 (네이버 fin.land · complexNo 140850 · 전용 84.98㎡)</h3>
+  <div class="hoga-bar">
+    <span class="hoga-end">하단 2억 4,000만</span>
+    <span class="hoga-track"></span>
+    <span class="hoga-end">상단 3억 2,800만</span>
+  </div>
+  <p class="note">⚠️ <b>매물 158건 · 호가 중앙값 2억 9,000만</b>. 신축 대단지라 매물 풀이 매우 두껍고(thick) 240~328만으로 광범위하게 분포 → 단기 매도 시 가격 경쟁 불가피.</p>
+
+  <h3>가장 최근 실거래 (≤6개월)</h3>
+  <div class="trade-hero">
+    <div class="big">2억 8,500만원</div>
+    <div class="note">2026-05 체결 · 전용 84.98㎡ 동일 평형 median. (호가 중앙 부근)</div>
+  </div>
+  <p class="note">실거래(2억 8,500만)·호가 중앙(2억 9,000만)은 양호하나, 매물 158건 경쟁으로 단기 회전 매도는 이보다 낮은 호가 하단대에서 체결될 가능성 → 수익앵커는 보수적으로 호가 하단.</p>
+
+  <h3>보수 매도 기준 (S) — 수익계산 앵커</h3>
+  <table>
+    <tr><th>항목</th><th class="num">값</th><th>근거</th></tr>
+    <tr class="pick"><td><b>보수 매도 기준 S</b></td><td class="num"><b class="hl">2억 6,680만</b></td><td><b>호가 하단</b> — 매물 158건 과다로 단기 매도 시 시장가 아래 체결 반영</td></tr>
+    <tr><td>호가 하단</td><td class="num">2억 4,000만</td><td>네이버 매물 158건 중 최저 호가</td></tr>
+    <tr><td>호가 중앙값</td><td class="num">2억 9,000만</td><td>중앙 × 0.92 = 2억 6,680만 = S</td></tr>
+    <tr><td>최근 실거래 median(≤6mo)</td><td class="num">2억 8,500만</td><td>2026-05 (S보다 높음 → S 유지)</td></tr>
+    <tr><td>k70 (시장 대비 낙찰비율)</td><td class="num">0.90</td><td>보통 경쟁(7~12명) tier · n≈7 추정(조회수+충남세종 prior)</td></tr>
+    <tr><td>최저가 / S 갭</td><td class="num">−18.7%</td><td>최저 2억 1,700만이 S 2억 6,680만 대비. 경매 엣지의 원천</td></tr>
+  </table>
+  <p class="note"><b>왜 호가 하단?</b> S = max(호가 하단 2억 4,000만, 호가 중앙 2억 9,000만 × 0.92 = 2억 6,680만) = <b>2억 6,680만</b>. 최근 실거래(2억 8,500만)가 S보다 높아 하향 보정 불필요. 신축이라 감정가(3억 1,000만)는 시세 상단 — 입찰 근거에서 보조로만.</p>
+
+  <h3>비용 항목 분리 (v10)</h3>
+  <table>
+    <tr><th>고정비용 항목</th><th class="num">금액</th><th>근거</th></tr>
+    <tr><td>취득세 + 법무등기</td><td class="num">3,231,039</td><td>법무통(bmtong) 환산식 · 입찰가 2억 4,012만(B70) 기준 · 1~2주택 1.1%</td></tr>
+    <tr><td>중개비(매도)</td><td class="num">1,067,200</td><td>S × 0.4%</td></tr>
+    <tr><td>기타</td><td class="num">2,000,000</td><td>이전·관리비·잡비 정액</td></tr>
+    <tr><td><b>고정비용 합계</b></td><td class="num"><b>6,298,239</b></td><td>이자 제외</td></tr>
+  </table>
+  <h3>대출이자 — 보유 3~6개월 (100% 대출 · 금리 4.5%)</h3>
+  <table>
+    <tr><th>보유 기간</th><th class="num">대출이자</th><th class="num">총비용(고정+이자)</th><th>비고</th></tr>
+    <tr><td>3개월</td><td class="num">2,701,350</td><td class="num">8,999,589</td><td></td></tr>
+    <tr class="pick"><td><b>4개월 ★EP70 기준</b></td><td class="num"><b>3,601,800</b></td><td class="num"><b>9,900,039</b></td><td>EP70은 4개월 기준</td></tr>
+    <tr><td>5개월</td><td class="num">4,502,250</td><td class="num">10,800,489</td><td></td></tr>
+    <tr><td>6개월</td><td class="num">5,402,700</td><td class="num">11,700,939</td><td>회전 지연 시</td></tr>
+  </table>
+  <p class="note"><b>EP70(세전 기대수익) = S − B70 − 고정비용 − 이자(4개월)</b> = 2억 6,680만 − 2억 4,012만 − 630만 − 360만 = <b class="hl">+1,678만</b>(watch ◇). 100% 대출(70% 경락+30% 신용, 이자 동일 가정). <b>v10에서는 이 EP70이 곧 과세표준</b>(아래 6.5절). 명도(임차인 없음)·수리비(3년차 신축 ~300만)는 참고 변동비로 과세·세후 제외.</p>
+
+  <h2>4. 입찰가별 기대수익 곡선</h2>
+  <p class="note">세전이익 = S(2억 6,680만) − 입찰가 − 비용(고정+이자 4개월). 명도·수리·세금 별도. 낙찰확률은 추정(당일 응찰자 수 편차 큼). <b>인수금 0 검증 완료.</b></p>
+  <table>
+    <tr><th>입찰가</th><th class="num">낙찰확률</th><th class="num">세전이익(명도·수리·세금 前)</th><th>tier</th></tr>
+    <tr><td>2억 1,700만 (최저)</td><td class="num">~30%</td><td class="num pos">+4,052만</td><td>★</td></tr>
+    <tr class="pick"><td>2억 2,678만 (마진형·B50)</td><td class="num"><b>~50%</b></td><td class="num pos"><b>+3,048만</b></td><td>★</td></tr>
+    <tr class="pick"><td>2억 4,012만 (권장·B70)</td><td class="num"><b>~70%</b></td><td class="num pos"><b>+1,678만</b></td><td>◇</td></tr>
+    <tr><td>2억 5,079만 (낙찰형·B85)</td><td class="num">~85%</td><td class="num pos">+582만</td><td>▷</td></tr>
+    <tr><td>2억 5,646만 (세전 본전 근사)</td><td class="num">~92%</td><td class="num">≈ 0</td><td>Walk-away</td></tr>
+    <tr><td>2억 6,680만 (=S 상한)</td><td class="num">~97%</td><td class="num neg">−1,062만</td><td>경매 메리트 소멸</td></tr>
+  </table>
+  <p class="note"><b>★지점(EP ≥ 세전 2,500만)</b>: 마진형(2억 2,678만, 승률 50%)까지. <b>권장 B70(2억 4,012만)은 822만 부족 = ◇</b>. <b>본전선(세전)</b>: ~2억 5,646만 = 절대 상한 권장(명도·수리 포함 시 더 보수적으로).</p>
+
+  <h2>5. 입찰 3안 비교 ★</h2>
+  <table>
+    <tr><th>지표</th><th class="num">🟢 마진형 2억 2,678만</th><th class="num">🟡 균형 2억 4,012만</th><th class="num">🔴 낙찰형 2억 5,079만</th></tr>
+    <tr><td>입찰가</td><td class="num">226,780,000</td><td class="num">240,120,000</td><td class="num">250,792,000</td></tr>
+    <tr><td>낙찰확률</td><td class="num">~50%</td><td class="num">~70%</td><td class="num">~85%</td></tr>
+    <tr><td>들어간 내 돈(자기자본·부대비용)</td><td class="num">~954만</td><td class="num">~990만</td><td class="num">~1,019만</td></tr>
+    <tr><td>낙찰 시 세전이익(EP)</td><td class="num pos">+3,048만</td><td class="num">+1,678만</td><td class="num pos">+582만</td></tr>
+    <tr><td><b>세후 순이익(중립매도 2억 8,500만)</b></td><td class="num pos"><b>+3,179만</b></td><td class="num pos"><b>+2,336만</b></td><td class="num pos">+1,662만</td></tr>
+    <tr><td>손익분기 매도가(세전 본전)</td><td class="num">~2억 3,679만</td><td class="num">~2억 5,646만 부근</td><td class="num">~2억 6,717만</td></tr>
+  </table>
+  <p class="note">v10은 낙찰가 100% 대출이라 "들어간 내 돈"은 부대비용(취득세·법무+중개+기타+이자4개월)만. 입찰보증금 2,170만은 입찰 당일 현금(신용 30% 선실행으로 충당)·미낙찰 시 즉시 반환·낙찰 시 잔금에 충당.</p>
+
+  <h3>매도 3단 민감도 — 세후 순이익</h3>
+  <table>
+    <tr><th>입찰가 \ 매도가</th><th class="num">보수 2억 6,680만 (호가 하단=S)</th><th class="num">중립 2억 8,500만 (실거래)</th><th class="num">낙관 3억 2,800만 (호가 상단)</th></tr>
+    <tr><td>마진형 2억 2,678만</td><td class="num pos">+2,064만</td><td class="num pos">+3,179만</td><td class="num pos">+5,767만</td></tr>
+    <tr><td>균형 2억 4,012만</td><td class="num pos">+1,221만</td><td class="num pos">+2,336만</td><td class="num pos">+4,970만</td></tr>
+    <tr><td>낙찰형 2억 5,079만</td><td class="num pos">+428만</td><td class="num pos">+1,662만</td><td class="num pos">+4,296만</td></tr>
+  </table>
+  <p class="note">※ 세후 순이익은 <b>v10 기준 — 과세표준 = EP70(세전 기대수익)</b>. <b>매도용 실수리(3년차 신축 ~300만)·명도(임차인 없음 ~0)는 유동적이라 과세·세후에서 제외한 별도 참고 변동비</b>이며, 실제 지출 시 위 세후에서 직접 차감하세요.</p>
+  <div class="danger">
+    <b>⚠️ 핵심 리스크 — 신축 + 호가 158건 과다.</b> 보수 매도(2억 6,680만)에서도 전 입찰가 흑자지만, 매물 풀 158건과 경쟁해 <b>매도 체결이 지연될 수 있습니다</b>. 4개월 회전 가정은 낙관적이며, 호가 하단 경쟁 우위(가격·청결도)를 확보하지 못하면 7~12개월로 늘어날 수 있습니다. 12개월 내 매도 실패 시 <b>풍세산단 배후 월세 임대 전환</b>이 안전판입니다(신축 3년차라 임대 경쟁력 양호).
+  </div>
+
+  <h2>6. 수익화 — 단기회전 (본인 명의 매매사업자)</h2>
+  <ul>
+    <li><b>권장 출구 = A 즉시전매(단기회전, 중앙 4개월)</b>. 매도 S(2억 6,680만) → <b>본인 명의 v10 세금 기준 적용</b>(세후는 §6.5 참조).</li>
+    <li>전용 84.98㎡ ≤ 85㎡ → <b>건물분 부가세 면세</b>. 무주택 첫 진입 → 종부세·다주택 중과 무영향. 충남 비조정 → 비교과세 77%·취득세 8% 중과 미적용(종소세 단일 누진).</li>
+    <li>전제: <b>본인 명의 매매사업자 등록</b>(잔금 전후 D+7~D+30, 취득세 1.1% 유지). 84.98㎡ 면세사업자 등록.</li>
+    <li>건강보험: 단건 EP70(+1,678만)은 보수외소득 2,000만 미만 → 추가 없음. 마진형(+3,048만)·연 다건 회전 시 2,000만 초과분 ×7.09%(11월) 발생 가능(참고).</li>
+    <li>B(임대 후 매도) = 매도 경쟁 회피·풍세산단 임대수요 안전판. C(장기 5년+)·D(3년차 신축 리모델링 불필요)·E(자가·명의 상충)는 비추천/fallback.</li>
+  </ul>
+
+  <h2>6.5 종합소득세 &amp; 세후이익 (v10 · 본인 명의)</h2>
+  <div class="insight">
+    <b>세금 주체는 본인입니다.</b> 본인 근로 과세표준 <b>7,235만</b>(총급여 8,800만 가정, 근로만 산출세액 1,160만)에 이 거래의 사업소득(과세표준 = EP70)을 합산해 누진세를 계산합니다. EP70은 이미 수리·명도·인수금을 제외한 세전 기대수익이므로, 수리·명도는 과세·세후에서 제외하고 참고 변동비로만 둡니다.
+  </div>
+  <table>
+    <tr><th>항목</th><th class="num">금액</th><th>비고</th></tr>
+    <tr class="pick"><td><b>과세표준 = EP70 (세전 기대수익, 4개월)</b></td><td class="num"><b class="hl">+16,779,961</b></td><td>S − B70 − 고정비용 − 이자(4개월, 100% 대출). 수리·명도 제외</td></tr>
+    <tr><td>본인 근로 과세표준</td><td class="num">72,350,000</td><td>v10 기준 base (근로만 산출세액 11,604,000)</td></tr>
+    <tr><td>합산 과세표준</td><td class="num">89,129,961</td><td>8,800만 초과분이 35%(지방세 포함 38.5%) 구간에 진입</td></tr>
+    <tr><td>(−) 추가 종합소득세(지방세 포함)</td><td class="num neg">−4,566,635</td><td>실효 한계세율 약 <b>27.2%</b></td></tr>
+    <tr class="pick"><td><b>세후이익</b></td><td class="num"><b class="hl">+1,221만</b></td><td>12,213,326원</td></tr>
+  </table>
+  <p class="note"><b>산정 3단:</b> ① 근로만 세액 1,160만. ② 본인 근로 과표 7,235만 + EP70 1,678만 = 합산 과표 8,913만. ③ 합산 산출세액에서 근로만 세액을 뺀 뒤 지방세 10%를 더해 추가 종소세 457만을 차감합니다. EP70 일부(1,300만 초과분)가 35% 구간에 걸려 평균 세율이 26.4%보다 약간 높은 27.2%입니다.</p>
+  <div class="insight" style="background:rgba(245,158,11,.08);border-left-color:var(--amber)">
+    <b>📌 참고 변동비 (과세·세후 제외).</b> 매도용 실수리(3년차 신축 ~300만)·명도(임차인 없음 ~0)는 금액 변동이 커 EP70·세금 계산에서 제외했습니다. 실제 지출이 발생하면 위 세후이익에서 직접 차감하세요.
+  </div>
+
+  <h2>7. D-day 액션 플랜</h2>
+  <div class="insight">
+    <b>✅ 권리 확정 완료 — D-1 액션은 만전 차원 + 시세·법무통 재확인.</b> 인수 0·임차인 없음·특수권리 전무 전부 검증됐습니다. 남은 건 명세서 최종 확인 + 취하·변경 재확인 + 네이버 시세 + 법무통 live + 입찰가 확정뿐.
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h4>D-1 확인 (권리는 확정)</h4>
+      <ul style="margin:0">
+        <li>매각물건명세서 "인수 0·임차인 없음" 최종 확인</li>
+        <li>취하·변경 재확인 (지지옥션)</li>
+        <li>네이버 84.98㎡ 호가·실거래 재확인 → S=2억 6,680만 검증</li>
+        <li><b>법무통 live 조회</b>로 취득세·법무 실수치</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>입찰 전 (D-20~D-1)</h4>
+      <ul style="margin:0">
+        <li>입찰가 결정 (3안 중 성향 선택)</li>
+        <li>본인 명의 매매사업자 등록 확인</li>
+        <li><b>대출상담사 100% 대출 실한도 확정</b>(경락 70%+신용 30%)</li>
+        <li>입찰보증금 2,170만 준비(신용 30% 선실행)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>낙찰 후 (D+0~D+30)</h4>
+      <ul style="margin:0">
+        <li>잔금 전 매매사업자 등록(본인·면세)</li>
+        <li>경락+신용대출 실행(100%)</li>
+        <li>명도(임차인 없음 → 소유자 자진/공실 인수)</li>
+        <li>소유권 이전</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>매도 (D+30~D+120)</h4>
+      <ul style="margin:0">
+        <li>네이버부동산 등록, 중립 2억 8,500만 타겟</li>
+        <li>호가 158건 경쟁 → 가격·청결도 차별화</li>
+        <li>4개월 내 체결 목표 / 실패 시 임대 전환</li>
+        <li>종합소득세 다음 해 5월 신고 반영</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>8. 최종 의견</h2>
+  <div class="lead">
+    <p><b>구조적으로 안전하고 권리·자금·세금 모두 통과</b>하는 깔끔한 물건입니다. 권리는 A 검증 완료(인수 0·임차인 없음·특수권리 전무), 최저가가 보수 매도 기준(S) 대비 −18.7%로 경매 엣지가 살아 있습니다. 다만 <b>2023년 준공 신축 대단지 + 호가 158건 매물 과다</b>가 단기 전매 시 매도 경쟁을 부르고, 그 보수화로 v10 기준 <b>EP70은 watch(◇)</b> — 70%승률 입찰가에서 세전 1,678만(★기준 2,500만에 822만 부족), 세후 +1,221만(중립매도 시 +2,336만)입니다.</p>
+    <p>마진은 입찰가 성향에 크게 좌우됩니다.</p>
+    <ul style="margin:6px 0">
+      <li><b>마진·안전 우선</b> → 마진형 2억 2,678만(낙찰확률 ~50%, 세후 +2,064만@보수 / +3,179만@중립, 보수 매도에도 두꺼운 흑자)</li>
+      <li><b>단기 회전 확보 우선</b> → 균형 2억 4,012만(70% 확보·세후 +1,221만@보수)</li>
+      <li><b>절대 상한 ~2억 5,646만</b>(세전 본전선) 초과 금지. 낙찰형(2억 5,079만)은 흑자나 안전마진 얇음</li>
+    </ul>
+    <p>권리·자금·구조는 모두 확정됐습니다. 남은 건 <b>입찰가 성향 선택 + D-1 명세서·법무통·네이버 시세 최종 확인</b>입니다. <b>신축 매물 과다로 매도 경쟁이 예상되므로 마진형 저가 입찰이 안전마진 확보에 유리</b>합니다. 미낙찰 시 보증금은 즉시 반환되므로 다음 물건으로 미련 없이 넘어가면 됩니다.</p>
+  </div>
+
+  <div class="foot">
+    출처: 네이버 fin.land(complexNo 140850) 호가·실거래(as-of 2026-06-23) + 지지옥션 권리검증(Tier2, rightsVerified=true) + bid-price-engine §0.5 v10 / monetization §10 v10 · 작성 2026-06-29 (monthly-sourcing Tier2 고정 앵커 기반 deep-dive)<br>
+    분석 신뢰도: <b>상 (권리 검증 완료)</b> — 인수 0·임차인 없음 확정. 잔여: 단지 매각사례 graph 텍스트추출 불가로 k70=0.90 보수 추정(조회수 + 충남세종 prior), 응찰자 n≈7 추정. EP70·자금력·곡선·세후는 "인수금 0" 검증 위 성립.<br>
+    Wiki: court/천안지원, region/천안동남, topic/market-anchored-bid · 케이스 산출물: _workspace/cases/2025타경12522/<br>
+    ※ 법원 공시자료·네이버 시세 기반 추정치로 오류·변경 가능. 투자 책임은 이용자에게 있습니다.
+  </div>
+</div>
+</body>
+</html>

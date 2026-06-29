@@ -12,7 +12,7 @@
  */
 
 window.AUCTION_SCHEMA_VERSION = "0.7.0";
-window.AUCTION_LAST_UPDATED = "2026-06-23";
+window.AUCTION_LAST_UPDATED = "2026-06-29";
 
 window.AUCTION_CASES = [
   {
@@ -1499,16 +1499,17 @@ window.AUCTION_CASES = [
     "saleRate": null,
     "rating": null,
     "verdict": "candidate",
-    "verdictReason": "조건부 GO(수익 ◇) — 보수 매도 기준 3.20억(호가) · 입찰권장 288M(70%) · 세전 EP70 ₩21M · 세후 ₩15M. 권리 검증·인수 0. (2026-06-23 v10 sourcing Tier2)",
+    "verdictReason": "조건부 GO(수익 ◇) — 보수 매도 기준 3.20억(호가) · 입찰권장 288M(70%) · 세전 EP70 ₩21M · 세후 ₩15M. 권리 검증·인수 0. (2026-06-23 v10 sourcing Tier2) · [deep-dive 2026-06-29] 권리 A 확정·5단계 풀 파이프라인+HTML 보고서",
     "tags": [
       "천안서북",
       "이편한세상두정",
       "monthly-sourcing-2026-07",
-      "◇candidate"
+      "◇candidate",
+      "deep-dive"
     ],
-    "sourcingSession": "2026-06-23 v10 monthly-sourcing(7월) Tier2(네이버+지지옥션 권리검증)",
+    "sourcingSession": "2026-06-23 v10 monthly-sourcing(7월) Tier2(네이버+지지옥션 권리검증) + 2026-06-29 deep-dive(천안지원 ◇ 풀 파이프라인)",
     "addedAt": "2026-05-15",
-    "updatedAt": "2026-06-23",
+    "updatedAt": "2026-06-29",
     "bldgYear": 2013,
     "kbPrice": null,
     "hauctionUrl": "https://www.hauction.co.kr/search/auction?unique_year=2025&unique_number=789",
@@ -1565,7 +1566,8 @@ window.AUCTION_CASES = [
       "real6moDate": "2026-05",
       "note": "84.88㎡ 64호가 320~352M·실거래(py2~4) ~325-340",
       "updatedAt": "2026-06-23"
-    }
+    },
+    "reportUrl": "report-2025타경789.html"
   },
   {
     "id": "2025타경1123",
@@ -2474,16 +2476,17 @@ window.AUCTION_CASES = [
     "expectedProfit70": 17439684,
     "rating": null,
     "verdict": "candidate",
-    "verdictReason": "조건부 GO(수익 ◇) — 보수 매도 기준 2.76억(호가) · 입찰권장 248M(70%) · 세전 EP70 ₩17M · 세후 ₩13M. 권리 검증·인수 0. (2026-06-23 v10 sourcing Tier2)",
+    "verdictReason": "조건부 GO(수익 ◇) — 보수 매도 기준 2.76억(호가) · 입찰권장 248M(70%) · 세전 EP70 ₩17M · 세후 ₩13M. 권리 검증·인수 0. (2026-06-23 v10 sourcing Tier2) · [deep-dive 2026-06-29] 권리 A 확정·5단계 풀 파이프라인+HTML 보고서",
     "tags": [
       "아산",
       "아산한라비발디스마트밸리",
       "monthly-sourcing-2026-07",
-      "◇candidate"
+      "◇candidate",
+      "deep-dive"
     ],
-    "sourcingSession": "2026-06-23 v10 monthly-sourcing(7월) Tier2(네이버+지지옥션 권리검증)",
+    "sourcingSession": "2026-06-23 v10 monthly-sourcing(7월) Tier2(네이버+지지옥션 권리검증) + 2026-06-29 deep-dive(천안지원 ◇ 풀 파이프라인)",
     "addedAt": "2026-06-01",
-    "updatedAt": "2026-06-23",
+    "updatedAt": "2026-06-29",
     "marketAnchorBasis": "호가",
     "flipRepair": 1500000,
     "evictionEst": 3000000,
@@ -4414,16 +4417,17 @@ window.AUCTION_CASES = [
     "expectedProfit50": 35008561,
     "rating": null,
     "verdict": "candidate",
-    "verdictReason": "조건부 GO(수익 ◇) — 보수 매도 기준 3.04억(호가) · 입찰권장 273M(70%) · 세전 EP70 ₩19M · 세후 ₩14M. 권리 검증·인수 0. (2026-06-23 v10 sourcing Tier2)",
+    "verdictReason": "조건부 GO(수익 ◇) — 보수 매도 기준 3.04억(호가) · 입찰권장 273M(70%) · 세전 EP70 ₩19M · 세후 ₩14M. 권리 검증·인수 0. (2026-06-23 v10 sourcing Tier2) · [deep-dive 2026-06-29] 권리 A 확정·5단계 풀 파이프라인+HTML 보고서",
     "tags": [
       "천안서북",
       "천안역우방아이유쉘",
       "monthly-sourcing-2026-07",
-      "◇candidate"
+      "◇candidate",
+      "deep-dive"
     ],
-    "sourcingSession": "2026-06-23 v10 monthly-sourcing(7월) Tier2(네이버+지지옥션 권리검증)",
+    "sourcingSession": "2026-06-23 v10 monthly-sourcing(7월) Tier2(네이버+지지옥션 권리검증) + 2026-06-29 deep-dive(천안지원 ◇ 풀 파이프라인)",
     "addedAt": "2026-06-23",
-    "updatedAt": "2026-06-23",
+    "updatedAt": "2026-06-29",
     "hauctionUrl": "https://www.hauction.co.kr/search/auction?unique_year=2025&unique_number=12408",
     "k70": 0.9,
     "repairCost": 3000000,
@@ -4466,7 +4470,8 @@ window.AUCTION_CASES = [
       "real6moDate": "2026-05",
       "note": "84.99㎡ 20호가 300~335·py1 실거래11건 ~327",
       "updatedAt": "2026-06-23"
-    }
+    },
+    "reportUrl": "report-2025타경12408.html"
   },
   {
     "id": "2025타경485",
@@ -4584,16 +4589,17 @@ window.AUCTION_CASES = [
     "expectedProfit50": 30480008,
     "rating": null,
     "verdict": "candidate",
-    "verdictReason": "조건부 GO(수익 ◇) — 보수 매도 기준 2.67억(호가) · 입찰권장 240M(70%) · 세전 EP70 ₩17M · 세후 ₩12M. 권리 검증·인수 0. (2026-06-23 v10 sourcing Tier2)",
+    "verdictReason": "조건부 GO(수익 ◇) — 보수 매도 기준 2.67억(호가) · 입찰권장 240M(70%) · 세전 EP70 ₩17M · 세후 ₩12M. 권리 검증·인수 0. (2026-06-23 v10 sourcing Tier2) · [deep-dive 2026-06-29] 권리 A 확정·5단계 풀 파이프라인+HTML 보고서",
     "tags": [
       "천안동남",
       "천안한양수자인에코시티",
       "monthly-sourcing-2026-07",
-      "◇candidate"
+      "◇candidate",
+      "deep-dive"
     ],
-    "sourcingSession": "2026-06-23 v10 monthly-sourcing(7월) Tier2(네이버+지지옥션 권리검증)",
+    "sourcingSession": "2026-06-23 v10 monthly-sourcing(7월) Tier2(네이버+지지옥션 권리검증) + 2026-06-29 deep-dive(천안지원 ◇ 풀 파이프라인)",
     "addedAt": "2026-06-23",
-    "updatedAt": "2026-06-23",
+    "updatedAt": "2026-06-29",
     "hauctionUrl": "https://www.hauction.co.kr/search/auction?unique_year=2025&unique_number=12522",
     "k70": 0.9,
     "repairCost": 3000000,
@@ -4636,7 +4642,8 @@ window.AUCTION_CASES = [
       "real6moDate": "2026-05",
       "note": "84.98㎡ 신축2023 대단지 158호가 240~328 광범위·실거래 ~270-290. 신축·물량과다",
       "updatedAt": "2026-06-23"
-    }
+    },
+    "reportUrl": "report-2025타경12522.html"
   },
   {
     "id": "2026타경600183",

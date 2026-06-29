@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>분석 보고서 · 2026타경10227 아산한라비발디스마트밸리</title>
+<title>분석 보고서 · 2026타경10227 아산음봉 한라비발디스마트밸리 204동 703호</title>
 <style>
   :root{
     --bg:#0f172a; --surface:#1e293b; --surface-2:#273449; --surface-3:#334155;
@@ -19,7 +19,7 @@
   h2{font-size:17px;margin:34px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--line);letter-spacing:-0.01em}
   h3{font-size:14px;margin:20px 0 8px;color:var(--text-mute);text-transform:none;letter-spacing:0.02em}
   .sub{color:var(--text-mute);font-size:13px;margin:0 0 18px}
-  .verdict{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:10px;font-weight:700;font-size:15px;margin:14px 0 4px;background:rgba(239,68,68,.12);color:var(--neg);border:1px solid rgba(239,68,68,.3)}
+  .verdict{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:10px;font-weight:700;font-size:15px;margin:14px 0 4px;background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
   .badges{margin:10px 0 0;display:flex;gap:8px;flex-wrap:wrap}
   .badge{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--surface-2);color:var(--text-mute);border:1px solid var(--line)}
   .badge.good{color:var(--pos);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
@@ -49,206 +49,261 @@
   .back{display:inline-block;margin-bottom:18px;font-size:13px;color:var(--text-mute);text-decoration:none}
   .back:hover{color:var(--text)}
   code{background:var(--surface-2);padding:1px 6px;border-radius:5px;font-size:12.5px}
+  .hoga-bar{display:flex;align-items:center;gap:10px;margin:10px 0 4px;font-size:13px}
+  .hoga-track{flex:1;height:8px;background:linear-gradient(90deg,var(--green),var(--amber));border-radius:6px;position:relative}
+  .hoga-end{font-variant-numeric:tabular-nums;color:var(--text-mute)}
+  .trade-hero{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:10px 0}
+  .trade-hero .big{font-size:20px;font-weight:700;color:var(--amber);font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
 <div class="wrap">
   <a class="back" href="index.html">← 캘린더로</a>
-  <h1>2026타경10227 · 아산한라비발디스마트밸리 204동 703호</h1>
-  <p class="sub">천안지원 · 매각기일 2026-06-09(화) · deep-dive 작성 2026-06-03 · <b style="color:var(--amber)">분석 신뢰도 중 (권리 raw 미검증 · 시세는 네이버 실거래/호가 확인)</b></p>
+  <h1>2026타경10227 · 아산음봉 한라비발디스마트밸리 204동 703호</h1>
+  <p class="sub">천안지원 · 매각기일 2026-07-14(화) · deep-dive 작성 2026-06-29 · v10 시장앵커·세금 기준 · <b style="color:var(--pos)">분석 신뢰도 중상 (권리 검증완료 · 단지 경쟁표본 보수추정)</b></p>
 
-  <div class="verdict">🔴 NO-GO — 경매 메리트 소멸 (최저가 ≈ 시장가, 경매 할인 없음)</div>
+  <div class="verdict">🟡 조건부 GO — 권리 안전 확정, 수익 watch(◇). 신축 경매 메리트 얇음 · 입찰가 성향 선택은 사용자 판단</div>
   <div class="badges">
-    <span class="badge bad">EP70 −1,061만 · 세후 −1,061만 · 제외 tier</span>
-    <span class="badge bad">신건 최저가=감정가=시장가 상단</span>
-    <span class="badge warn">단지 매각가율 94.8% (과열)</span>
-    <span class="badge warn">권리 raw 미검증 (잠정 등급)</span>
-    <span class="badge good">3년차 신축 · 65.7㎡ 부가세 면세</span>
+    <span class="badge good">권리 A 검증 · 인수 0</span>
+    <span class="badge good">EP70 +1,744만 · 세후 +1,262만</span>
+    <span class="badge good">자금 OK (들어간 내 돈 ~983만)</span>
+    <span class="badge warn">2023 신축(3년차) · 경매 엣지 얇음</span>
+    <span class="badge">66㎡ 부가세 면세</span>
+    <span class="badge warn">★기준(2,500만@70%) 756만 부족</span>
   </div>
 
   <div class="lead">
-    <p><b>경매로 살 이유가 없는 물건입니다.</b> 신건(유찰 0회)이라 최저매각가가 감정가(₩3억)와 같고, 이는 현재 호가 상단(₩3억 3,000만)·KB시세(₩3억)와 사실상 동일선입니다. <b>경매의 이익은 "현재 시장가 대비 낙찰 할인폭"</b>인데, 이 건은 출발선부터 할인폭이 거의 0이라 <b>경매 메리트가 소멸</b>합니다.</p>
-    <p>v9.2 보수 매도 기준(호가 하단) <b>S = ₩2억 9,500만</b>에 70% 승률 입찰가(B70)를 산정하면 clamp 바닥(최저매각가 ₩3억과 S 사이)에 붙어 <b>B70 = ₩2억 9,500만</b>이 되고, 여기서 비용(취득세·법무·이자·중개·기타)을 빼면 <b>세전 EP70 = −₩1,061만 · 세후 −₩1,061만</b> — 예상 적자 1,000만원을 넘겨 <b>제외(fail) tier</b>입니다. 게다가 이 단지는 직전 5건 낙찰가율 평균 94.8%·평균 응찰 8.2명의 <b>과열 단지</b>라, 실제 낙찰가는 감정가 부근 또는 그 위에서 형성될 공산이 큽니다.</p>
-    <p>권리는 <b>raw 미검증(잠정)</b> 상태입니다. 다만 권리가 깨끗하더라도(인수 0 가정) 위 수익 구조 자체가 적자라 결론은 바뀌지 않습니다. <b>이 단지를 원한다면 경매가 아니라 시장에서 직접 매수하는 편이 합리적</b>입니다.</p>
+    <p><b>권리는 안전하고, 수익은 watch(◇) 등급입니다.</b> 권리는 인수 0·임차인 없음·특수권리 전무로 <b>완전 클린(A 검증 완료)</b>, 자금력도 여유(들어간 내 돈 ~983만, 100% 대출)입니다. <b>구조적 NO-GO 사유(권리 결손·인수 위험·Walk-away &lt; 최저가·자금 불가)는 하나도 없습니다.</b></p>
+    <p>다만 <b>2023년 준공 3년차 신축</b>이라 경매 메리트가 본질적으로 얇습니다. 호가 하단(보수 매도 기준 S) <b>2억 7,600만</b>에 70%승률 입찰가(B70) <b>2억 4,840만</b>을 넣으면 경매 엣지가 2,760만, 고정비용·이자(4개월·100% 대출)를 빼면 <b>세전 EP70 +1,744만(◇ Watch)</b>으로 사용자 관심 기준(2,500만@70%)에 756만 못 미칩니다. 본인 합산 종소세를 빼면 <b>세후 +1,262만</b>입니다.</p>
+    <p>그래도 ◇를 받치는 건 <b>두 가지 안전판</b>입니다. ① 3년차 신축·소형이라 <b>매도 유동성 양호</b>, ② <b>아산테크노밸리권 산단 배후</b>라 매도가 막혀도 임대 전환으로 버틸 수 있습니다. 입찰가 성향은 사용자 판단입니다 — 시세 약세 방어엔 마진형 저가(2억 3,460만·승률 ~50%·세후 +2,134만)가 안전마진에 유리하고, 단기회전 확보엔 균형(2억 4,840만·~70%·세후 +1,262만)입니다. <b>EP70·세후는 매도용 수리·명도를 뺀 세전이익(EP70)을 그대로 과세표준으로 본 v10 기준</b>이며, 실수리(~150만)·명도(~300만)는 유동적이라 별도 참고 변동비로만 둡니다.</p>
   </div>
 
   <h2>1. 물건 개요</h2>
   <div class="grid2">
     <div class="card">
       <h4>기본</h4>
-      <div class="kv"><span class="k">소재지</span><span class="v">충남 아산시 음봉면 산동리 1066 · 204동 703호</span></div>
-      <div class="kv"><span class="k">전용 / 평형</span><span class="v">65.72㎡ (86A · 공급 86.8㎡)</span></div>
-      <div class="kv"><span class="k">준공</span><span class="v">2023.12 · 3년차 신축</span></div>
-      <div class="kv"><span class="k">단지</span><span class="v">아산한라비발디스마트밸리 (complexNo 143364)</span></div>
-      <div class="kv"><span class="k">담당 / 지역</span><span class="v">천안지원 · 아산(priority 2)</span></div>
-      <div class="kv"><span class="k">유찰</span><span class="v">신건(0회) · 1차 매각</span></div>
+      <div class="kv"><span class="k">소재지</span><span class="v">아산 음봉면 산동리 1066 · 204동 703호</span></div>
+      <div class="kv"><span class="k">전용 / 평형</span><span class="v">65.47㎡ (약 20평) · 분양 약 26평형</span></div>
+      <div class="kv"><span class="k">준공</span><span class="v"><b style="color:var(--amber)">2023 · 3년차 신축</b></span></div>
+      <div class="kv"><span class="k">단지</span><span class="v">아산음봉 한라비발디스마트밸리 (산동희망로 40)</span></div>
+      <div class="kv"><span class="k">권역</span><span class="v">아산 priority 2 · 천안 인접 ~20km</span></div>
+      <div class="kv"><span class="k">점유</span><span class="v">임차인 없음 → 소유자/공실 추정</span></div>
     </div>
     <div class="card">
       <h4>금액</h4>
-      <div class="kv"><span class="k">감정가</span><span class="v">3억원</span></div>
-      <div class="kv"><span class="k">최저가</span><span class="v"><b>3억원 (100% · 신건)</b></span></div>
-      <div class="kv"><span class="k">입찰보증금</span><span class="v">3,000만원 (최저 10%)</span></div>
-      <div class="kv"><span class="k">보수 매도 기준(S)</span><span class="v"><b class="hl">2억 9,500만</b> (호가 하단)</span></div>
-      <div class="kv"><span class="k">KB시세</span><span class="v">3억원</span></div>
-      <div class="kv"><span class="k">호가</span><span class="v">2억 9,500만 ~ 3억 3,000만 (37건)</span></div>
+      <div class="kv"><span class="k">감정가</span><span class="v">3억</span></div>
+      <div class="kv"><span class="k">최저가</span><span class="v"><b>2억 1,000만 (70%, 1회유찰)</b></span></div>
+      <div class="kv"><span class="k">입찰보증금</span><span class="v">2,100만 (최저 10%)</span></div>
+      <div class="kv"><span class="k">보수 매도 기준(S)</span><span class="v"><b class="hl">2억 7,600만</b> (호가 하단)</span></div>
+      <div class="kv"><span class="k">호가 range</span><span class="v">2억 7,000만~3억 2,000만 (48건)</span></div>
+      <div class="kv"><span class="k">최근 실거래(≤6mo)</span><span class="v">3억 1,800만 median (2026-05)</span></div>
+      <div class="kv"><span class="k">조회수</span><span class="v">66</span></div>
     </div>
   </div>
-  <p class="note">⚠️ 신건이라 최저매각가(₩3억) = 감정가 = KB시세. 보수 매도 기준 S(₩2억 9,500만, 호가 하단)가 최저매각가보다 <b>낮습니다</b> → 최저가로 받아도 시장가 아래로 사는 게 아님. 매각기일 변경·취하 여부는 D-1 재확인 필요.</p>
+  <p class="note">최저가 70%(1회 유찰). 조회수 66은 수요 대리지표. 신축이라 호가·실거래가 감정가(3억)에 근접 — 경매 메리트 절대폭이 제한적입니다.</p>
 
-  <h2>2. 권리분석 — 안전등급 <b style="color:var(--amber)">잠정 (raw 미검증)</b></h2>
-  <div class="danger">
-    <b>⚠️ 권리 raw 미검증.</b> 이 케이스는 지지옥션 등기권리표·법원임차조사·매각물건명세서 raw가 아직 확인되지 않았습니다. 캘린더 메타데이터상 <code>권리 깨끗(인수 없음) · risk=safe</code>로 표기돼 있으나 <b>미검증 잠정값</b>입니다. <b>입찰을 고려한다면 D-day 전 지지옥션에서 등기·임차조사·매각물건명세서를 직접 확인해야 합니다.</b> 아래 곡선·수익 수치는 모두 <b>"인수금 0" 가정 위에서만 성립</b>합니다.
-  </div>
-  <ul>
-    <li>잠정 등급: <b>safe 표기(미검증)</b> — 말소기준권리·등기 명세·임차인 대항력·명도 난이도 모두 <b>raw 확인 필요</b>.</li>
-    <li>3년차 신축(2023.12 준공) → 통상 선순위 임차인·장기 점유 분쟁 가능성은 낮으나, <b>분양 잔금 미상환·전세 임차인(대항력) 인수 위험</b>은 신축 단지에서 흔하므로 반드시 확인.</li>
-    <li>인수금이 0이 아니면(예: 대항력 임차인 보증금 인수) EP70은 그만큼 더 악화 → NO-GO 결론은 강화될 뿐입니다.</li>
-  </ul>
-
-  <h2>3. 시장 시세 &amp; 보수 매도 기준 (v9)</h2>
   <div class="insight">
-    <b>왜 호가 하단을 쓰나.</b> 매매사업자의 단기 매도는 시장 호가가 아니라 <b>시장가 아래에서 빠르게 체결</b>됩니다. 그래서 수익계산 앵커 S는 <b>호가 하단(₩2억 9,500만)</b>을 씁니다. 이 단지는 호가 37건이 형성돼 있어 thin하지 않으나, <b>최저가(₩3억)가 이미 S(₩2억 9,500만)보다 높아</b> 경매 출발선부터 시장 대비 불리합니다.
+    <b>◇ 진입 경위 — 신건 fail → 1회 유찰 재등장.</b> 6/3 sourcing 당시엔 <b>신건(최저=감정 100%)</b>이라 B70이 감정가 floor에 막혀 EP70 음수 → fail이었습니다. <b>1회 유찰로 최저가가 2억 1,000만(70%)으로 내려오면서</b> B70=clamp(S×0.90, 최저, 상한 S)=2억 4,840만이 시장앵커로 풀려 <b>EP70 +1,744만(◇)으로 진입</b>했습니다. "신건 floor 해소 → 시장앵커 적용"의 전형 사례입니다.
   </div>
-  <h3>현시점 호가 (전용 65.72㎡ · 37건)</h3>
-  <table>
-    <tr><th>구분</th><th class="num">가격</th><th>비고</th></tr>
-    <tr><td>호가 하단(low)</td><td class="num"><b>2억 9,500만</b></td><td>저층/27 · 2026-05-24 등록 · <b>S 앵커</b></td></tr>
-    <tr><td>호가 중앙(median)</td><td class="num">3억 1,500만</td><td>37건 중앙</td></tr>
-    <tr><td>호가 상단(high)</td><td class="num">3억 3,000만</td><td>고층/24 · 2026-06-03 등록</td></tr>
-  </table>
-  <p class="note">호가 표본(최신): 2억 9,500만(저/27) · 3억(1/26) · 3억 1,000만(5/24) · 3억 1,000만(고/24) · 3억 3,000만(고/24). 매물 37건으로 유동성은 양호하나 가격대가 최저매각가 위에 두텁게 깔려 있음.</p>
 
-  <h3>가장 최근 실거래 (#2 강조)</h3>
-  <div class="card" style="margin:8px 0 4px">
-    <div class="kv"><span class="k">최근 실거래</span><span class="v"><b class="hl">3억 1,600만</b> · 2026-02-21 · 9층</span></div>
-    <p class="note" style="margin-top:6px">매각기일(2026-06-09) 기준 약 4개월 전 거래로 <b>6개월 이내(계산 반영 가능)</b>. 단, S 앵커는 호가 하단(2억 9,500만)이 실거래 median(≤6mo)보다 낮아 그대로 사용.</p>
+  <h2>2. 권리분석 — 안전등급 A <span style="color:var(--pos);font-size:13px">(검증 완료 · 인수 0)</span></h2>
+  <p>지지옥션 사건상세 권리검증 결과 <b>인수권리 0 · 인수금 0 확정</b>(rightsVerified=true). 말소기준권리 이후 등기는 매각으로 <b>전부 말소</b>, 말소기준보다 앞선 인수 대상 선순위 권리 <b>없음</b>. <b>임차인 없음</b>(지지옥션 임차조사 — 임차인 정보 부존재).</p>
+  <table>
+    <tr><th>항목</th><th>판정</th></tr>
+    <tr><td>말소기준권리 이후 등기</td><td>전부 말소</td></tr>
+    <tr><td>선순위 인수 권리</td><td><b>없음</b></td></tr>
+    <tr class="pick"><td><b>인수금액</b></td><td><b class="hl">₩0 (clean)</b></td></tr>
+    <tr><td>임차인</td><td><b>없음</b> (대항력 임차인 부존재)</td></tr>
+    <tr><td>특수권리(유치권·법정지상권·분묘·선순위 가처분/가등기)</td><td>5종 <b>전무</b></td></tr>
+  </table>
+  <ul>
+    <li><b>임차인 없음</b> → 인수 보증금 0. 점유는 소유자/공실 추정 → 명도 협의형(또는 인도명령).</li>
+    <li>함정 신호 없음(trapFlag=false) — 임차권등기 표시 無, 신축이라 인수함정 패턴과 무관.</li>
+    <li>명도: 예상 명도비 ₩300만(중앙) — <b>참고 변동비(EP70·과세·세후 제외)</b>, 실제 지출 시 직접 차감.</li>
+  </ul>
+  <div class="insight">
+    <b>D-1 권리 확인은 만전 차원(등급 A 불변).</b> 지지옥션 등기권리표·매각물건명세서 PDF로 인수 0 재확인 + 미납관리비 관리실 문의(소액 추정, 인수 무관) + 취하·변경 재확인.
   </div>
-  <table>
-    <tr><th>거래일</th><th class="num">가격</th><th class="num">층</th><th>비고</th></tr>
-    <tr><td>2026-02-21</td><td class="num">3억 1,600만</td><td class="num">9</td><td>최근 1건(≤6mo)</td></tr>
-    <tr><td>2026-01-20</td><td class="num">3억 1,700만</td><td class="num">11</td><td>≤6mo</td></tr>
-    <tr><td>2025-10-27</td><td class="num" style="color:var(--text-mute)">3억 2,000만</td><td class="num">19</td><td style="color:var(--text-mute)">참고(6mo 초과)</td></tr>
-    <tr><td>2025-09-28</td><td class="num" style="color:var(--text-mute)">3억</td><td class="num">16</td><td style="color:var(--text-mute)">참고(6mo 초과)</td></tr>
-    <tr><td>2025-08-13</td><td class="num" style="color:var(--text-mute)">2억 8,000만</td><td class="num">2</td><td style="color:var(--text-mute)">참고(저층·6mo 초과)</td></tr>
-    <tr><td>2025-08-02</td><td class="num" style="color:var(--text-mute)">3억 500만</td><td class="num">18</td><td style="color:var(--text-mute)">참고(6mo 초과)</td></tr>
-  </table>
 
-  <h3>보수 매도 기준 S 및 비용 분리</h3>
-  <table>
-    <tr><th>항목</th><th class="num">금액</th><th>근거</th></tr>
-    <tr><td>보수 매도 기준 S</td><td class="num"><b>2억 9,500만</b></td><td>호가 하단(v9.basis = "호가 하단") · 단기매도 = 시장가 아래 체결</td></tr>
-    <tr><td>70% 승률 입찰가 B70</td><td class="num"><b>2억 9,500만</b></td><td>clamp(S×k70, 최저 3억, 상한 S) → 바닥 S에 붙음(k70=0.90)</td></tr>
-    <tr><td>취득세 + 법무등기</td><td class="num">388만 9,050</td><td>법무통식 (B70 기준)</td></tr>
-    <tr><td>중개비(매도)</td><td class="num">118만</td><td>S × 0.4%</td></tr>
-    <tr><td>기타</td><td class="num">200만</td><td>고정</td></tr>
-    <tr><td>고정비용 합</td><td class="num">706만 9,050</td><td>취득·법무 + 중개 + 기타</td></tr>
-    <tr class="pick"><td><b>EP70 (세전 기대수익 · 4개월 기준)</b></td><td class="num"><b class="neg">−1,061만</b></td><td>S − B70 − 고정비용 − 이자(4개월). <b>제외 tier</b></td></tr>
-  </table>
-  <p class="note">B70(₩2억 9,500만) ≈ S(₩2억 9,500만)이라 매도차익(S−B70) 자체가 거의 0 → 비용만큼 그대로 적자. <b>경매 할인폭이 없어 비용이 그대로 손실</b>이 되는 구조. ※ 매도용 실수리·명도는 유동적이라 EP70에 미반영(§6.5 참고 변동비).</p>
+  <h2>3. 시장 시세 &amp; 보수 매도 기준 (v10)</h2>
+  <div class="insight">
+    <b>v10은 "기대 매도가" 단일 숫자를 쓰지 않습니다.</b> 현시점 호가 range와 최근 실거래를 있는 그대로 보여주고, 수익계산에는 보수적인 매도 기준(S)만 명시합니다. 단기 매도는 시장가 아래에서 빨리 체결되므로 <b>호가 하단</b>을 앵커로 씁니다. 이 건은 <b>실거래 median(3억 1,800만)이 호가보다 높아 약세 신호가 아니며</b>, S 하향 트리거는 없습니다.
+  </div>
 
-  <h3>대출이자 — 보유 기간별 (LTV 80% · 금리 4.5%, B70 기준)</h3>
+  <h3>현시점 호가 (네이버 fin.land · 단지 143364 · 전용 65.47㎡)</h3>
+  <div class="hoga-bar">
+    <span class="hoga-end">하단 2억 7,000만</span>
+    <span class="hoga-track"></span>
+    <span class="hoga-end">상단 3억 2,000만</span>
+  </div>
+  <p class="note">매물 48건 · 호가 중앙값 3억. 신축 단지라 매물 형성(thin 아님).</p>
+
+  <h3>가장 최근 실거래 (≤6mo)</h3>
+  <div class="trade-hero">
+    <div class="big">3억 1,800만원</div>
+    <div class="note">2026-05 median · 단지 143364 전용 65.47㎡ 동일 평형. 실거래 레인지 2억 8,000만~3억 2,000만. (호가보다 높아 S는 호가 하단 채택)</div>
+  </div>
+
+  <h3>보수 매도 기준 (S) — 수익계산 앵커</h3>
   <table>
-    <tr><th>보유 기간</th><th class="num">이자</th><th>비고</th></tr>
-    <tr><td>3개월</td><td class="num">265만 5,000</td><td></td></tr>
-    <tr class="pick"><td><b>4개월 (EP70 기준)</b></td><td class="num"><b>354만</b></td><td>EP70 산정 앵커</td></tr>
-    <tr><td>5개월</td><td class="num">442만 5,000</td><td></td></tr>
-    <tr><td>6개월</td><td class="num">531만</td><td></td></tr>
+    <tr><th>항목</th><th class="num">값</th><th>근거</th></tr>
+    <tr class="pick"><td><b>보수 매도 기준 S</b></td><td class="num"><b class="hl">2억 7,600만</b></td><td><b>호가 하단</b> = max(호가하단 2억 7,000만, 호가중앙 3억×0.92=2억 7,600만)</td></tr>
+    <tr><td>호가 하단</td><td class="num">2억 7,000만</td><td>네이버 매물 48건 중 최저 호가</td></tr>
+    <tr><td>최근 실거래 median(≤6mo)</td><td class="num">3억 1,800만</td><td>호가보다 높음 → S 하향 미적용</td></tr>
+    <tr><td>k70 (시장 대비 낙찰비율)</td><td class="num">0.90</td><td>보통 경쟁(n≈7) tier. 단지 매각표본 부재 → 충남세종 prior 보수 추정</td></tr>
+    <tr><td>최저가 / S 갭</td><td class="num">−23.9%</td><td>최저 2억 1,000만이 S 2억 7,600만 대비. 경매 엣지의 원천</td></tr>
   </table>
-  <p class="note">EP70은 <b>4개월 보유</b> 기준입니다. 보유가 길어질수록 이자가 늘어 적자가 더 깊어집니다(6개월이면 −1,238만 수준).</p>
+  <p class="note"><b>왜 호가 하단?</b> 단기 매도는 시장가 아래에서 체결됩니다. 실거래 median(3억 1,800만)이 호가보다 높아 약세 신호가 아니므로, 보수적으로 <b>호가 하단 기준 S=2억 7,600만</b>을 채택했습니다. 감정가(3억)는 실거래보다 낮아 입찰 근거에선 보조로만 봅니다. <b>신축이라 최저가(2억 1,000만)·B70(2억 4,840만)이 시세에 비교적 근접</b> — 경매 엣지 S×(1−k70)=2,760만으로 살아있으나 노후 단지 대비 절대폭은 제한적입니다.</p>
+
+  <h3>비용 항목 분리 (v10 #4)</h3>
+  <table>
+    <tr><th>고정비용 항목</th><th class="num">금액</th><th>근거</th></tr>
+    <tr><td>취득세 + 법무등기 (법무통)</td><td class="num">3,330,316</td><td>법무통(bmtong) 환산식 · B70(2억 4,840만) 기준 · 1.1%</td></tr>
+    <tr><td>중개비(매도)</td><td class="num">1,104,000</td><td>S × 0.4%</td></tr>
+    <tr><td>기타</td><td class="num">2,000,000</td><td>이전·잡비 정액</td></tr>
+    <tr><td><b>고정비용 합계</b></td><td class="num"><b>6,434,316</b></td><td>이자 제외</td></tr>
+  </table>
+  <h3>대출이자 — 보유 3~6개월 (100% 대출 · 금리 4.5%)</h3>
+  <table>
+    <tr><th>보유 기간</th><th class="num">대출이자</th><th class="num">총비용(고정+이자)</th><th>비고</th></tr>
+    <tr><td>3개월</td><td class="num">2,794,500</td><td class="num">9,228,816</td><td></td></tr>
+    <tr class="pick"><td><b>4개월 ★EP70 기준</b></td><td class="num"><b>3,726,000</b></td><td class="num"><b>10,160,316</b></td><td>EP70은 4개월 기준</td></tr>
+    <tr><td>5개월</td><td class="num">4,657,500</td><td class="num">11,091,816</td><td></td></tr>
+    <tr><td>6개월</td><td class="num">5,589,000</td><td class="num">12,023,316</td><td>회전 지연 시</td></tr>
+  </table>
+  <p class="note"><b>EP70(세전 기대수익) = S − B70 − 고정비용 − 이자(4개월)</b> = 2억 7,600만 − 2억 4,840만 − 643만 − 373만 = <b class="hl">+1,744만</b>(watch ◇). <b>v10에서는 이 EP70이 곧 과세표준</b>입니다(6.5절). 명도비·수리비는 참고 변동비로 과세·세후에서 제외합니다.</p>
 
   <h2>4. 입찰가별 기대수익 곡선</h2>
-  <p class="note">세전이익 = S(2억 9,500만) − 입찰가 − 비용. 명도·수리·세금 별도. 인수금 0 가정. <b>신건이라 입찰 하한이 최저매각가(₩3억) = S 위</b>여서 곡선이 단일 지점에 갇힘.</p>
+  <p class="note">세전이익 = S(2억 7,600만) − 입찰가 − 비용(고정+이자 4개월). 명도·수리·세금 별도. 낙찰확률은 추정(당일 응찰자 수 편차 큼). <b>인수금 0 검증 완료.</b></p>
   <table>
     <tr><th>입찰가</th><th class="num">낙찰확률</th><th class="num">세전이익(명도·수리·세금 前)</th><th>tier</th></tr>
-    <tr class="pick"><td>3억 (최저매각가)</td><td class="num">~30%</td><td class="num neg"><b>−1,061만</b></td><td>제외</td></tr>
+    <tr><td>2억 1,000만 (최저)</td><td class="num">~30%</td><td class="num pos">+5,688만</td><td>★</td></tr>
+    <tr class="pick"><td>2억 3,460만 (마진형·B50)</td><td class="num"><b>~50%</b></td><td class="num pos"><b>+3,161만</b></td><td>★</td></tr>
+    <tr class="pick"><td>2억 4,840만 (권장·B70)</td><td class="num"><b>~70%</b></td><td class="num pos"><b>+1,744만</b></td><td>◇</td></tr>
+    <tr><td>2억 5,944만 (낙찰형·B85)</td><td class="num">~85%</td><td class="num">+610만</td><td>▷</td></tr>
+    <tr><td>2억 6,538만 (세전 본전 근사)</td><td class="num">~92%</td><td class="num neg">−0</td><td>Walk-away</td></tr>
+    <tr><td>2억 7,600만 (=S 상한)</td><td class="num">~97%</td><td class="num neg">−1,217만</td><td>경매 메리트 소멸</td></tr>
   </table>
-  <p class="note"><b>★ 2,500만선·본전선 모두 도달 불가.</b> 최저매각가(₩3억)가 이미 S(₩2억 9,500만)를 ₩500만 초과 → 어떤 입찰가에서도 세전이익이 양(+)이 될 수 없음. 입찰가를 올릴수록 적자만 깊어짐. <b>세전 본전선(BEP)은 S − 비용 ≈ 2억 8,800만으로, 입찰 가능 하한(₩3억)보다 낮아 도달 불가.</b></p>
+  <p class="note"><b>★지점(EP70 ≥ 세전 2,500만)</b>: 마진형(2억 3,460만, 승률 50%)까지. <b>권장 B70(2억 4,840만)은 756만 부족 = ◇</b>. <b>본전선(세전)</b>: ~2억 6,538만 = 절대 상한 권장(명도·수리 포함 시 더 보수적으로 ~2억 6,000만). 정상 입찰 영역은 전부 흑자 — 제외선(−1,000만)은 S 상한 근처에서만 도달.</p>
 
-  <h2>5. 입찰 3안 비교</h2>
-  <p class="note">신건이라 마진형·균형·낙찰형 입찰가가 모두 입찰 하한(최저매각가 ₩3억 = B70 clamp 결과)으로 수렴 → 3안이 동일 지점.</p>
+  <h2>5. 입찰 3안 비교 ★</h2>
   <table>
-    <tr><th>지표</th><th class="num">🟢 마진형</th><th class="num">🟡 균형</th><th class="num">🔴 낙찰형</th></tr>
-    <tr><td>입찰가</td><td class="num">2억 9,500만</td><td class="num">2억 9,500만</td><td class="num">2억 9,500만</td></tr>
-    <tr><td>들어간 내 돈(자기자본)</td><td class="num">6,738만 9,050</td><td class="num">6,738만 9,050</td><td class="num">6,738만 9,050</td></tr>
-    <tr><td>세전이익(EP)</td><td class="num neg">−1,061만</td><td class="num neg">−1,061만</td><td class="num neg">−1,061만</td></tr>
+    <tr><th>지표</th><th class="num">🟢 마진형 2억 3,460만</th><th class="num">🟡 균형 2억 4,840만</th><th class="num">🔴 낙찰형 2억 5,944만</th></tr>
+    <tr><td>입찰가(권장 응찰가)</td><td class="num">234,637,891</td><td class="num">248,418,743</td><td class="num">259,456,529</td></tr>
+    <tr><td>낙찰확률</td><td class="num">~50%</td><td class="num">~70%</td><td class="num">~85%</td></tr>
+    <tr><td>들어간 내 돈(자기자본)</td><td class="num">~966만</td><td class="num">~983만</td><td class="num">~996만</td></tr>
+    <tr><td>낙찰 시 세전이익(EP)</td><td class="num pos">+3,161만</td><td class="num">+1,744만</td><td class="num pos">+610만</td></tr>
+    <tr><td><b>세후 순이익(중립매도 2억 7,600만)</b></td><td class="num pos"><b>+2,134만</b></td><td class="num pos"><b>+1,262만</b></td><td class="num pos">+449만</td></tr>
+    <tr><td>손익분기 매도가(세전 본전)</td><td class="num">~2억 4,440만</td><td class="num">~2억 5,860만</td><td class="num neg">~2억 7,000만</td></tr>
   </table>
-  <p class="note">번들 threeBid 기준 세 안의 입찰가·자기자본·세전이익이 동일(신건 단일 지점). 실제 입찰 가능 최저가는 ₩3억이며, 그 경우 적자는 더 깊어집니다.</p>
+  <p class="note"><b>들어간 내 돈</b> = 부대비(취득세·법무+기타) + 명도(~300만) + 매도용 실수리(~150만). 100% 대출(70% 경락+30% 신용)이라 입찰가·보증금은 대출 조달. 입찰보증금 2,100만은 입찰 당일 현금 필요 → 신용대출(30%분)을 입찰 전 선실행해 충당.</p>
 
-  <h3>매도가 민감도 — 세후 순이익</h3>
+  <h3>매도 3단 민감도 — 세후 순이익</h3>
   <table>
-    <tr><th>매도 시나리오</th><th class="num">매도가</th><th class="num">세전(biz)</th><th class="num">종소세</th><th class="num">세후(after)</th></tr>
-    <tr><td>보수</td><td class="num">2억 8,025만</td><td class="num neg">−2,530만</td><td class="num">0</td><td class="num neg"><b>−2,530만</b></td></tr>
-    <tr class="pick"><td>중립</td><td class="num">2억 9,500만</td><td class="num neg">−1,061만</td><td class="num">0</td><td class="num neg"><b>−1,061만</b></td></tr>
-    <tr><td>낙관</td><td class="num">3억 3,000만</td><td class="num pos">+2,425만</td><td class="num">400만</td><td class="num pos"><b>+2,025만</b></td></tr>
+    <tr><th>입찰가 \ 매도가</th><th class="num">보수 2억 6,500만</th><th class="num">중립 2억 7,600만(S)</th><th class="num">낙관 3억</th></tr>
+    <tr><td>마진형 2억 3,460만</td><td class="num pos">+1,460만</td><td class="num pos">+2,134만</td><td class="num pos">+3,604만</td></tr>
+    <tr><td>균형 2억 4,840만</td><td class="num pos">+477만</td><td class="num pos">+1,262만</td><td class="num pos">+2,732만</td></tr>
+    <tr><td>낙찰형 2억 5,944만</td><td class="num neg">−485만</td><td class="num pos">+449만</td><td class="num pos">+2,035만</td></tr>
   </table>
-  <p class="note">세전(biz)·세후(after)는 모두 <b>매도용 실수리·명도 제외 기준</b>(v9.2). 실수리·명도는 별도 참고 변동비(§6.5).</p>
-  <div class="danger">
-    <b>흑자는 호가 상단(₩3억 3,000만)에 정확히 팔아야만 가능.</b> 보수·중립 매도에서는 모두 적자(−2,530만 / −1,061만). 낙관(호가 최상단) 매도에서만 세후 +2,025만인데, 이는 "최저가에 낙찰 + 단기에 시장 최상단가에 매도"라는 <b>거의 불가능한 양끝 조합</b>을 동시에 충족해야 합니다. 과열 단지(낙찰가율 94.8%)에서 최저가 낙찰 자체가 비현실적이라 사실상 적자 시나리오만 남습니다.
+  <p class="note">※ 세후 순이익은 <b>v10 기준 — 과세표준 = EP70(세전 기대수익)</b>. <b>매도용 실수리(~150만)·명도(~300만)는 유동적이라 과세·세후에서 제외한 별도 참고 변동비</b>이며, 실제 지출 시 위 세후에서 직접 차감하세요. 음수(0 미만)는 종소세 0.</p>
+  <div class="insight">
+    <b>반직관 포인트.</b> 보수 매도(2억 6,500만)에서도 흑자를 사수하는 건 <b>마진형(+1,460만)과 균형형(+477만)</b>이고, 낙찰형은 보수 매도 시 손실(−485만)입니다. 신축이라 경매 엣지가 얇아(S×(1−k70)=2,760만) <b>입찰가가 조금만 올라도 안전마진이 빠르게 소진</b>됩니다. <b>싸게 받으면 좋고, 비싸지면 굳이 안 받는 게 합리</b>. 미낙찰 시 보증금은 즉시 반환되므로 다음 물건으로 미련 없이 넘어가면 됩니다.
   </div>
 
-  <h2>6. 수익화 전략</h2>
+  <h2>6. 수익화 — 단기회전 (본인 명의 매매사업자)</h2>
   <ul>
-    <li><b>권장 출구: 없음(입찰 비권장).</b> A 즉시전매는 매도차익이 비용을 덮지 못해 적자, B/C 임대도 진입원가가 시장가와 동일해 자본차익 기대 불가.</li>
-    <li>65.72㎡ ≤ 85㎡ → 건물분 부가세 면세이고 3년차 신축이라 물건 자체는 깨끗하나, <b>진입가 메리트가 없어</b> 수익화 전략을 논할 단계가 아닙니다.</li>
-    <li>건강보험: 과세표준(EP70) 기준 실현이익이 −1,061만(손실) &lt; ₩2,000만 → 사업소득 추가 건강보험료 발생 없음(애초에 흑자가 아님).</li>
-    <li>대안: 이 단지·평형을 원한다면 <b>경매 대신 네이버 호가 하단(₩2억 9,500만) 직접 매수</b>가 더 합리적 — 경매 비용(취득세 차이 미미하나 명도 리스크·기간 비용)을 피할 수 있음.</li>
+    <li><b>권장 출구 = A 즉시전매(단기회전, 중앙 4개월)</b>. 매도 S(2억 7,600만)에서 <b>본인 명의 v10 세금 기준 적용</b>(세후는 §6.5).</li>
+    <li>전용 65.47㎡ ≤ 85㎡ → <b>건물분 부가세 면세</b>. 무주택 첫 진입 → 종부세·다주택 중과 무영향.</li>
+    <li><b>D(리모델링) 메리트 낮음 — 3년차 신축이라 수리 투자 회수 불가</b>(가치상승 &lt; 비용). 수리비 모드 A(As-is, 청소·줄눈, ~300만)만 적용.</li>
+    <li><b>B(임대) 안전판 ★★★ — 아산테크노밸리권 산단 배후 임대수요.</b> 매도 12개월+ 지연 시 자동 임대 전환으로 손실 방어. 이 안전판이 ◇를 받칩니다.</li>
+    <li>C(장기임대 5년+)·E(자가·천안 거주·명의 상충)는 비추천/fallback.</li>
   </ul>
+  <h3>자기자본 수익률 (참고 — 100% 대출 레버리지)</h3>
+  <table>
+    <tr><th>입찰가</th><th class="num">들어간 내 돈</th><th class="num">손에 남는 돈(세후)</th><th class="num">자기자본 ROI</th><th class="num">연환산(4개월)</th></tr>
+    <tr><td>마진형 2억 3,460만</td><td class="num">~966만</td><td class="num pos">+2,134만</td><td class="num">221%</td><td class="num">662%</td></tr>
+    <tr class="pick"><td>균형 2억 4,840만</td><td class="num">~983만</td><td class="num pos">+1,262만</td><td class="num">128%</td><td class="num">385%</td></tr>
+    <tr><td>낙찰형 2억 5,944만</td><td class="num">~996만</td><td class="num pos">+449만</td><td class="num">45%</td><td class="num">135%</td></tr>
+  </table>
+  <p class="note">⚠️ ROI가 매우 높은 건 <b>100% 대출 레버리지 효과</b> — 들어간 내 돈이 부대 현금(~1,000만)뿐이라 분모가 작습니다. <b>절대 수익(세후 +1,262만, 균형)으로 판단</b>하세요. 진입원가 IRR(참고)은 균형 기준 약 5.1%(4개월)·연환산 ~15%.</p>
 
-  <h2>6.5 종합소득세 &amp; 세후이익 (v9.2 · 배우자 합산 누진)</h2>
+  <h2>6.5 종합소득세 &amp; 세후이익 (v10 · 본인 명의)</h2>
+  <div class="insight">
+    <b>세금 주체는 본인입니다.</b> 본인 근로 과세표준 <b>7,235만</b>(총급여 8,800만, 근로만 산출세액 1,160만)에 이 거래의 사업소득(과세표준 = EP70)을 합산해 누진세를 계산합니다. EP70은 이미 수리·명도·인수금을 제외한 세전 기대수익이므로, 실수리·명도는 과세·세후에서 제외하고 참고 변동비로만 둡니다.
+  </div>
   <table>
     <tr><th>항목</th><th class="num">금액</th><th>비고</th></tr>
-    <tr><td>과세표준 = EP70 (세전 기대수익)</td><td class="num neg"><b>−1,061만</b></td><td>v9.2 — EP70 그 자체(실수리·명도 차감 없음)</td></tr>
-    <tr><td>종합소득세 (지방세 포함)</td><td class="num">0</td><td>EP70이 음수(손실) → 추가 종소세 없음</td></tr>
-    <tr><td>한계세율</td><td class="num">—</td><td>손실 구간 (과세 대상 아님)</td></tr>
-    <tr class="pick"><td><b>세후이익</b></td><td class="num neg"><b>−1,061만</b></td><td>과세표준(EP70) − 종소세 = 손실 확정</td></tr>
+    <tr class="pick"><td><b>과세표준 = EP70 (세전 기대수익, 4개월)</b></td><td class="num"><b class="hl">+17,439,684</b></td><td>S − B70 − 고정비용 − 이자(4개월·100% 대출). 수리·명도 제외</td></tr>
+    <tr><td>본인 근로 과세표준</td><td class="num">72,350,000</td><td>v10 기준 base (근로만 산출세액 11,604,000)</td></tr>
+    <tr><td>합산 과세표준</td><td class="num">89,789,684</td><td>8,800만 초과분 1,789,684원이 35%(지방세 포함 38.5%) 구간 진입</td></tr>
+    <tr><td>(−) 추가 종합소득세(지방세 포함)</td><td class="num neg">−4,820,628</td><td>실효 한계세율 약 <b>27.6%</b></td></tr>
+    <tr class="pick"><td><b>세후이익</b></td><td class="num"><b class="hl">+1,262만</b></td><td>12,619,056원</td></tr>
   </table>
-  <div class="insight">
-    <b>종소세 산정 구조(참고).</b> 본 하네스는 과세표준을 <b>EP70(세전 기대수익)</b>으로 잡고, 이를 <b>배우자 근로소득 ₩3,600만에 사업소득으로 합산</b>해 누진 한계세율을 적용합니다. 산정은 3단계입니다 — ① 근로만 과세표준 ₩2,385만 → 산출세액 ₩232만, ② 합산 과세표준 = ₩2,385만 + EP70 → 합산 산출세액, ③ 추가 종소세 = (합산 산출세액 − ₩232만) × 1.1(지방세). 사업소득이 커지면 15%→24%→35% 구간이 자동 이동합니다. <b>다만 이 건은 EP70이 음수라 ② 합산 과세표준이 근로만 과세표준 이하로 내려가 추가 종소세가 발생하지 않습니다</b>(손실). 흑자 낙관 시나리오(세전 +2,425만)에서만 한계 16.5%로 ₩400만이 과세됩니다.
+  <p class="note"><b>산정 3단:</b> ① 근로만 세액 1,160만. ② 본인 근로 과표 7,235만 + EP70 1,744만 = 합산 과표 8,979만. ③ 합산 산출세액 1,599만 − 근로만 세액 1,160만 = 438만 × 1.1(지방세) = 추가 종소세 482만. EP70 일부(179만)가 35% 구간에 걸려 평균 세율이 26.4%보다 약간 높습니다. <b>건강보험</b>: 균형 EP70(1,744만) &lt; 2,000만 → 보수외소득 추가 <b>없음</b>. (단 마진형 EP50 3,161만은 2,000만 초과분 ×7.09% ≈ ~82만 추가, 11월 정산.)</p>
+  <div class="insight" style="background:rgba(245,158,11,.08);border-left-color:var(--amber)">
+    <b>📌 참고 변동비 (과세·세후 제외).</b> 매도용 실수리(연식 ≤8년 ~150만)·명도(~300만)는 금액 변동이 커 EP70·세금 계산에서 제외했습니다. 실제 지출이 발생하면 위 세후이익에서 직접 차감하세요. <b>신축이라 실수리는 청소·줄눈 최소 수준</b>입니다.
   </div>
-  <p class="note">📌 <b>참고 변동비(과세·세후 제외)</b>: 매도용 실수리 ~150만 · 명도 ~300만 — 유동적이라 EP70·세금에 미반영, 실제 지출 시 직접 차감(리모델링 참고 상한 ~300만도 참고만). 매도가(S) ₩2억 9,500만 ≤ ₩3억 5,500만 → 배우자 명의(24% 이하 구간) 안전, 본인 명의(35%) 비교 불필요.</p>
 
   <h2>7. D-day 액션 플랜</h2>
-  <div class="danger">
-    <b>🔴 입찰 비권장.</b> 수익 구조가 적자(EP70 −1,061만, 제외 tier)이고 과열 단지라 메리트가 없습니다. 아래 액션은 "그래도 검토한다면" 최소 확인 사항입니다.
+  <div class="insight">
+    <b>✅ 권리 확정 — D-1 액션은 만전 차원 + 경쟁강도 확인.</b> 인수 0·임차인 없음 검증됐습니다. 남은 건 <b>단지 매각사례 확인</b>(k70 0.90 vs 신축 인기단지 과열 0.94)·취하변경·입찰가 확정입니다.
   </div>
   <div class="grid2">
     <div class="card">
-      <h4>입찰 전 필수 검증 (권리 미검증)</h4>
+      <h4>D-1 확인 (권리는 확정)</h4>
       <ul style="margin:0">
-        <li><b>지지옥션 등기권리표 직접 확인</b> — 말소기준·인수권리</li>
-        <li><b>법원임차조사·전입세대</b> — 대항력 임차인 여부</li>
-        <li><b>매각물건명세서 PDF</b> — 인수조건·특별매각조건</li>
-        <li>분양 잔금/전세 인수 위험(신축 단지 특유) 점검</li>
+        <li><b>단지 매각사례 확인</b>(k70 0.90 vs 과열 0.94 — 신축 인기단지면 응찰 과열 가능)</li>
+        <li>지지옥션 등기권리표·매각물건명세서 PDF — 인수 0 재확인</li>
+        <li>네이버 65.47㎡ 호가·실거래 → S=2억 7,600만 검증</li>
+        <li>취하·변경 재확인 · 미납관리비 관리실 문의</li>
       </ul>
     </div>
     <div class="card">
-      <h4>경제성 재확인</h4>
+      <h4>입찰 전 (D-20~D-1)</h4>
       <ul style="margin:0">
-        <li>네이버 호가 하단 재확인 → S=2억 9,500만 검증</li>
-        <li>최저가(₩3억) &gt; S 구조 = 경매 메리트 없음 재인지</li>
-        <li>단지 직접 매수(시장) 옵션과 비교</li>
-        <li>매각기일 변경·취하 여부 D-1 확인</li>
+        <li>입찰가 결정 (3안 중 성향 선택)</li>
+        <li>본인 명의 매매사업자 등록 준비(잔금 전)</li>
+        <li><b>신용대출 선실행</b> → 입찰보증금 2,100만 충당</li>
+        <li>대출상담사 100% 대출(경락70+신용30) 실한도 확정</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>낙찰 후 (D+0~D+30)</h4>
+      <ul style="margin:0">
+        <li>잔금 전 매매사업자 등록(본인·면세)</li>
+        <li>경락+신용대출 실행(100%)</li>
+        <li>점유자 명도 협상(임차인 없음 → 협의형/공실, 보수 300만)</li>
+        <li>소유권 이전</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>매도 (D+90~D+120)</h4>
+      <ul style="margin:0">
+        <li>네이버부동산 등록, 중립 2억 7,600만 타겟</li>
+        <li>4개월 내 체결 목표(단기회전)</li>
+        <li>지연 시 임대 전환(산단 배후 안전판)</li>
+        <li>종합소득세 다음 해 5월 신고 반영</li>
       </ul>
     </div>
   </div>
-  <p class="note">권리가 깨끗하더라도(인수 0) 수익 구조 자체가 적자이므로 결론(NO-GO)은 바뀌지 않습니다. 실수리·명도는 EP70에 미반영된 참고 변동비(과세 제외)이며, 실제 지출 시 추가로 적자가 더 깊어집니다. 다음 후보(천안·아산 유찰 물건 중 시장가 대비 할인폭 있는 건)로 이동 권장.</p>
 
   <h2>8. 최종 의견</h2>
   <div class="lead">
-    <p><b>🔴 NO-GO.</b> 신건이라 최저매각가(₩3억)가 감정가·KB시세와 동일하고, 보수 매도 기준 S(호가 하단 ₩2억 9,500만)보다도 ₩500만 높습니다. <b>경매의 본질인 "시장가 대비 할인폭"이 0 이하</b>라, 어떤 입찰가에서도 세전이익이 양(+)이 될 수 없습니다. 세전 EP70 −1,061만 · 세후 −1,061만으로 <b>제외(예상 적자 1,000만↑) tier</b>입니다.</p>
-    <p>게다가 이 단지는 직전 5건 낙찰가율 평균 <b>94.8%·평균 응찰 8.2명의 과열 단지</b>라, 실제 낙찰가는 감정가 부근 또는 그 위에서 형성될 가능성이 높습니다 — 적자 폭은 더 커질 수 있습니다. 흑자는 "최저가 낙찰 + 호가 최상단 단기 매도"라는 비현실적 양끝 조합에서만 가능합니다.</p>
+    <p><b>구조적으로 안전하고 권리·자금·세금 모두 통과</b>하는 깔끔한 신축 물건입니다. 권리는 A 검증 완료(인수 0·임차인 없음), 자금력도 여유(들어간 내 돈 ~983만, 100% 대출·DSR ~22%), 최저가가 보수 매도 기준(S) 대비 −23.9%로 경매 엣지가 살아 있습니다. 다만 <b>2023년 준공 3년차 신축</b>이라 경매 메리트가 본질적으로 얇아 <b>EP70은 watch(◇)</b> — 70%승률 입찰가에서 세전 1,744만(★기준 2,500만에 756만 부족), 세후 +1,262만입니다(v10 과세표준 = EP70 기준).</p>
+    <p>◇를 받치는 건 <b>매도 유동성(3년차 신축·소형)</b>과 <b>임대 안전판(아산테크노밸리권 산단 배후)</b>입니다. 마진은 입찰가 성향에 크게 좌우됩니다.</p>
     <ul style="margin:6px 0">
-      <li><b>권리는 raw 미검증(잠정)</b> — 위 수치는 모두 인수금 0 가정 위 성립. 인수금이 있으면 적자만 심화.</li>
-      <li><b>이 평형을 원한다면 경매가 아니라 시장 직접 매수</b>(호가 하단 ₩2억 9,500만)가 합리적.</li>
-      <li>경매 메리트가 있는 다음 후보(유찰로 최저가가 시장가 아래로 내려온 건)로 이동 권장.</li>
+      <li><b>마진·안전 우선</b> → 마진형 2억 3,460만(낙찰확률 ~50%, 세후 +2,134만, 보수 매도에도 흑자)</li>
+      <li><b>단기 회전 확보 우선</b> → 균형 2억 4,840만(70% 확보·세후 +1,262만)</li>
+      <li><b>절대 상한 ~2억 6,538만</b>(세전 본전선) 초과 금지. 낙찰형(2억 5,944만)은 보수 매도 시 손실(−485만)</li>
     </ul>
-    <p><b>결론: 입찰하지 않습니다.</b></p>
+    <p>권리·자금·구조는 모두 확정됐습니다. 남은 건 <b>입찰가 성향 선택 + D-1 단지 매각사례 확인(경쟁강도)</b>입니다. 신축 경매 메리트 한계와 시세 약세 방어를 감안하면 <b>마진형 저가 입찰이 안전마진 확보에 유리</b>합니다. 미낙찰 시 보증금은 즉시 반환되므로 미련 없이 다음 물건으로 넘어가면 됩니다.</p>
   </div>
 
   <div class="foot">
-    출처: 네이버 fin.land 단지 2026타경10227 호가·실거래(번들 complexNo 143364) + v9 cases.js + bid-price-engine §0.5 v9 / monetization §10 · 작성 2026-06-03 (v9.2 세금 동기화 — 과세표준 = EP70, 실수리·명도는 참고 변동비로 분리)<br>
-    분석 신뢰도: <b>중</b> — 시세(네이버 호가 37건·실거래 ≤6mo)는 확인됐으나 <b>권리 raw 미검증(잠정 등급)</b>. 곡선·수익·세금은 "인수금 0" 가정 위 성립. 입찰 검토 시 지지옥션 등기·임차조사·매각물건명세서 직접 확인 필수.<br>
-    ※ 법원 공시자료·추정치 기반으로 오류·변경 가능. 투자 책임은 이용자에게 있습니다.
+    출처: 네이버 fin.land 단지 143364 호가(48건)·실거래(2026-05 median 3억 1,800만) + <b style="color:var(--pos)">지지옥션 권리검증(인수 0·임차인 없음, rightsVerified=true)</b> + 2026-06-23 monthly-sourcing Tier2 앵커 + bid-price-engine §0.5 v10 / monetization-scenarios §10 v10 · deep-dive 작성 2026-06-29<br>
+    분석 신뢰도: <b>중상</b> — 권리 검증완료(인수 0)·시세 호가 48건/실거래 ≤6개월 확보. 잔여: 단지 매각사례 표본 부재(경쟁강도 n≈7 충남세종 prior 보수 추정 — D-1 확인 권고)·법무통 live 조회. EP70·자금력·곡선·세후는 "인수금 0" 검증 위 성립.<br>
+    Wiki: complex/아산음봉한라비발디스마트밸리(신규), court/천안지원, region/아산, topic/market-anchored-bid · 케이스 산출물: _workspace/cases/2026타경10227/<br>
+    ※ 법원 공시자료·네이버 시세 기반 추정치로 오류·변경 가능. 투자 책임은 이용자에게 있습니다.
   </div>
 </div>
 </body>
