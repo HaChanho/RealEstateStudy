@@ -4397,7 +4397,7 @@ window.AUCTION_CASES = [
     "areaSqm": 85,
     "appraisalPrice": 323000000,
     "minimumPrice": 226100000,
-    "kbPrice": null,
+    "kbPrice": 320000000,
     "rounds": 2,
     "region": "천안서북",
     "regionPriority": 1,
@@ -4417,7 +4417,7 @@ window.AUCTION_CASES = [
     "expectedProfit50": 35008561,
     "rating": null,
     "verdict": "candidate",
-    "verdictReason": "조건부 GO(수익 ◇) — 보수 매도 기준 3.04억(호가) · 입찰권장 273M(70%) · 세전 EP70 ₩19M · 세후 ₩14M. 권리 검증·인수 0. (2026-06-23 v10 sourcing Tier2) · [deep-dive 2026-06-29] 권리 A 확정·5단계 풀 파이프라인+HTML 보고서",
+    "verdictReason": "조건부 GO(수익 ◇) — 보수 매도 기준 3.04억(호가) · 입찰권장 273M(70%) · 세전 EP70 ₩19M · 세후 ₩14M. 권리 검증·인수 0. (2026-06-23 v10 sourcing Tier2) · [deep-dive 2026-06-29] 권리 A 확정·5단계 풀 파이프라인+HTML 보고서 · [네이버 재조사 2026-06-30] 매매 21건 정상(단일매물 아님)·502호=5층 저층보정→현실매도 315~320M(고층 327은 과대) · 사용자 공격 입찰 계획 290M",
     "tags": [
       "천안서북",
       "천안역우방아이유쉘",
@@ -4427,7 +4427,7 @@ window.AUCTION_CASES = [
     ],
     "sourcingSession": "2026-06-23 v10 monthly-sourcing(7월) Tier2(네이버+지지옥션 권리검증) + 2026-06-29 deep-dive(천안지원 ◇ 풀 파이프라인)",
     "addedAt": "2026-06-23",
-    "updatedAt": "2026-06-29",
+    "updatedAt": "2026-06-30",
     "hauctionUrl": "https://www.hauction.co.kr/search/auction?unique_year=2025&unique_number=12408",
     "k70": 0.9,
     "repairCost": 3000000,
@@ -4461,15 +4461,17 @@ window.AUCTION_CASES = [
       "complexNo": "115413",
       "askingPrice": {
         "low": 300000000,
-        "median": 330000000,
-        "high": null,
-        "count": null,
+        "median": 335000000,
+        "high": 360000000,
+        "count": 10,
+        "dealCount": 21,
         "area": 85
       },
       "real6moMedian": 327000000,
       "real6moDate": "2026-05",
-      "note": "84.99㎡ 20호가 300~335·py1 실거래11건 ~327",
-      "updatedAt": "2026-06-23"
+      "floorAdjustedSale": 318000000,
+      "note": "재조사 2026-06-30: 매매 21건(110A 10호가 300~360·중앙335, 300은 바닥1건)·전세1·월세1 → 단일매물 아님. KB 320/부동산원 310. 502호=5층 저층보정→현실매도 315~320M(고층 실거래327은 과대)",
+      "updatedAt": "2026-06-30"
     },
     "reportUrl": "report-2025타경12408.html"
   },
