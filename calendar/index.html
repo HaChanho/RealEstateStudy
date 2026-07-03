@@ -436,6 +436,8 @@
   .naver-data .trade-item .price { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
   .naver-data .trade-item .area { color: var(--text-dim); font-variant-numeric: tabular-nums; }
   .naver-data .trade-item .floor { color: var(--text-mute); }
+  .naver-data .trade-item .price .trade-tag { margin-left: 5px; font-size: 9px; font-weight: 600; padding: 1px 4px; border-radius: 4px; vertical-align: middle; }
+  .naver-data .trade-item .price .trade-tag.direct { color: #b45309; background: rgba(245,158,11,.15); }
   .naver-data .empty { color: var(--text-mute); font-size: 11px; font-style: italic; }
   .naver-updated { color: var(--text-mute); font-size: 10px; margin-top: 6px; text-align: right; }
   /* 호가 분포 바 (v9.1 — track + ticks + legend, 라벨 오버플로 없음) */
@@ -2135,7 +2137,10 @@
           if (stale && !sepShown) { list.appendChild(el('div', { cls: 'trade-sep', text: '─── 6개월 초과 (참고) ───' })); sepShown = true; }
           const item = el('div', { cls: 'trade-item' + (stale ? ' stale' : '') });
           item.appendChild(el('span', { cls: 'date', text: t.date || '—' }));
-          item.appendChild(el('span', { cls: 'price', text: fmtMoney(t.price) }));
+          const priceCell = el('span', { cls: 'price' });
+          priceCell.appendChild(document.createTextNode(fmtMoney(t.price)));
+          if (t.type === '직거래') priceCell.appendChild(el('span', { cls: 'trade-tag direct', text: '직거래' }));
+          item.appendChild(priceCell);
           item.appendChild(el('span', { cls: 'area', text: (t.area != null) ? (+t.area).toFixed(0) + '㎡' : '—' }));
           item.appendChild(el('span', { cls: 'floor', text: t.floor ? t.floor + '층' : '' }));
           list.appendChild(item);
