@@ -1908,10 +1908,10 @@
     // 매각 결과 도래 시 [내 예상 N개 + 모델 예측(감정가×예측매각가율)] vs 실측 3자 오차를 일괄 비교, 최소 |오차%| 강조.
     {
       const myBids = predictionBids(c);
+      const modelBid = modelExpectedBid(c);
+      const ar = resultFor(c);
+      const actual = (ar && ar.soldPrice != null) ? ar.soldPrice : null;
       if (myBids.length) {
-        const modelBid = modelExpectedBid(c);
-        const ar = resultFor(c);
-        const actual = (ar && ar.soldPrice != null) ? ar.soldPrice : null;
         const mark = i => (myBids.length > 1 ? ['①', '②'][i] : '');
         const isActual = isActualBidEntry(c);
         const psec = section(isActual ? '🎯 내 입찰가 (실제)' : '🎯 내 예상 낙찰가', { boxed: true, accent: 'pred', key: 'pred' });
@@ -1986,6 +1986,16 @@
           psec.appendChild(grid);
           psec.appendChild(el('div', { cls: 'small-note', text: '모델 예측 = 감정가 × 예측 매각가율. 매각 결과가 나오면 내 예상·모델·실측 3자 오차가 자동 비교됩니다.' }));
         }
+        inner.appendChild(psec);
+      } else if (modelBid != null && actual == null) {
+        // 내 예상 미등록 + 결과 전 — 모델 예상 낙찰가 단독 표시
+        const rate = (c.saleRateMu != null) ? c.saleRateMu : (c.saleRate != null ? c.saleRate : null);
+        const psec = section('🎯 모델 예상 낙찰가', { boxed: true, accent: 'pred', key: 'pred' });
+        const grid = el('div', { cls: 'detail-grid' });
+        grid.appendChild(field('모델 예상 낙찰가', fmtMoney(modelBid), { mono: true, price: true, tone: 'positive' }));
+        if (rate != null) grid.appendChild(field('예측 매각가율', (rate * 100).toFixed(1) + '%', { mono: true, muted: true }));
+        psec.appendChild(grid);
+        psec.appendChild(el('div', { cls: 'small-note', text: '모델 예측 = 감정가 × 예측 매각가율. 사용자 예상 미등록. 매각 결과가 나오면 모델·실측 오차가 자동 비교됩니다.' }));
         inner.appendChild(psec);
       }
     }
