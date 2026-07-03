@@ -4322,9 +4322,15 @@ window.AUCTION_CASES = [
     "saleRate": null,
     "saleRateNote": "동일평형60㎡ 2024-107597 12명·감정86.2%(2회차 comparable)·신건2025-1566 100%1명 / 세종6mo매각가율88.2%·평균8.1명 / GG alg 86.56%예측. k70=0.90 실측수렴",
     "interestTier": "diamond",
-    "saleRateMu": null,
+    "saleRateMu": 0.866,
     "saleRateSigma": 0.05,
-    "saleRateN": 2,
+    "saleRateN": 1,
+    "salesHistory": [
+      { "saleDate": "2025-03-13", "dongHo": "521동", "area": 59.95, "appraisal": 362000000, "soldPrice": 312100000, "soldRate": 0.862, "bidders": 12, "note": "2024-107597 동일평형 2회차 경쟁낙찰 — 최적 comparable" },
+      { "saleDate": "2025-08-14", "dongHo": "521동", "area": 59.95, "appraisal": 331000000, "soldPrice": 331000000, "soldRate": 1.00, "bidders": 1, "outlier": true, "outlierReason": "2025-1566 신건 단독응찰(저감 경쟁 없음) — 2회차 comparable 부적격" },
+      { "saleDate": "2024-10-31", "dongHo": "503동", "area": 84.70, "appraisal": 475000000, "soldPrice": 378740000, "soldRate": 0.80, "bidders": 5, "outlier": true, "outlierReason": "2024-2746 인근 84㎡ (다른 평형)" },
+      { "saleDate": "2024-02-15", "dongHo": "503동", "area": 84.70, "appraisal": 430000000, "soldPrice": 354000000, "soldRate": 0.82, "bidders": 4, "outlier": true, "outlierReason": "2023-110190 인근 84㎡ (다른 평형)" }
+    ],
     "bid70": 302483617,
     "bid50": 285637119,
     "neutralSalePrice": 336000000,
