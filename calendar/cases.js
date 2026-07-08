@@ -12,7 +12,7 @@
  */
 
 window.AUCTION_SCHEMA_VERSION = "0.7.0";
-window.AUCTION_LAST_UPDATED = "2026-06-29";
+window.AUCTION_LAST_UPDATED = "2026-07-08";
 
 window.AUCTION_CASES = [
   {
@@ -4316,7 +4316,7 @@ window.AUCTION_CASES = [
     "rounds": 2,
     "region": "세종",
     "regionPriority": 2,
-    "rightsStatus": "말소기준 근저당 푸본현대생명 2020-10-26·등기전부말소·임차인없음·인수0(연체관리비 공용분~174만)",
+    "rightsStatus": "말소기준 근저당 푸본현대생명 2020-10-26·등기전부말소·임차인없음·인수0(연체관리비 공용분~174만)·법원원본 검증(2026-07-08 등기부·물건명세서·현황조사·전입세대열람)·개인회생 2026-03-25 폐지→명도 회생법상 제약 소멸",
     "rightsRisk": "safe",
     "rightsVerified": true,
     "saleRate": null,
@@ -4338,17 +4338,19 @@ window.AUCTION_CASES = [
     "expectedProfit50": 39000000,
     "rating": null,
     "verdict": "candidate",
-    "verdictReason": "🟡 조건부 GO(구조안전·수익 ◇~★경계) — 권리 A 검증·인수0·1,240세대 세종 실거주 대단지. 동일평형 12명·감정86.2% 실측 k70=0.90. B70 302.5M서 EP70 세전 +2,174만(◇·★기준 258만 부족), 밴드상단 중립345면 +3,071만(★). EP70 세후 +1,527만 / 실현이익 세후 +936만(보수336). Walk 279.8M>최저242.2M. 리스크: 개인회생 명도지연·본인명의 35%점프(배우자전환 시 세후+287~590만)·◇경계 얇은마진. 100%대출 실한도 확정 조건. (2026-07-03 deep-dive)",
+    "verdictReason": "🟡 조건부 GO(구조안전·수익 ◇~★경계) — 권리 A 법원원본 검증(2026-07-08 등기부·명세서·현황·전입 원본)·인수0·1,240세대 세종 실거주 대단지. 동일평형 12명·감정86.2% 실측 k70=0.90. B70 302.5M서 EP70 세전 +2,174만(◇·★기준 258만 부족), 밴드상단 중립345면 +3,071만(★). EP70 세후 +1,527만 / 실현이익 세후 +936만(보수336). Walk 279.8M>최저242.2M. ★개인회생(2024개회111109) 2026-03-25 폐지 확정→명도 회생법상 제약 소멸(인도명령 정상, 7/3 최대리스크 해소). 잔여 리스크: 본인명의 35%점프(배우자전환 시 세후+287~590만)·◇경계 얇은마진·100%대출 실한도 확정 조건. (2026-07-03 deep-dive → 2026-07-08 원본검증)",
     "tags": [
       "세종",
       "첫마을5단지푸르지오",
       "monthly-sourcing-2026-07",
       "◇candidate",
-      "deep-dive"
+      "deep-dive",
+      "원본검증(7-8)",
+      "개인회생폐지"
     ],
-    "sourcingSession": "2026-06-23 v10 monthly-sourcing(7월) Tier2 → 2026-07-03 deep-dive(풀 파이프라인)",
+    "sourcingSession": "2026-06-23 v10 monthly-sourcing(7월) Tier2 → 2026-07-03 deep-dive(풀 파이프라인) → 2026-07-08 법원원본 검증(등기부·명세서·현황·전입·감정·개인회생)",
     "addedAt": "2026-06-23",
-    "updatedAt": "2026-07-03",
+    "updatedAt": "2026-07-08",
     "reportUrl": "report-2024타경119033.html",
     "hauctionUrl": "https://www.hauction.co.kr/search/auction?unique_year=2024&unique_number=119033",
     "k70": 0.9,
