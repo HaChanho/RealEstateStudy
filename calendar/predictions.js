@@ -34,9 +34,16 @@
  */
 
 window.AUCTION_PREDICTIONS_VERSION = "0.3.0";
-window.AUCTION_PREDICTIONS_UPDATED = "2026-06-14";
+window.AUCTION_PREDICTIONS_UPDATED = "2026-07-08";
 
 window.AUCTION_PREDICTIONS = {
+  "2024타경119033@2026-07-09": {
+    predictedAt: "2026-07-08",
+    bids: [
+      { value: 315000000, memo: "써니픽 (최소)" },
+      { value: 320000000, memo: "써니픽 (최대)" }
+    ]
+  },
   "2025타경12295": {
     predictedAt: "2026-06-04",
     bids: [
