@@ -12,7 +12,8 @@
  * → 레거시 id-only 키(2026-06-02 백필 90건)는 그대로 보존. 렌더(resultFor)·회고 Step 0가
  *   "복합키 우선 → 레거시 id 폴백"으로 하위호환 → 일괄 마이그레이션 불필요.
  *
- * 필드: status(sold|failed|changed|withdrawn|postponed|unknown), soldPrice, soldRate,
+ * 필드: status(sold|failed|changed|withdrawn|postponed|stayed|unknown), soldPrice, soldRate,
+ *       ※ stayed(집행정지·매각불허가 반복 등 절차 중단, quadrant=null) — 2026-07-21 도입
  *       bidderCount, secondBid, quadrant(TP|FP|FN|TN|null), predictedSaleRate/Verdict,
  *       saleRateError, saleDateActual, priceMasked, lesson, source(ggi-chrome|user-assist|hauction-*),
  *       retrospectedAt.
