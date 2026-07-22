@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>낙찰물건 타임라인</title>
+<style>
+  :root{
+    --bg:#eef1f7; --surface:#fff; --surface-2:#f3f5fb; --surface-3:#e4e8f3;
+    --border:#dde3f0; --border-strong:#c1cad9; --text:#1a1f2e; --text-dim:#4a5570; --text-mute:#8b95a7;
+    --accent:#3b6fde; --accent-strong:#1e40af; --price:#b45309; --positive:#059669; --negative:#dc2626; --pending:#0284c7;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Segoe UI",Roboto,sans-serif;font-size:14px}
+  header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--surface)}
+  header h1{margin:0;font-size:18px;font-weight:600;letter-spacing:-.01em}
+  main{display:flex;gap:16px;padding:16px 20px;align-items:flex-start}
+  .col-list{flex:0 0 300px;display:flex;flex-direction:column;gap:10px}
+  .col-detail{flex:1;min-width:0}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .hcard{cursor:pointer;transition:border-color .15s}
+  .hcard:hover,.hcard.sel{border-color:var(--accent)}
+  .hcard .cx{font-weight:600}
+  .hcard .sub{color:var(--text-mute);font-size:12px;margin-top:3px}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px}
+  .badge.holding{background:rgba(2,132,199,.12);color:#075985} .badge.sold{background:rgba(5,150,105,.12);color:#065f46}
+  .stub{padding:48px 20px;text-align:center;color:var(--text-dim);line-height:1.7}
+  .ctx{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 14px}
+  .chip{background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:3px 10px;font-size:12px;color:var(--text-dim)}
+  .chip b{color:var(--text)}
+  .sec-title{font-size:12px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:.04em;margin:16px 0 8px}
+  .steps{list-style:none;margin:0;padding:0}
+  .steps li{display:flex;gap:10px;align-items:baseline;padding:6px 0;border-left:2px solid var(--border);padding-left:12px;margin-left:4px}
+  .steps li.done{border-left-color:var(--positive)} .steps li.pending{opacity:.5}
+  .steps .k{font-weight:600;min-width:64px} .steps .d{color:var(--text-mute);font-size:12px}
+  table.ledger{width:100%;border-collapse:collapse;font-size:13px}
+  table.ledger th,table.ledger td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border)}
+  table.ledger td.amt{text-align:right;font-variant-numeric:tabular-nums;color:var(--price)}
+  .pnl{display:flex;gap:20px;flex-wrap:wrap}
+  .pnl .kv .l{color:var(--text-mute);font-size:12px} .pnl .kv .v{font-size:18px;font-weight:700}
+  @media (max-width:900px){ main{flex-direction:column} .col-list{flex:1 1 auto;width:100%} }
+</style>
+</head>
+<body>
+<header><h1>📈 낙찰물건 타임라인</h1></header>
+<main id="app"><div class="stub">로딩 중…</div></main>
+
+<!-- 파생 소스(공개): ../calendar/{results,cases}.js. 원장·lib(로컬 전용): ../../_holdings/* (공개선 404→stub). -->
+<script src="../site-nav.js"></script>
+<script>
+(function () {
+  var v = Date.now();
+  function load(src, cb) { var s = document.createElement('script'); s.src = src + '?v=' + v; s.onload = function(){cb(true);}; s.onerror = function(){cb(false);}; document.head.appendChild(s); }
+  // 순서: results → cases (파생 소스) → holdings-lib → holdings(원장). 각각 실패해도 진행.
+  load('../calendar/results.js', function () {
+    load('../calendar/cases.js', function () {
+      load('../../_holdings/holdings-lib.js', function () {
+        load('../../_holdings/holdings.js', function () { render(); });
+      });
+    });
+  });
+
+  function today() { return new Date().toISOString().slice(0, 10); }
+  function won(n) { return n == null ? '—' : '₩' + Number(n).toLocaleString('ko-KR'); }
+  var STEP_LABEL = { won:'낙찰', balance:'잔금납부', eviction:'명도완료', repair:'수리완료', listed:'매물등록', sold:'매도' };
+
+  function render() {
+    var app = document.getElementById('app');
+    var L = window.HoldingsLib, H = window.AUCTION_HOLDINGS;
+    // 공개 배포(원장·lib 미도달) 또는 데이터 없음 → stub
+    if (!L || !H || !Object.keys(H).length) {
+      app.innerHTML = '<div class="stub">🔒 낙찰물건 타임라인은 <b>비공개</b>입니다.<br>전체 여정·비용·손익은 로컬 환경에서만 열람합니다.<br><span style="font-size:12px;color:var(--text-mute)">(공개 페이지는 위계·네비게이션용입니다)</span></div>';
+      return;
+    }
+    var RESULTS = window.AUCTION_RESULTS || {}, CASES = window.AUCTION_CASES || [];
+    var ids = Object.keys(H);
+    var sel = ids[0];
+    app.innerHTML = '<div class="col-list" id="list"></div><div class="col-detail" id="detail"></div>';
+    function draw() {
+      var list = document.getElementById('list'); list.innerHTML = '';
+      ids.forEach(function (id) {
+        var h = H[id], f = L.deriveAuctionFacts(h, RESULTS, CASES);
+        var el = document.createElement('div');
+        el.className = 'card hcard' + (id === sel ? ' sel' : '');
+        var badge = h.disposition === 'sold' ? '<span class="badge sold">매도완료</span>' : '<span class="badge holding">보유중 D+' + (L.holdingDays(h, today()) || 0) + '</span>';
+        el.innerHTML = '<div class="cx">' + (f.complex || h.holdingId) + '</div>' +
+          '<div class="sub">낙찰 ' + (f.wonDate || '—') + ' · ' + won(f.wonPrice) + '</div>' +
+          '<div class="sub">' + badge + ' · 누적지출 ' + won(L.costTotal(h)) + '</div>';
+        el.onclick = function () { sel = id; draw(); };
+        list.appendChild(el);
+      });
+      drawDetail();
+    }
+    function drawDetail() {
+      var h = H[sel], f = L.deriveAuctionFacts(h, RESULTS, CASES), d = document.getElementById('detail');
+      var chips = [
+        f.complex && '<span class="chip"><b>' + f.complex + '</b></span>',
+        f.dongHo && '<span class="chip">' + f.dongHo + '</span>',
+        f.court && '<span class="chip">' + f.court + '</span>',
+        f.areaSqm && '<span class="chip">전용 ' + f.areaSqm + '㎡</span>',
+        '<span class="chip">낙찰가 <b>' + won(f.wonPrice) + '</b></span>',
+        f.appraisalPrice && '<span class="chip">감정 ' + won(f.appraisalPrice) + '</span>',
+        f.bidderCount != null && '<span class="chip">' + f.bidderCount + '명 응찰</span>'
+      ].filter(Boolean).join('');
+      var steps = (h.milestones || []).map(function (m) {
+        var done = !!m.at;
+        return '<li class="' + (done ? 'done' : 'pending') + '"><span class="k">' + (STEP_LABEL[m.key] || m.key) + '</span>' +
+          '<span class="d">' + (m.at || '예정') + (m.memo ? ' · ' + m.memo : '') + '</span></li>';
+      }).join('');
+      var rows = (h.costs || []).length
+        ? h.costs.map(function (e) {
+            return '<tr><td>' + (e.occurredAt || '') + '</td><td>' + e.category + (e.direction === 'in' ? ' (환급)' : '') + '</td>' +
+              '<td class="amt">' + (e.direction === 'in' ? '−' : '') + won(e.amount) + '</td><td>' + (e.memo || '') + '</td></tr>';
+          }).join('')
+        : '<tr><td colspan="4" style="color:var(--text-mute);text-align:center;padding:16px">기록된 비용 없음</td></tr>';
+      var dispLabel = h.disposition === 'sold' ? '매도완료' : '보유중 D+' + (L.holdingDays(h, today()) || 0);
+      var realized = h.disposition === 'sold' ? won((f.wonPrice != null && h.resalePrice != null) ? (h.resalePrice - f.wonPrice - L.costTotal(h)) : null) + ' <span style="font-size:11px;color:var(--text-mute)">(세전·잠정)</span>' : '매도 전 (미정)';
+      d.innerHTML =
+        '<div class="card">' +
+          '<div class="ctx">' + chips + '</div>' +
+          (f.reportUrl ? '<a href="../calendar/' + f.reportUrl + '" style="font-size:12px">📄 상세 분석 보고서</a>' : '') +
+          '<div class="sec-title">⏱ 여정</div><ul class="steps">' + steps + '</ul>' +
+          '<div class="sec-title">🧾 비용 원장</div>' +
+          '<table class="ledger"><thead><tr><th>일자</th><th>항목</th><th style="text-align:right">금액</th><th>메모</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+          '<div class="sec-title">💰 손익</div>' +
+          '<div class="pnl"><div class="kv"><div class="l">상태</div><div class="v">' + dispLabel + '</div></div>' +
+          '<div class="kv"><div class="l">누적지출</div><div class="v" style="color:var(--price)">' + won(L.costTotal(h)) + '</div></div>' +
+          '<div class="kv"><div class="l">실현손익</div><div class="v">' + realized + '</div></div></div>' +
+        '</div>';
+    }
+    draw();
+  }
+})();
+</script>
+</body>
+</html>
