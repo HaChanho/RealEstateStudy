@@ -52,14 +52,45 @@
 (function () {
   var v = Date.now();
   function load(src, cb) { var s = document.createElement('script'); s.src = src + '?v=' + v; s.onload = function(){cb(true);}; s.onerror = function(){cb(false);}; document.head.appendChild(s); }
-  // 순서: results → cases (파생 소스) → holdings-lib → holdings(원장). 각각 실패해도 진행.
+  // 파생 소스(공개) + holdings-lib(공개 이전됨) + crypto-lib(공개) 로드 → 로컬 평문 원장 시도 → boot.
   load('../calendar/results.js', function () {
     load('../calendar/cases.js', function () {
-      load('../../_holdings/holdings-lib.js', function () {
-        load('../../_holdings/holdings.js', function () { render(); });
+      load('holdings-lib.js', function () {
+        load('crypto-lib.js', function () {
+          load('../../_holdings/holdings.js', function () { boot(); });
+        });
       });
     });
   });
+
+  function boot() {
+    // 1계층: 로컬 평문 원장 도달 → 비번 없이 full
+    if (window.AUCTION_HOLDINGS && Object.keys(window.AUCTION_HOLDINGS).length) { render(); return; }
+    // 2계층: 공개 암호문 blob → 비번 프롬프트
+    fetch('holdings.enc.json?v=' + v)
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; })
+      .then(function (blob) { if (blob && blob.ct) promptPassword(blob); else render(); }); // 3계층: stub
+  }
+
+  function promptPassword(blob) {
+    var app = document.getElementById('app');
+    app.innerHTML = '<div class="stub">🔒 낙찰물건 타임라인은 <b>비공개</b>입니다. 비밀번호를 입력하면 열람합니다.'
+      + '<form id="pwf" style="margin-top:16px">'
+      + '<input id="pw" type="password" autocomplete="off" placeholder="비밀번호" '
+      + 'style="padding:8px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;min-width:260px" />'
+      + '<button type="submit" style="margin-left:8px;padding:8px 16px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:8px;cursor:pointer">열람</button>'
+      + '<div id="pwe" style="color:var(--negative);font-size:12px;margin-top:8px;min-height:16px"></div>'
+      + '</form></div>';
+    document.getElementById('pwf').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var el = document.getElementById('pw'), err = document.getElementById('pwe');
+      err.textContent = '복호화 중…';
+      window.CryptoLib.decryptToJSON(blob, el.value).then(function (obj) {
+        window.AUCTION_HOLDINGS = obj; render();
+      }).catch(function () { err.textContent = '비밀번호가 올바르지 않습니다.'; el.value = ''; el.focus(); });
+    });
+  }
 
   function today() { return new Date().toISOString().slice(0, 10); }
   function won(n) { return n == null ? '—' : '₩' + Number(n).toLocaleString('ko-KR'); }
