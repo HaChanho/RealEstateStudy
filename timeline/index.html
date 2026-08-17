@@ -145,6 +145,30 @@
               '<td class="amt">' + (e.direction === 'in' ? '−' : '') + won(e.amount) + '</td><td>' + (e.memo || '') + '</td></tr>';
           }).join('')
         : '<tr><td colspan="4" style="color:var(--text-mute);text-align:center;padding:16px">기록된 비용 없음</td></tr>';
+      // 💳 자금·대출 — loan(주 담보대출) + funding(조달 구성). 값 없는 필드는 생략.
+      var pct = function (r) { return r == null ? null : (r * 100).toFixed(2).replace(/\.?0+$/, '') + '%'; };
+      var ln = h.loan || {};
+      var loanKv = [
+        ['대출기관', ln.lender], ['원금', ln.principal != null ? won(ln.principal) : null],
+        ['금리', pct(ln.rate)], ['실행일', ln.executedAt],
+        ['중도상환수수료', pct(ln.prepayFeeRate)], ['만기', ln.term]
+      ].filter(function (r) { return r[1]; })
+       .map(function (r) { return '<div class="kv"><div class="l">' + r[0] + '</div><div class="v">' + r[1] + '</div></div>'; }).join('');
+      var fundRows = (h.funding || []).map(function (x) {
+        return '<tr><td>' + x.source + '</td><td class="amt">' + (x.amount != null ? won(x.amount) : '—') + '</td>' +
+          '<td>' + (pct(x.rate) || '—') + '</td><td>' + (x.memo || '') + '</td></tr>';
+      }).join('');
+      var fundTotal = (h.funding || []).reduce(function (s, x) { return s + (Number(x.amount) || 0); }, 0);
+      var fundingHtml = (loanKv || fundRows)
+        ? '<div class="sec-title">💳 자금·대출</div>' +
+          (loanKv ? '<div class="pnl">' + loanKv + (ln.memo ? '<div class="kv"><div class="l">비고</div><div class="v" style="text-align:right">' + ln.memo + '</div></div>' : '') + '</div>' : '') +
+          (fundRows ? '<table class="ledger"><thead><tr><th>조달처</th><th style="text-align:right">금액</th><th>금리</th><th>메모</th></tr></thead><tbody>' + fundRows +
+            '<tr><td><b>합계</b></td><td class="amt"><b>' + won(fundTotal) + '</b></td><td></td><td></td></tr></tbody></table>' : '')
+        : '';
+      var notesHtml = h.notes
+        ? '<div class="sec-title">📝 메모</div><div class="card" style="white-space:pre-wrap;font-size:12.5px;line-height:1.65;background:var(--surface-2)">' +
+          String(h.notes).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }) + '</div>'
+        : '';
       var dispLabel = h.disposition === 'sold' ? '매도완료' : '보유중 D+' + (L.holdingDays(h, today()) || 0);
       var realized = h.disposition === 'sold' ? won((f.wonPrice != null && h.resalePrice != null) ? (h.resalePrice - f.wonPrice - L.costTotal(h)) : null) + ' <span style="font-size:11px;color:var(--text-mute)">(세전·잠정)</span>' : '매도 전 (미정)';
       d.innerHTML =
@@ -154,10 +178,12 @@
           '<div class="sec-title">⏱ 여정</div><ul class="steps">' + steps + '</ul>' +
           '<div class="sec-title">🧾 비용 원장</div>' +
           '<table class="ledger"><thead><tr><th>일자</th><th>항목</th><th style="text-align:right">금액</th><th>메모</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+          fundingHtml +
           '<div class="sec-title">💰 손익</div>' +
           '<div class="pnl"><div class="kv"><div class="l">상태</div><div class="v">' + dispLabel + '</div></div>' +
           '<div class="kv"><div class="l">누적지출</div><div class="v" style="color:var(--price)">' + won(L.costTotal(h)) + '</div></div>' +
           '<div class="kv"><div class="l">실현손익</div><div class="v">' + realized + '</div></div></div>' +
+          notesHtml +
         '</div>';
     }
     draw();
