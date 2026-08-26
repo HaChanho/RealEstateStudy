@@ -622,6 +622,14 @@
     /* P0 모바일: 패널 backdrop (탭하면 닫힘 — 딥링크 갇힘 해소) */
     .panel-backdrop.show { display: block; position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 19; }
   }
+  /* 빈 달 안내 — 진입월 자동이동으로도 못 막는 경우(필터·수동 이동) */
+  .cal-empty { padding: 48px 20px; text-align: center; color: var(--text-dim); line-height: 1.7; }
+  .cal-empty b { color: var(--text); }
+  .cal-empty .hint { display: block; margin-top: 10px; font-size: 12px; color: var(--text-mute); }
+  /* 데이터 신선도 — 30일 초과 시 경고 톤 */
+  .stale-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+                 background: var(--surface-3); color: var(--text-dim); margin-left: 6px; }
+  .stale-badge.warn { background: #fef3c7; color: #92400e; }
 </style>
 <script src="../shared/cal-lib.js"></script>
 </head>
@@ -1190,7 +1198,14 @@
       if (node) node.textContent = ratings[i];
     }
     document.getElementById('schema-ver').textContent = window.AUCTION_SCHEMA_VERSION || '—';
-    document.getElementById('data-updated').textContent = window.AUCTION_LAST_UPDATED || '—';
+    {
+      // 데이터 신선도 — 갱신일만 찍으면 며칠 지났는지 아무도 세지 않는다.
+      const upd = window.AUCTION_LAST_UPDATED || '';
+      const slot = document.getElementById('data-updated');
+      slot.replaceChildren(document.createTextNode(upd || '—'));
+      const n = window.CalLib.staleDays(upd, todayStr);
+      if (n != null) slot.appendChild(el('span', { cls: 'stale-badge' + (n > 30 ? ' warn' : ''), text: `${n}일 전` }));
+    }
     renderResultStats();
     renderActiveFilters();
   }
@@ -1447,6 +1462,26 @@
       }
       dayCell.appendChild(chipsWrap);
       cal.appendChild(dayCell);
+    }
+
+    // 이 달에 표시할 사건이 하나도 없으면 안내를 띄운다.
+    // 진입월 자동이동으로 첫 로드는 막히지만, 필터·수동 이동으로는 여전히 도달한다.
+    // byDate는 전체 필터 결과라 달과 무관하다 — 실제로 그려진 칩 수를 봐야 한다.
+    if (!cal.querySelector('.chip')) {
+      const all = CASES.map((c) => c.saleDate).filter(Boolean).sort();
+      const note = el('div', { cls: 'cal-empty' });
+      note.appendChild(el('div', { text: '이 달에는 표시할 매각기일이 없습니다.' }));
+      if (all.length) {
+        const fmtM = (s) => `${s.slice(0, 4)}년 ${Number(s.slice(5, 7))}월`;
+        note.appendChild(el('span', {
+          cls: 'hint',
+          text: `데이터가 있는 기간: ${fmtM(all[0])} ~ ${fmtM(all[all.length - 1])} · 총 ${CASES.length}건`,
+        }));
+      } else {
+        note.appendChild(el('span', { cls: 'hint', text: '아직 수집된 사건이 없습니다.' }));
+      }
+      cal.replaceChildren(note);
+      cal.style.gridTemplateColumns = '1fr';
     }
   }
 
