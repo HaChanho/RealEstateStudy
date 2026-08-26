@@ -1,0 +1,70 @@
+/* 공유 디자인 토큰 — 홈(지도)은 제외한다.
+   홈은 --paper/--ink/--rule + 명조체의 의도적인 편집 디자인이라 색을 통일하면 정체성이 파괴된다.
+   캘린더·타임라인만 참조. 값 변경은 여기 한 곳에서만. */
+:root {
+  /* ── 중립 ── */
+  --n-0:   #ffffff;
+  --n-25:  #fbfcfe;
+  --n-50:  #f6f8fb;
+  --n-100: #eef1f7;
+  --n-200: #e2e7ef;
+  --n-300: #cbd3e1;
+  --n-400: #9aa5b8;
+  --n-600: #5a6579;
+  --n-900: #161b26;
+
+  /* ── 의미 별칭 (기존 이름 유지 — 대규모 치환 회피) ── */
+  --bg:            var(--n-100);
+  --surface:       var(--n-0);
+  --surface-2:     var(--n-50);
+  --surface-3:     var(--n-200);
+  --border:        var(--n-200);
+  --border-strong: var(--n-300);
+  --text:          var(--n-900);
+  --text-dim:      var(--n-600);
+  --text-mute:     #6b7688;   /* AA 통과값. 구 #8b95a7 은 12px 에서 3.02:1 로 미달 */
+
+  /* ── 강조 ── */
+  --accent:        #3b6fde;
+  --accent-strong: #1e40af;
+
+  /* ── 채도 예산 1: 별점 (유일한 풀채도) ── */
+  --r5-fg: #ffffff;  --r5-bg: #d97706;  --r5-tint: #fffbeb;
+  --r4-fg: #ffffff;  --r4-bg: #4d7c0f;  --r4-tint: #f7fee7;
+  --r3-fg: #ffffff;  --r3-bg: #0369a1;  --r3-tint: #f0f9ff;
+  --r2-fg: #6d28d9;  --r2-bg: #ede9fe;  --r2-tint: #faf5ff;
+  --r1-fg: #64748b;  --r1-bg: #f1f5f9;  --r1-tint: transparent;
+
+  /* ── 채도 예산 2: 손실 신호 ── */
+  --loss:      #dc2626;
+  --loss-tint: #fef2f2;
+
+  /* ── 무채색 상태 (verdict·결과 — 형태로 구분, 색 아님) ── */
+  --muted-dot:    var(--n-400);
+  --muted-bg:     var(--n-50);
+  --muted-border: var(--n-300);
+
+  /* ── 알파 스케일 — rgba 92종을 4단으로 접는다 ──
+     실측: 베이스 28색 × 제각각인 알파. rgb(245,158,11) 하나가 알파 12종을 썼다. */
+  --a-1: 0.06;   /* 최약 배경 틴트 */
+  --a-2: 0.14;   /* 배경 틴트 */
+  --a-3: 0.30;   /* 테두리 */
+  --a-4: 0.55;   /* 강조 테두리 */
+
+  /* ── 간격 (4px 그리드) ── */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px;
+  --sp-4: 16px; --sp-5: 20px; --sp-6: 24px;
+
+  /* ── 반경 ── */
+  --r-sm: 6px; --r-md: 8px; --r-lg: 10px; --r-pill: 999px;
+
+  /* ── 그림자 ── */
+  --sh-1: 0 1px 2px rgb(15 23 42 / var(--a-1));
+  --sh-2: 0 1px 3px rgb(15 23 42 / var(--a-1));
+  --sh-panel: -16px 0 32px rgb(31 41 55 / var(--a-2));
+
+  /* ── 타이포 스케일 ── */
+  --fs-xs: 10px; --fs-sm: 11px; --fs-md: 12px;
+  --fs-base: 13px; --fs-lg: 14px; --fs-xl: 18px; --fs-2xl: 24px;
+  --lh-tight: 1.25; --lh-base: 1.5; --lh-loose: 1.7;
+}
