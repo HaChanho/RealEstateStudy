@@ -171,12 +171,12 @@
   /* Detail panel — uses CSS var --panel-w so JS drag can resize without touching layout */
   .detail-panel {
     --panel-w: clamp(380px, calc(100vw - 1020px), 480px);
-    /* flex 컨테이너 안에서는 width 가 아니라 flex-basis 로 폭을 준다.
-       width 만 쓰면 flex-basis:auto 가 베이스의 width:0 을 물고 0 으로 굳어 패널이
-       3px(테두리만)로 붕괴한다 — >900px 데스크톱에서 패널이 열리지 않던 원인. */
-    flex: 0 0 0px;
-    width: auto;
-    transition: flex-basis .25s ease;
+    /* 폭은 width 로 준다. flex-basis 에 명시적 길이(0px 포함)를 주면 그 값이 주축 크기를
+       결정해 width 가 무시된다 — 라이브에서 패널이 3px(테두리만)로 붕괴했던 원인.
+       flex-basis:auto 여야 width 가 basis 로 쓰인다. */
+    flex: 0 0 auto;
+    width: 0;
+    transition: width .25s ease;
     background: var(--panel-bg);
     /* Refined separation: thin violet stripe + soft layered shadow */
     border-left: 3px solid var(--panel-accent);
@@ -189,7 +189,7 @@
     position: relative;
     margin-left: 12px;                                   /* visible gutter — strong separation cue */
   }
-  .detail-panel.open { flex-basis: clamp(380px, calc(100vw - 1020px), 480px); }
+  .detail-panel.open { width: clamp(380px, calc(100vw - 1020px), 480px); }
   .detail-inner { width: var(--panel-w); padding: 20px 20px 20px 26px; overflow-y: auto; height: 100%; scroll-behavior: smooth; }
   /* Resize handle — drag the left edge to widen/narrow the panel */
   .resize-handle {
@@ -592,7 +592,7 @@
   @media (max-width: 900px) {
     /* 데스크톱 거터(margin-left)·좌측 stripe는 모바일 전체화면에서 오버플로 유발 → 제거 */
     .detail-panel { margin-left: 0; border-left: none; }
-    .detail-panel.open { flex-basis: 100vw; width: 100vw; position: fixed; top: 0; left: 0; right: auto; bottom: 0; z-index: 20; }
+    .detail-panel.open { width: 100vw; position: fixed; top: 0; left: 0; right: auto; bottom: 0; z-index: 20; }
     .detail-inner { width: 100%; padding: 16px 14px; overflow-x: hidden; }  /* 모바일 가로 오버플로 차단 */
     /* 모바일: 대시보드 2컬럼 → 1컬럼 복귀 (좁은 화면 잘림 방지) */
     .detail-money { grid-template-columns: 1fr; }
@@ -690,7 +690,7 @@
   @media (max-width: 1399px) {
     .detail-panel { position: fixed; top: 0; right: 0; bottom: 0; z-index: 30; margin-left: 0;
                     width: 0; border-left-width: 0; }
-    .detail-panel.open { flex-basis: auto; width: min(480px, 46vw); border-left-width: 3px; }
+    .detail-panel.open { width: min(480px, 46vw); border-left-width: 3px; }
     .panel-backdrop { display: none; }
     .detail-panel.open ~ .panel-backdrop,
     .panel-backdrop.show { display: block; position: fixed; inset: 0; z-index: 29;
@@ -1061,9 +1061,9 @@
   function applyPanelWidth(w) {
     const panel = document.getElementById('detail-panel');
     if (!panel) return;
-    // flex-basis 를 직접 설정한다. var() 간접 참조는 flex-basis 에서 해석되지 않는다.
-    if (w == null) { panel.style.removeProperty('flex-basis'); panel.style.removeProperty('--panel-w'); }
-    else { panel.style.setProperty('--panel-w', w + 'px'); panel.style.setProperty('flex-basis', w + 'px'); }
+    // width 로 설정한다(flex-basis 는 auto 여야 width 가 주축 크기로 쓰인다).
+    if (w == null) { panel.style.removeProperty('width'); panel.style.removeProperty('--panel-w'); }
+    else { panel.style.setProperty('--panel-w', w + 'px'); panel.style.setProperty('width', w + 'px'); }
   }
   function savePanelWidth(w) {
     try { localStorage.setItem(LS_PANEL_W, String(w)); } catch (e) {}
