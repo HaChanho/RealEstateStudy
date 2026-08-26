@@ -190,7 +190,9 @@
     margin-left: 12px;                                   /* visible gutter — strong separation cue */
   }
   .detail-panel.open { width: clamp(380px, calc(100vw - 1020px), 480px); }
-  .detail-inner { width: var(--panel-w); padding: 20px 20px 20px 26px; overflow-y: auto; height: 100%; scroll-behavior: smooth; }
+  /* 내용은 패널 폭을 그대로 따른다. var(--panel-w) 를 쓰면 CSS 기본 clamp(최대 480px)에
+     묶여 패널을 아무리 넓혀도 내용이 480px 에 갇힌다 — "영역 늘리기에 제한"의 실체였다. */
+  .detail-inner { width: 100%; padding: 20px 20px 20px 26px; overflow-y: auto; height: 100%; scroll-behavior: smooth; }
   /* Resize handle — drag the left edge to widen/narrow the panel */
   .resize-handle {
     position: absolute;
@@ -1044,9 +1046,10 @@
   }
   const LS_PANEL_W = 'calendar.panelWidth.v3'; // v3: 기본폭을 뷰포트 비율(캘린더:상세 35:65)로 전환. 구 키 저장값 무시.
   const PANEL_W_MIN = 380;
-  // 구 PANEL_W_DEFAULT_RATIO = 0.65 삭제. 1440에서 패널 936px → 칸 폭 90px 이었다
-  // (별점 원 하나와 잘린 두 글자만 남는다). 기본값은 CSS clamp 에 위임한다.
-  const PANEL_W_MAX = () => Math.max(PANEL_W_MIN, Math.min(560, window.innerWidth - 900));
+  // 상한은 사용자가 정한다. 상세를 크게 보고 싶은 순간이 실재하므로 좁게 묶지 않는다.
+  // 그리드가 좁아지는 건 사용자의 선택이고, 되돌릴 수단(리사이즈·프리셋)이 있으면 된다.
+  // (기본값만 CSS clamp 로 적당히 잡고, 드래그 상한은 뷰포트의 92%까지 연다.)
+  const PANEL_W_MAX = () => Math.max(PANEL_W_MIN, Math.round(window.innerWidth * 0.92));
   function clampPanelW(w) {
     return Math.max(PANEL_W_MIN, Math.min(PANEL_W_MAX(), w));
   }
