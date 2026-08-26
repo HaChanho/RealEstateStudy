@@ -92,8 +92,30 @@
     return { executed: executed, planned: planned };
   }
 
+  // 칩 라벨 — 단지명만. 사건번호는 DB 키이지 스캔 단서가 아니다.
+  // 실측: 사건번호가 라벨 폭의 50%(p50 65.1px / 130.4px)를 쓰고 있었다.
+  // 자르지 않는다 — CSS ellipsis 가 실제 셀 폭에 맞춰 자르게 위임한다.
+  // (구 shortenComplex 는 7자 하드컷이라 셀을 넓혀도 폭이 쓰이지 않았다: p50 72.7 ≈ max 75.5 포화)
+  function chipLabel(c) {
+    if (!c) return '';
+    return String(c.complex || c.caseNumber || '');
+  }
+
+  // 툴팁 — 사건번호는 여기로 옮긴다.
+  function chipTitle(c, rating, fmtMoney) {
+    if (!c) return '';
+    const parts = [c.caseNumber, c.complex].filter(Boolean);
+    if (rating != null) parts.push('★' + rating);
+    if (c.minimumPrice != null && typeof fmtMoney === 'function') {
+      parts.push('최저 ' + fmtMoney(c.minimumPrice));
+    }
+    return parts.join(' · ');
+  }
+
   return {
     todayKST: todayKST,
+    chipLabel: chipLabel,
+    chipTitle: chipTitle,
     monthKeyOf: monthKeyOf,
     pickEntryMonth: pickEntryMonth,
     monthOfCase: monthOfCase,
