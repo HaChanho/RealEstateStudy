@@ -49,6 +49,21 @@
   table.ledger.fc td.amt.under { color: var(--positive); }
   table.ledger.fc .pct { font-size: 11px; opacity: .8 }
   .fc-cap { font-size: 11px; color: var(--text-mute); margin-top: 4px }
+  /* S3 — .kv .v(18px/700)는 숫자 전용. 서술형은 별도 위계로 내린다. */
+  .pnl .kv.kv-text { max-width: 320px; }
+  .pnl .kv.kv-text .t { font-size: var(--fs-base); font-weight: 500; color: var(--text);
+                        line-height: var(--lh-base); }
+  .pnl .kv .v { font-variant-numeric: tabular-nums; }
+  /* S2 — pending 마일스톤: opacity:.5 합성으로 명암비 1.65:1(AA 미달)이었다.
+     거기 담긴 게 '명도 협의기한'이라는 지금 가장 액션이 필요한 정보다. */
+  .steps li.pending { opacity: 1; }
+  .steps li.pending .k { color: var(--text-dim); }
+  .steps li.pending .d { color: var(--text-mute); }
+  .steps li.pending { border-left-color: var(--border-strong); border-left-style: dashed; }
+  /* 잔여 하드코딩 토큰화 */
+  .card { box-shadow: var(--sh-1); }
+  .badge.holding { background: rgb(2 132 199 / var(--a-2)); color: var(--r3-bg); }
+  .badge.sold { background: rgb(5 150 105 / var(--a-2)); color: var(--positive); }
 </style>
 <script src="../shared/cal-lib.js"></script>
 <script src="../site-nav.js" defer></script>
@@ -232,12 +247,24 @@
       // 💳 자금·대출 — loan(주 담보대출) + funding(조달 구성). 값 없는 필드는 생략.
       var pct = function (r) { return r == null ? null : (r * 100).toFixed(2).replace(/\.?0+$/, '') + '%'; };
       var ln = h.loan || {};
+      // R2 — loan.repayment 승격. monthlyPayment 등이 구조화 필드로 있는데
+      // render() 가 안 읽어서 같은 사실이 2,257자 메모 산문에만 있었다.
+      var rp = ln.repayment || {};
+      // S3 — .kv .v 는 18px/700 이라 숫자 전용이다. 서술형은 .kv-text 로 분리한다
+      // (구 구조에서는 회사명·59자 문장이 금액과 같은 위계였다).
+      var kvNum = function (l, v) { return v ? '<div class="kv"><div class="l">' + l + '</div><div class="v">' + v + '</div></div>' : ''; };
+      var kvTxt = function (l, v) { return v ? '<div class="kv kv-text"><div class="l">' + l + '</div><div class="t">' + v + '</div></div>' : ''; };
       var loanKv = [
-        ['대출기관', ln.lender], ['원금', ln.principal != null ? won(ln.principal) : null],
-        ['금리', pct(ln.rate)], ['실행일', ln.executedAt],
-        ['중도상환수수료', pct(ln.prepayFeeRate)], ['만기', ln.term]
-      ].filter(function (r) { return r[1]; })
-       .map(function (r) { return '<div class="kv"><div class="l">' + r[0] + '</div><div class="v">' + r[1] + '</div></div>'; }).join('');
+        kvNum('원금', ln.principal != null ? won(ln.principal) : null),
+        kvNum('금리', pct(ln.rate)),
+        kvNum('월 납입금', rp.monthlyPayment != null ? won(rp.monthlyPayment) : null),
+        kvNum('중도상환수수료', pct(ln.prepayFeeRate)),
+        kvTxt('대출기관', ln.lender),
+        kvTxt('실행일', ln.executedAt),
+        kvTxt('상환방식', [rp.type, ln.term].filter(Boolean).join(' · ')),
+        kvTxt('납입일', rp.dayOfMonth ? '매월 ' + rp.dayOfMonth + '일' : null),
+        kvTxt('출구 계획', rp.exitPlan)
+      ].filter(Boolean).join('');
       var fundRows = (h.funding || []).map(function (x) {
         return '<tr><td>' + x.source + '</td><td class="amt">' + (x.amount != null ? won(x.amount) : '—') + '</td>' +
           '<td>' + (pct(x.rate) || '—') + '</td><td>' + (x.memo || '') + '</td></tr>';
@@ -245,7 +272,7 @@
       var fundTotal = (h.funding || []).reduce(function (s, x) { return s + (Number(x.amount) || 0); }, 0);
       var fundingHtml = (loanKv || fundRows)
         ? '<div class="sec-title">💳 자금·대출</div>' +
-          (loanKv ? '<div class="pnl">' + loanKv + (ln.memo ? '<div class="kv"><div class="l">비고</div><div class="v" style="text-align:right">' + ln.memo + '</div></div>' : '') + '</div>' : '') +
+          (loanKv ? '<div class="pnl">' + loanKv + (ln.memo ? '<div class="kv kv-text"><div class="l">비고</div><div class="t">' + ln.memo + '</div></div>' : '') + '</div>' : '') +
           (fundRows ? '<div class="ledger-wrap"><table class="ledger"><thead><tr><th>조달처</th><th style="text-align:right">금액</th><th>금리</th><th>메모</th></tr></thead><tbody>' + fundRows +
             '<tr><td><b>합계</b></td><td class="amt"><b>' + won(fundTotal) + '</b></td><td></td><td></td></tr></tbody></table></div>' : '')
         : '';
