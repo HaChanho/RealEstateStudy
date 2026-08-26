@@ -75,10 +75,23 @@
     return totalCost(h, facts) - fund;
   }
 
-  // 변동비 V — 아직 집행 전이지만 매도까지 확정적으로 발생할 비용(명도·수리 등).
-  // unbookedLiabilities 와 이중 계상하지 않도록 plannedCosts 만 쓴다.
-  function plannedTotal(h) {
-    return (h && h.plannedCosts || []).reduce((s, x) => s + (Number(x && x.amount) || 0), 0);
+  // 변동비 — 아직 집행 전이지만 매도까지 확정적으로 발생할 비용.
+  // 원장에 plannedCosts 가 있으면 그것을 쓰고, 없으면 cases.js 모델 추정치에서 파생한다
+  // (수리비 repairCost + 명도 등 costBreakdown.etc). 숫자를 원장에 복제하지 않기 위함.
+  // 중개수수료는 여기 넣지 않는다 — 매도가 비례라 BROKERAGE_RATE 로 따로 처리한다.
+  // 취득비는 이미 costs[] 에 실적으로 있으므로 넣지 않는다.
+  function plannedTotal(h, caseData) {
+    const explicit = (h && h.plannedCosts) || null;
+    if (explicit) return explicit.reduce((s, x) => s + (Number(x && x.amount) || 0), 0);
+    if (!caseData) return 0;
+    const cb = caseData.costBreakdown || {};
+    return (Number(caseData.repairCost) || 0) + (Number(cb.etc) || 0);
+  }
+
+  // 변동비 총액 = 미집행 예정비 + 미계상 확정부채.
+  // 미계상 부채(예: 공용 체납관리비)는 근거가 확정된 채무라 손익분기에 반드시 들어가야 한다.
+  function variableCosts(h, caseData) {
+    return plannedTotal(h, caseData) + unbookedTotal(h);
   }
 
   // 주담보(경락잔금대출) 외 조달 — 신용대출 등. 원리금 상환이 아니라 이자만 계산한다.
@@ -119,13 +132,14 @@
   }
 
   // 손익분기 매도가 — 이 값 이상으로 팔아야 본전. 중개수수료를 매도가에 비례해 뺀다.
-  function breakEvenPrice(h, facts, m) {
-    return (totalCost(h, facts) + financeCost(h, m) + plannedTotal(h)) / (1 - BROKERAGE_RATE);
+  function breakEvenPrice(h, facts, m, caseData) {
+    return (totalCost(h, facts) + financeCost(h, m) + variableCosts(h, caseData)) / (1 - BROKERAGE_RATE);
   }
 
   // 세전이익 — 매도가 P, 보유 m 개월 가정.
-  function pretaxProfit(h, facts, salePrice, m) {
-    return salePrice * (1 - BROKERAGE_RATE) - totalCost(h, facts) - financeCost(h, m) - plannedTotal(h);
+  function pretaxProfit(h, facts, salePrice, m, caseData) {
+    return salePrice * (1 - BROKERAGE_RATE) - totalCost(h, facts) - financeCost(h, m)
+      - variableCosts(h, caseData);
   }
 
   // 월 런레이트 — 손익 기준(이자만)과 현금 기준(원리금 전액)은 다르다.
@@ -161,7 +175,7 @@
     costTotal: costTotal, holdingDays: holdingDays, daysBetween: daysBetween,
     BROKERAGE_RATE: BROKERAGE_RATE, ACQ_CATS: ACQ_CATS,
     acquisitionCosts: acquisitionCosts, totalCost: totalCost, equity: equity,
-    plannedTotal: plannedTotal, unbookedTotal: unbookedTotal,
+    plannedTotal: plannedTotal, unbookedTotal: unbookedTotal, variableCosts: variableCosts,
     loanBalance: loanBalance, financeCost: financeCost,
     breakEvenPrice: breakEvenPrice, pretaxProfit: pretaxProfit,
     monthlyRunRate: monthlyRunRate, realizedPretax: realizedPretax,

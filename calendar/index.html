@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
 <title>경매 케이스 캘린더</title>
 <link rel="stylesheet" href="../shared/theme.css" />
 <style>
@@ -74,7 +75,7 @@
   .calendar .weekday { padding: 8px 6px; text-align: center; color: var(--text-mute); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
   .calendar .weekday.sun { color: #dc2626; }
   .calendar .weekday.sat { color: #2563eb; }
-  .calendar .day { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; min-height: 120px; padding: 6px; display: flex; flex-direction: column; gap: 4px; transition: border-color .15s; position: relative; box-shadow: 0 1px 2px rgb(15 23 42 / var(--a-1)); }
+  .calendar .day { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; min-height: 88px; padding: 6px; display: flex; flex-direction: column; gap: 4px; transition: border-color .15s; position: relative; box-shadow: 0 1px 2px rgb(15 23 42 / var(--a-1)); }
   .calendar .day.other-month { opacity: 0.45; background: var(--surface-2); }
   .calendar .day.today { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset, 0 1px 4px rgb(59 111 222 / var(--a-2)); }
   .calendar .day .date-row { display: flex; align-items: center; justify-content: space-between; }
@@ -89,7 +90,7 @@
   .calendar .day .chips { display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
 
   /* Chip — info-dense */
-  .chip { display: grid; grid-template-columns: 22px 1fr auto; gap: 5px; align-items: center; padding: 4px 6px; border-radius: 6px; font-size: 11px; cursor: pointer; border: 1px solid transparent; line-height: 1.25; transition: border-color .15s, transform .1s; background: var(--surface-2); }
+  .chip { display: grid; grid-template-columns: 3px 1fr auto; gap: 8px; align-items: center; padding: 4px 8px 4px 0; border-radius: 6px; font-size: var(--fs-base); cursor: pointer; border: 1px solid transparent; line-height: 1.25; transition: border-color .15s, transform .1s; background: var(--surface-2); }
   .chip:hover { border-color: var(--accent); transform: translateX(1px); }
   .chip .chip-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .chip .chip-rating { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 10px; line-height: 1; letter-spacing: -0.02em; flex-shrink: 0; }
@@ -149,7 +150,34 @@
   .more-count:hover { color: var(--accent); }
 
   /* List view */
-  .list-wrap { padding: 12px 20px; }
+  /* ── 리스트 뷰 (11열 · 40px 고정행) ── */
+  .list-wrap { padding: 0 20px 24px; }
+  .list-table { table-layout: fixed; border-collapse: separate; border-spacing: 0;
+                font-size: var(--fs-base); font-variant-numeric: tabular-nums; min-width: 992px; }
+  .list-table thead th { position: sticky; top: 0; z-index: 3; height: 34px; padding: 0 10px;
+                background: var(--surface-2); color: var(--text-mute); font-size: var(--fs-sm);
+                font-weight: 600; letter-spacing: .03em; white-space: nowrap; text-align: left;
+                border-bottom: 1px solid var(--border-strong); cursor: pointer; user-select: none; }
+  .list-table thead th[aria-sort="ascending"], .list-table thead th[aria-sort="descending"] {
+                color: var(--text); background: var(--surface-3); }
+  .list-table tbody td { height: 40px; padding: 0 10px; white-space: nowrap; overflow: hidden;
+                text-overflow: ellipsis; vertical-align: middle; border-bottom: 1px solid var(--border); }
+  .list-table tbody tr { cursor: pointer; }
+  .list-table tbody tr:hover { background: var(--surface-2); }
+  .list-table tbody tr[aria-selected="true"] { background: rgb(59 111 222 / var(--a-2));
+                box-shadow: inset 4px 0 0 var(--accent-strong); }
+  /* 월 그룹 헤더 — 47행이 3개월에 걸쳐 있는데 경계가 없었다 */
+  .list-table tbody tr.grp td { height: 26px; background: var(--surface-2); color: var(--text-dim);
+                font-size: var(--fs-sm); font-weight: 700; position: sticky; top: 34px; z-index: 2;
+                border-bottom: 1px solid var(--border-strong); }
+  /* 값 없는 셀은 아무것도 그리지 않는다 — '—' 가 실제 값과 같은 시각 무게를 쓰고 있었다 */
+  .list-table td.empty { color: var(--n-300); }
+  .list-table .col-complex { font-weight: 600; color: var(--text); }
+  .list-table .col-dh { font-size: var(--fs-sm); color: var(--text-mute); margin-left: 6px; font-weight: 400; }
+  /* 숫자 블록 시작점에 구분선 — 눈이 소수점 자리로 수직 스캔하게 */
+  .list-table tbody td:nth-child(7), .list-table thead th:nth-child(7) {
+                border-left: 1px solid var(--border); }
+
   .list-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 8px; overflow: hidden; }
   .list-table thead th { background: var(--surface-2); color: var(--text-mute); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; cursor: pointer; user-select: none; }
   .list-table thead th:hover { color: var(--text); }
@@ -189,7 +217,23 @@
     position: relative;
     margin-left: 12px;                                   /* visible gutter — strong separation cue */
   }
-  .detail-panel.open { width: clamp(380px, calc(100vw - 1020px), 480px); }
+  /* 기본 640px — 480px 에서는 금액 셀이 3줄로 깨진다(실측 줄바꿈 2건). */
+  .detail-panel.open { width: clamp(420px, calc(100vw - 860px), 640px); }
+  /* full — 그리드를 숨기고 패널이 전체를 쓴다. 3열이면 스크롤 없이 한 화면. */
+  .detail-panel.full { width: calc(100vw - 64px) !important; }
+  body.panel-full .view-wrap { display: none; }
+  body.panel-full .detail-panel { margin-left: 0; }
+  .detail-panel.full .detail-inner { column-count: 3; column-gap: 20px; }
+  .detail-panel.full .detail-section { break-inside: avoid; }
+  .detail-panel.full .detail-header { column-span: all; }
+  #panel-expand { background: none; border: 1px solid var(--border); color: var(--text-dim);
+                  border-radius: var(--r-sm); cursor: pointer; font-size: var(--fs-md);
+                  padding: 3px 8px; font-family: inherit; }
+  #panel-expand:hover { border-color: var(--accent); color: var(--text); }
+  #panel-expand[aria-pressed="true"] { background: var(--accent); color: var(--n-0); border-color: var(--accent); }
+  /* 리사이즈 핸들 발견성 — 7px 는 너무 좁았다 */
+  .resize-handle { width: 10px !important; }
+  .resize-handle:hover { background: rgb(59 111 222 / var(--a-3)); }
   /* 내용은 패널 폭을 그대로 따른다. var(--panel-w) 를 쓰면 CSS 기본 clamp(최대 480px)에
      묶여 패널을 아무리 넓혀도 내용이 480px 에 갇힌다 — "영역 늘리기에 제한"의 실체였다. */
   .detail-inner { width: 100%; padding: 20px 20px 20px 26px; overflow-y: auto; height: 100%; scroll-behavior: smooth; }
@@ -749,6 +793,36 @@
                          border: 1px solid var(--border); }
   .tl-link { display: inline-block; margin-top: var(--sp-2); font-size: var(--fs-md);
              color: var(--accent); font-weight: 600; }
+  .list-table .verdict-badge { font-size: var(--fs-sm); padding: 1px 6px; border-radius: var(--r-sm); }
+  .list-table .list-result-flag { font-size: 10px; font-weight: 700; padding: 1px 4px;
+                                  border-radius: var(--r-sm); margin-left: 4px; }
+  .list-table .list-result-flag.won  { background: var(--accent); color: var(--n-0); }
+  .list-table .list-result-flag.lost { background: var(--muted-bg); color: var(--text-mute);
+                                       border: 1px solid var(--border); }
+  .list-table .dday-badge { margin-left: 5px; }
+  /* 포커스링 — 전역 규칙이 0개였다. 키보드 사용자는 자기 위치를 알 수 없었다. */
+  :where(a, button, input, select, [tabindex], tr, .chip):focus-visible {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 2px;
+    border-radius: inherit;
+  }
+  .list-table tbody tr:focus-visible { outline-offset: -2px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  }
+  /* 스크린리더 전용 */
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+             overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  /* 칩 — verdict 를 1차 스캔 단서로(좌측 3px 바). 별점은 62%가 빈 값이라 최강 위치에서 뺐다. */
+  .chip .chip-vbar { width: 3px; align-self: stretch; border-radius: 2px 0 0 2px; background: var(--muted-dot); }
+  .chip.candidate .chip-vbar { background: var(--accent); }
+  .chip.hold      .chip-vbar { background: var(--r5-bg); }
+  .chip.pass      .chip-vbar { background: var(--positive); }
+  .chip.pending   .chip-vbar { background: var(--n-400); }
+  .chip.fail .chip-vbar, .chip.expired .chip-vbar { background: var(--n-300); }
+  .chip .chip-text { font-size: var(--fs-base); font-weight: 600; color: var(--text); }
+  .chip .chip-price { font-size: var(--fs-base); font-weight: 700; }
+  .chip .chip-rating { width: 18px; height: 18px; font-size: 10px; }
 </style>
 <script src="../shared/cal-lib.js"></script>
 <script src="../shared/icons.js"></script>
@@ -844,6 +918,7 @@
   <nav class="rail" id="rail"></nav>
   <aside class="flyout" id="flyout"></aside>
   <div class="view-area">
+  <div class="sr-only" id="sr-status" role="status" aria-live="polite"></div>
   <div class="topbar" id="topbar">
     <div class="month-nav" id="month-nav">
       <button class="nav-btn" id="prev-month" title="이전 달" type="button">←</button>
@@ -855,11 +930,11 @@
 <main>
   <div class="view-wrap">
     <div id="calendar-view" class="calendar-wrap">
-      <div id="calendar" class="calendar"></div>
+      <div id="calendar" class="calendar" role="grid" aria-label="매각기일 달력"></div>
       <div id="agenda"></div>
     </div>
     <div id="list-view" class="list-wrap" hidden>
-      <table class="list-table">
+      <table class="list-table" role="grid" aria-label="경매 사건 목록" tabindex="0">
         <thead><tr id="list-head"></tr></thead>
         <tbody id="list-body"></tbody>
       </table>
@@ -867,7 +942,7 @@
     </div>
   </div>
   <div class="panel-backdrop" id="panel-backdrop"></div>
-  <aside class="detail-panel" id="detail-panel">
+  <aside class="detail-panel" id="detail-panel" role="complementary" aria-label="사건 상세">
     <div class="resize-handle" id="resize-handle" title="드래그하여 패널 너비 조절"></div>
     <div class="detail-inner" id="detail-inner"></div>
   </aside>
@@ -1039,17 +1114,18 @@
       const stored = localStorage.getItem(LS_VERDICT_HIDDEN);
       if (stored != null) return new Set(JSON.parse(stored));
     } catch (e) {}
-    return new Set(['fail']); // default: hide fail (per user preference)
+    // 기본 숨김: fail + expired. 만료건이 월 최상단 칸을 점유해 스캔 시작점을 죽인다.
+    return new Set(['fail', 'expired']);
   }
   function saveVerdictHidden(set) {
     try { localStorage.setItem(LS_VERDICT_HIDDEN, JSON.stringify([...set])); } catch (e) {}
   }
   const LS_PANEL_W = 'calendar.panelWidth.v3'; // v3: 기본폭을 뷰포트 비율(캘린더:상세 35:65)로 전환. 구 키 저장값 무시.
-  const PANEL_W_MIN = 380;
+  const PANEL_W_MIN = 420;
   // 상한은 사용자가 정한다. 상세를 크게 보고 싶은 순간이 실재하므로 좁게 묶지 않는다.
   // 그리드가 좁아지는 건 사용자의 선택이고, 되돌릴 수단(리사이즈·프리셋)이 있으면 된다.
   // (기본값만 CSS clamp 로 적당히 잡고, 드래그 상한은 뷰포트의 92%까지 연다.)
-  const PANEL_W_MAX = () => Math.max(PANEL_W_MIN, Math.round(window.innerWidth * 0.92));
+  const PANEL_W_MAX = () => Math.max(PANEL_W_MIN, Math.min(1100, window.innerWidth - 320));
   function clampPanelW(w) {
     return Math.max(PANEL_W_MIN, Math.min(PANEL_W_MAX(), w));
   }
@@ -1061,6 +1137,32 @@
     } catch (e) {}
     return null;
   }
+  // 패널 프리셋 3단. 실측상 2열 레이아웃은 880px 에서 포화한다(scrollH 1116 → 1300px 에서도 1103).
+  // 즉 "넓히기 제한"의 해결은 상한 숫자가 아니라 열 수다 — full 은 3열로 간다.
+  const PANEL_PRESETS = [560, 880, 'full'];
+  const LS_PANEL_FULL = 'calendar.panelFull.v1';
+
+  function isPanelFull() {
+    try { return localStorage.getItem(LS_PANEL_FULL) === '1'; } catch (e) { return false; }
+  }
+  function setPanelFull(on) {
+    const panel = document.getElementById('detail-panel');
+    if (!panel) return;
+    panel.classList.toggle('full', !!on);
+    document.body.classList.toggle('panel-full', !!on);
+    try { on ? localStorage.setItem(LS_PANEL_FULL, '1') : localStorage.removeItem(LS_PANEL_FULL); } catch (e) {}
+    const btn = document.getElementById('panel-expand');
+    if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  function cyclePanelPreset() {
+    const panel = document.getElementById('detail-panel');
+    if (!panel || !panel.classList.contains('open')) return;
+    if (isPanelFull()) { setPanelFull(false); applyPanelWidth(PANEL_PRESETS[0]); savePanelWidth(PANEL_PRESETS[0]); return; }
+    const cur = Math.round(panel.getBoundingClientRect().width);
+    if (cur < PANEL_PRESETS[1] - 40) { applyPanelWidth(PANEL_PRESETS[1]); savePanelWidth(PANEL_PRESETS[1]); }
+    else setPanelFull(true);
+  }
+
   function applyPanelWidth(w) {
     const panel = document.getElementById('detail-panel');
     if (!panel) return;
@@ -1506,7 +1608,10 @@
 
     const weekdays = ['일','월','화','수','목','금','토'];
     // 활성 요일 칼럼만 — 그리드 칼럼 수도 동적으로 맞춘다(7 → ACTIVE_DOWS.length).
-    cal.style.gridTemplateColumns = 'repeat(' + ACTIVE_DOWS.length + ', 1fr)';
+    // 열 수는 반드시 요일 수와 같아야 한다 — auto-fit 을 쓰면 6열이 생겨
+      // 요일 헤더와 날짜 칸이 어긋난다(달력의 기본 계약 위반).
+      // 좁은 폭에서 칸이 짜부라지는 문제는 패널 프리셋(full 모드는 그리드를 숨김)으로 푼다.
+      cal.style.gridTemplateColumns = 'repeat(' + ACTIVE_DOWS.length + ', minmax(0, 1fr))';
     ACTIVE_DOWS.forEach((dow) => {
       cal.appendChild(el('div', { cls: 'weekday' + (dow === 0 ? ' sun' : dow === 6 ? ' sat' : ''), text: weekdays[dow] }));
     });
@@ -1548,7 +1653,8 @@
       dayCell.appendChild(dateRow);
 
       const chipsWrap = el('div', { cls: 'chips' });
-      const MAX_VISIBLE = 4;
+      const MAX_VISIBLE = 12;   // 사실상 캡 해제. 중앙값 2건/일이라 캡이 걸리는 칸은 극소수이고,
+                                //  걸릴 땐 하필 가장 중요한 날(13건)이었다.
       function appendChip(c) {
         const r = effectiveRating(c);
         const cls = ['chip', c.verdict];
@@ -1558,16 +1664,15 @@
         if (dCls === 'urgent' && c.verdict !== 'expired') cls.push('dday-urgent');
         else if (dCls === 'soon' && c.verdict !== 'expired') cls.push('dday-soon');
         const chip = el('div', { cls: cls.join(' '), title: window.CalLib.chipTitle(c, r, fmtMoneyShort) });
+        chip.dataset.caseId = c.id;
+        chip.tabIndex = -1;
         if (c.id === state.selectedId) chip.classList.add('selected');
-        // Rating dot
-        const rd = el('span', { cls: 'chip-rating ' + (r != null ? 'r' + r : 'none'), text: r != null ? r + '' : '·' });
-        chip.appendChild(rd);
+        // 1차 단서 = 판정(좌측 3px 바). 별점은 76건 중 실제 값이 2건뿐이라
+        // 62%가 빈 회색 점이었다 — 최강 위치를 빈 값이 먹고 있었다.
+        chip.appendChild(el('span', { cls: 'chip-vbar' }));
         // Label
         {
-          const label = el('span', { cls: 'chip-text' });
-          label.appendChild(el('span', { cls: 'vdot' }));   // verdict — 채도 대신 형태로 구분
-          label.appendChild(document.createTextNode(' ' + window.CalLib.chipLabel(c)));
-          chip.appendChild(label);
+          chip.appendChild(el('span', { cls: 'chip-text', text: window.CalLib.chipLabel(c) }));
         }
         // v6.1 관심 tier 미니배지(★/◇/▷) + 회고 결과 배지를 하나의 trailing 그룹으로 묶는다.
         // 3컬럼 grid(22px 1fr auto)는 trailing 셀이 1개일 때만 안정적이다. tier·result가
@@ -1575,7 +1680,12 @@
         // result배지가 2행 22px 컬럼으로 밀려 가격과 겹친다. 둘을 한 셀(.chip-trail)에 수용해 방지.
         const trail = el('span', { cls: 'chip-trail' });
         { const _tm = { primary: '★', watch: '◇', watchlist: '▷' }; if (c.interestTier && _tm[c.interestTier]) trail.appendChild(el('span', { cls: 'chip-tier tier-' + (c.interestTier === 'primary' ? 'star' : c.interestTier === 'watch' ? 'watch' : 'watchlist'), text: _tm[c.interestTier] })); }
-        { const _b = resultChipBadge(resultFor(c)); if (_b) trail.appendChild(_b); }
+        // 별점 — 값 있을 때만. 없으면 아무것도 그리지 않는다.
+        if (r != null) trail.appendChild(el('span', { cls: 'chip-rating r' + r, text: String(r) }));
+        // 결과 배지는 지난 사건에서만 — 미래 칩에서는 자리만 먹는다.
+        if ((c.saleDate || '') < todayStr) {
+          const _b = resultChipBadge(resultFor(c)); if (_b) trail.appendChild(_b);
+        }
         // L1 — 내 입찰 결과. results.js 에 myResult(won 1 · lost 3)가 있는데 화면에 없었다.
         { const _ar = resultFor(c);
           if (_ar && _ar.myResult) {
@@ -1641,22 +1751,23 @@
   }
 
   // ===== List view =====
+  // 11열. 구 14열에서 사건번호·KB시세·보수매도를 뺐다.
+  //  - 사건번호: distinct 47/47 로 정보량은 최대지만 의사결정 단서가 0. DB 키다(칩에서 뺀 것과 같은 논리).
+  //  - KB시세·보수매도: 채움률 60%/49% 이고, 권장가·예상수익이 이미 KB 를 반영한 파생값이다.
+  // 단지 셀에서 주소도 뺐다 — 47%가 단지명+동번호를 재출력하고, 지역 컬럼과도 중복이라 3줄 줄바꿈만 만들었다.
   const LIST_COLUMNS = [
-    { key: 'rating',     label: '별점',    width: '50px',  align: 'center' },
-    { key: 'verdict',    label: '판정',    width: '80px' },
-    { key: 'saleDate',   label: '매각일',  width: '100px' },
-    { key: 'caseNumber', label: '사건',    width: '140px' },
-    { key: 'complex',    label: '단지',    width: 'auto' },
-    { key: 'region',     label: '지역',    width: '80px' },
-    { key: 'areaSqm',    label: '전용',    width: '60px',  align: 'right' },
-    { key: 'minimumPrice', label: '최저가', width: '110px',  align: 'right' },
-    { key: 'kbPrice',    label: 'KB시세',  width: '105px',  align: 'right' },
-    { key: 'neutralSalePrice', label: '보수매도', width: '110px', align: 'right' },
-    { key: 'bid70',      label: '입찰권장(70%)', width: '115px', align: 'right' },
-    { key: 'expectedProfit70', label: '예상수익', width: '100px', align: 'right' },
-    { key: 'saleRate',   label: '매각가율', width: '70px', align: 'right' },
-    { key: 'rounds',     label: '유찰',    width: '50px', align: 'center' },
-  ];
+    { key: 'rating',     label: '★',      width: '44px',  align: 'center' },
+    { key: 'saleDate',   label: '매각일',  width: '96px' },
+    { key: 'complex',    label: '단지 · 동호', width: 'auto' },
+    { key: 'region',     label: '지역',    width: '68px' },
+    { key: 'areaSqm',    label: '전용',    width: '52px',  align: 'right' },
+    { key: 'verdict',    label: '판정',    width: '96px' },
+    { key: 'minimumPrice', label: '최저가', width: '76px', align: 'right' },
+    { key: 'bid70',      label: '권장가',  width: '76px',  align: 'right' },
+    { key: 'expectedProfit70', label: '예상수익', width: '88px', align: 'right' },
+    { key: 'saleRate',   label: '매각가율', width: '72px', align: 'right' },
+    { key: 'rounds',     label: '유찰',    width: '48px', align: 'right' },
+  ];;
 
   function sortValue(c, key) {
     switch (key) {
@@ -1684,6 +1795,9 @@
         else { state.sort.key = col.key; state.sort.dir = (col.key === 'rating' || col.key === 'margin' || col.key === 'rounds') ? 'desc' : 'asc'; }
         renderList();
       });
+      th.setAttribute('scope', 'col');
+      th.setAttribute('aria-sort',
+        state.sort.key === col.key ? (state.sort.dir === 'asc' ? 'ascending' : 'descending') : 'none');
       head.appendChild(th);
     }
 
@@ -1704,86 +1818,98 @@
 
     document.getElementById('list-empty').hidden = sorted.length > 0;
 
+    // 정렬이 매각일 기준일 때만 월 그룹 헤더를 넣는다(다른 정렬에선 월이 뒤섞여 의미가 없다).
+    const groupByMonth = state.sort.key === 'saleDate';
+    let lastMonth = null;
+
     for (const c of sorted) {
+      if (groupByMonth) {
+        const mk = String(c.saleDate || '').slice(0, 7);
+        if (mk && mk !== lastMonth) {
+          lastMonth = mk;
+          const n = sorted.filter((x) => String(x.saleDate || '').slice(0, 7) === mk).length;
+          const gtr = el('tr', { cls: 'grp' });
+          const gtd = el('td', { text: `${mk.slice(0, 4)}년 ${Number(mk.slice(5, 7))}월 · ${n}건` });
+          gtd.colSpan = LIST_COLUMNS.length;
+          gtr.appendChild(gtd);
+          body.appendChild(gtr);
+        }
+      }
       const tr = el('tr');
-      if (c.id === state.selectedId) tr.classList.add('selected');
+      if (c.id === state.selectedId) { tr.classList.add('selected'); tr.setAttribute('aria-selected', 'true'); }
+      tr.tabIndex = -1;
+      tr.dataset.caseId = c.id;
       const days = daysUntil(c.saleDate);
       const dCls = ddayClass(days);
       if (dCls === 'urgent' && c.verdict !== 'expired') tr.classList.add('dday-urgent');
       else if (dCls === 'soon' && c.verdict !== 'expired') tr.classList.add('dday-soon');
       tr.addEventListener('click', () => openDetail(c.id));
 
-      // rating
+      // ── 11열. 순서: ★ · 매각일 · 단지 · 지역 · 전용 · 판정 · 최저가 · 권장가 · 예상수익 · 매각가율 · 유찰 ──
+      const numTd = (val, fmt, opts) => {
+        const o = opts || {};
+        const td = el('td', { cls: 'col-num' + (val == null ? ' empty' : (o.cls || '')) });
+        td.style.textAlign = 'right';
+        if (val == null) td.textContent = '';           // '—' 를 그리지 않는다
+        else { td.textContent = fmt(val); if (o.title) td.title = o.title(val); }
+        return td;
+      };
+
+      // 1. ★ — 값 없으면 아무것도 안 그린다(62%가 빈 회색 점이었다)
       {
-        const td = el('td');
-        td.style.textAlign = 'center';
+        const td = el('td'); td.style.textAlign = 'center';
         const r = effectiveRating(c);
-        const dot = el('span', { cls: 'chip-rating ' + (r != null ? 'r' + r : 'none'), text: r != null ? r + '' : '·' });
-        dot.style.display = 'inline-flex';
-        td.appendChild(dot);
+        if (r != null) td.appendChild(el('span', { cls: 'chip-rating r' + r, text: String(r) }));
         tr.appendChild(td);
       }
-      // verdict
-      {
-        const td = el('td');
-        td.appendChild(el('span', { cls: 'verdict-badge ' + c.verdict, text: c.verdict }));
-        const _ar = resultFor(c);
-        if (_ar) {
-          const SMAP = { sold: '낙찰', failed: '유찰', changed: '변경', withdrawn: '취하', postponed: '연기', unknown: '미확정' };
-          const lab = _ar.quadrant || SMAP[_ar.status] || '결과';
-          const rate = _ar.soldRate != null ? ' ' + Math.round(_ar.soldRate * 100) + '%' : '';
-          td.appendChild(el('span', { cls: 'list-result-flag ' + (_ar.quadrant || _ar.status), text: lab + rate }));
-        }
-        tr.appendChild(td);
-      }
-      // saleDate + dday
+      // 2. 매각일
       {
         const td = el('td', { cls: 'col-num' });
-        td.appendChild(document.createTextNode(c.saleDate || '—'));
-        if (dCls && c.verdict !== 'expired') {
-          const b = el('span', { cls: 'dday-badge ' + dCls, text: ddayLabel(days) });
-          b.style.marginLeft = '6px';
-          td.appendChild(b);
+        td.appendChild(document.createTextNode((c.saleDate || '').slice(5).replace('-', '/')));
+        const dl = ddayLabel(days);
+        if (dCls && c.verdict !== 'expired' && dl) {
+          td.appendChild(el('span', { cls: 'dday-badge ' + dCls, text: dl }));
         }
         tr.appendChild(td);
       }
-      // caseNumber
-      tr.appendChild(el('td', { cls: 'col-num', text: c.caseNumber }));
-      // complex + dongHo
+      // 3. 단지 · 동호
       {
         const td = el('td');
-        td.appendChild(el('div', { cls: 'col-complex', text: c.complex || '—' }));
-        if (c.dongHo || c.address) {
-          const meta = (c.dongHo || '') + (c.address ? ' · ' + c.address : '');
-          td.appendChild(el('div', { cls: 'col-meta', text: meta }));
+        td.appendChild(el('b', { cls: 'col-complex', text: c.complex || '—' }));
+        if (c.dongHo) td.appendChild(el('span', { cls: 'col-dh', text: c.dongHo }));
+        td.title = [c.caseNumber, c.complex, c.dongHo, c.address].filter(Boolean).join(' · ');
+        tr.appendChild(td);
+      }
+      // 4. 지역
+      tr.appendChild(el('td', { text: c.region || '' }));
+      // 5. 전용
+      tr.appendChild(numTd(c.areaSqm, (v) => Math.round(v)));
+      // 6. 판정
+      {
+        const td = el('td');
+        td.appendChild(el('span', { cls: 'verdict-badge ' + c.verdict, text: verdictShort(c.verdict) }));
+        // 결과 플래그는 '내 입찰 결과'만. TP/FN 은 성적표 개념이라 스캔 화면에 두지 않는다.
+        const _ar = resultFor(c);
+        if (_ar && _ar.myResult) {
+          td.appendChild(el('span', { cls: 'list-result-flag ' + _ar.myResult,
+            text: _ar.myResult === 'won' ? '낙' : '패',
+            title: _ar.myResult === 'won' ? '내가 낙찰받은 물건' : '내가 입찰했으나 패찰' }));
         }
         tr.appendChild(td);
       }
-      // region
-      tr.appendChild(el('td', { text: c.region || '—' }));
-      // area
-      { const td = el('td', { cls: 'col-num' }); td.style.textAlign = 'right'; td.textContent = c.areaSqm ? c.areaSqm.toFixed(1) : '—'; tr.appendChild(td); }
-      // minimumPrice
-      { const td = el('td', { cls: 'col-num' }); td.style.textAlign = 'right'; td.textContent = fmtMoney(c.minimumPrice); td.title = fmtMoney(c.minimumPrice); tr.appendChild(td); }
-      // kbPrice
-      { const td = el('td', { cls: 'col-num' + (!c.kbPrice ? ' dim' : '') }); td.style.textAlign = 'right'; td.textContent = c.kbPrice ? fmtMoney(c.kbPrice) : '—'; if (c.kbPrice) td.title = fmtMoney(c.kbPrice); tr.appendChild(td); }
-      // 기대매도가 (neutralSalePrice = 최근 실거래)
-      { const td = el('td', { cls: 'col-num' + (c.neutralSalePrice == null ? ' dim' : '') }); td.style.textAlign = 'right'; td.textContent = c.neutralSalePrice ? fmtMoneyShort(c.neutralSalePrice) : '—'; if (c.neutralSalePrice) td.title = '보수 매도 기준(호가 하단) ' + fmtMoney(c.neutralSalePrice); tr.appendChild(td); }
-      // 입찰권장가 (낙찰확률 70%)
-      { const td = el('td', { cls: 'col-num' + (c.bid70 == null ? ' dim' : '') }); td.style.textAlign = 'right'; td.textContent = c.bid70 ? fmtMoneyShort(c.bid70) : '—'; if (c.bid70) td.title = '입찰 권장가(낙찰확률 70%) ' + fmtMoney(c.bid70); tr.appendChild(td); }
-      // 예상수익 (세전 EP70, short form; 전액 hover)
-      {
-        const ep = c.expectedProfit70;
-        const td = el('td', { cls: 'col-num' + (ep == null ? ' dim' : ep >= 0 ? ' ep-pos' : ' ep-neg') });
-        td.style.textAlign = 'right';
-        if (ep == null) td.textContent = '—';
-        else { td.textContent = fmtMoneyShortSigned(ep); td.title = '세전 기대수익(EP70) ' + fmtMoneySigned(ep); }
-        tr.appendChild(td);
-      }
-      // saleRate
-      { const td = el('td', { cls: 'col-num' + (c.saleRate == null ? ' dim' : '') }); td.style.textAlign = 'right'; td.textContent = c.saleRate != null ? (c.saleRate * 100).toFixed(1) + '%' : '미확인'; tr.appendChild(td); }
-      // rounds
-      { const td = el('td'); td.style.textAlign = 'center'; td.textContent = c.rounds == null ? '—' : (c.rounds === 0 ? '신건' : c.rounds + '회'); tr.appendChild(td); }
+      // 7. 최저가
+      tr.appendChild(numTd(c.minimumPrice, fmtMoneyShort, { title: fmtMoney }));
+      // 8. 권장가
+      tr.appendChild(numTd(c.bid70, fmtMoneyShort, { title: (v) => '입찰 권장가(낙찰확률 70%) ' + fmtMoney(v) }));
+      // 9. 예상수익
+      tr.appendChild(numTd(c.expectedProfit70, fmtMoneyShortSigned, {
+        cls: c.expectedProfit70 >= 0 ? ' ep-pos' : ' ep-neg',
+        title: (v) => '세전 기대수익(EP70) ' + fmtMoneySigned(v),
+      }));
+      // 10. 매각가율
+      tr.appendChild(numTd(c.saleRate, (v) => (v * 100).toFixed(0) + '%'));
+      // 11. 유찰
+      tr.appendChild(numTd(c.rounds, (v) => (v === 0 ? '신건' : v + '회')));
 
       body.appendChild(tr);
     }
@@ -1850,6 +1976,8 @@
 
   // ===== Detail panel =====
   function verdictLabel(v) { return ({pending:'Pending', candidate:'Candidate', pass:'Pass', hold:'Hold', fail:'Fail', expired:'Expired'})[v] || v; }
+  // 리스트용 축약 — 영문 라벨은 108px 칸에서 잘린다(실측 31/429 셀 잘림).
+  function verdictShort(v) { return ({pending:'대기', candidate:'후보', pass:'통과', hold:'보류', fail:'제외', expired:'만료'})[v] || v; }
   function riskLabel(r) { return ({safe:'안전', moderate:'중간', risky:'위험'})[r] || r; }
 
   function openDetail(id, opts) {
@@ -1910,6 +2038,13 @@
     shareBtn.title = '이 사건 링크 복사';
     shareBtn.addEventListener('click', () => copyDeepLink(c.id, shareBtn));
     actions.appendChild(shareBtn);
+    // 확대 토글 — 560 / 880 / 전체 3단 순환. 키보드 \\ 와 리사이즈 핸들 더블클릭도 같은 동작.
+    const expandBtn = el('button', { cls: 'icon-btn', text: '⤢', title: '패널 크기 순환 (560 / 880 / 전체 · 단축키 \\)' });
+    expandBtn.id = 'panel-expand';
+    expandBtn.setAttribute('aria-label', '패널 크기 전환');
+    expandBtn.setAttribute('aria-pressed', isPanelFull() ? 'true' : 'false');
+    expandBtn.addEventListener('click', cyclePanelPreset);
+    actions.appendChild(expandBtn);
     const closeBtn = el('button', { cls: 'close', text: '×', title: '닫기' });
     closeBtn.addEventListener('click', closeDetail);
     actions.appendChild(closeBtn);
@@ -2588,6 +2723,7 @@
   }
 
   function closeDetail() {
+    setPanelFull(false);
     state.selectedId = null;
     document.getElementById('detail-panel').classList.remove('open');
     document.getElementById('panel-backdrop').classList.remove('show'); // 모바일 backdrop 해제
@@ -2700,10 +2836,65 @@
     else closeDetail();
   });
   // 키보드 접근성 (a11y): ESC로 상세 패널 닫기
+  // ===== 키보드 내비게이션 =====
+  // 이 도구의 핵심 동작은 "수십 건을 훑으며 하나씩 자세히 본다"인데,
+  // 지금까지는 행 하나 볼 때마다 마우스 클릭이 필요했다. ↑↓ + 패널 연동이 "쉽게 탐색"의 실체다.
+  function visibleCaseIds() {
+    if (state.view === 'list') {
+      return [...document.querySelectorAll('.list-table tbody tr[data-case-id]')]
+        .map((tr) => tr.dataset.caseId);
+    }
+    return [...document.querySelectorAll('#calendar .chip[data-case-id]')]
+      .map((n) => n.dataset.caseId);
+  }
+
+  function moveSelection(delta, absolute) {
+    const ids = visibleCaseIds();
+    if (!ids.length) return;
+    let idx;
+    if (absolute != null) idx = absolute < 0 ? ids.length - 1 : 0;
+    else {
+      const cur = ids.indexOf(state.selectedId);
+      idx = cur < 0 ? (delta > 0 ? 0 : ids.length - 1) : cur + delta;
+    }
+    idx = Math.max(0, Math.min(ids.length - 1, idx));
+    const id = ids[idx];
+    // 패널이 열려 있으면 즉시 갱신(76건 로컬 데이터라 debounce 불필요),
+    // 닫혀 있으면 선택만 옮긴다.
+    const panelOpen = document.getElementById('detail-panel').classList.contains('open');
+    if (panelOpen) openDetail(id);
+    else { state.selectedId = id; syncUrl(true); if (state.view === 'list') renderList(); else renderCalendar(); }
+    const node = state.view === 'list'
+      ? document.querySelector(`.list-table tbody tr[data-case-id="${CSS.escape(id)}"]`)
+      : document.querySelector(`#calendar .chip[data-case-id="${CSS.escape(id)}"]`);
+    if (node) node.scrollIntoView({ block: 'nearest' });   // center 는 화면이 튄다
+  }
+
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && state.selectedId) {
-      e.preventDefault();
-      closeDetail();
+    const t = e.target;
+    const typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+    if (e.key === 'Escape') {
+      if (typing) { t.blur(); return; }
+      if (document.getElementById('flyout').classList.contains('open')) { toggleFlyout(false); return; }
+      if (state.selectedId) { e.preventDefault(); closeDetail(); }
+      return;
+    }
+    if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+
+    switch (e.key) {
+      case 'ArrowDown': case 'j': e.preventDefault(); moveSelection(1); break;
+      case 'ArrowUp':   case 'k': e.preventDefault(); moveSelection(-1); break;
+      case 'Home': e.preventDefault(); moveSelection(0, 1); break;
+      case 'End':  e.preventDefault(); moveSelection(0, -1); break;
+      case 'Enter': case ' ':
+        if (state.selectedId) { e.preventDefault(); openDetail(state.selectedId); }
+        break;
+      case '/': e.preventDefault(); document.getElementById('f-search').focus(); break;
+      case 'f': e.preventDefault(); toggleFlyout(); break;
+      case '\\': e.preventDefault(); cyclePanelPreset(); break;
+      case '1': e.preventDefault(); setView('calendar'); break;
+      case '2': e.preventDefault(); setView('list'); break;
+      default: break;
     }
   });
   // 모바일: backdrop 탭하면 패널 닫기 (딥링크 갇힘 해소)
@@ -2722,6 +2913,7 @@
 
   // ===== Resizable detail panel =====
   applyPanelWidth(loadPanelWidth());
+  if (isPanelFull()) setPanelFull(true);
   (function setupResize() {
     const handle = document.getElementById('resize-handle');
     const panel = document.getElementById('detail-panel');
@@ -2764,12 +2956,13 @@
     handle.addEventListener('pointercancel', endDrag);
     // Double-click handle → reset to default width
     handle.addEventListener('dblclick', () => {
-      // CSS clamp 기본값으로 리셋 — 저장값을 지워야 다음 로드에도 기본값이 적용된다.
-      applyPanelWidth(null);
-      try { localStorage.removeItem(LS_PANEL_W); } catch (e) {}
+      cyclePanelPreset();   // 560 → 880 → full → 560
     });
     // Re-clamp on viewport resize so user can't get stuck wider than the window
     window.addEventListener('resize', () => {
+      // 닫힌 패널은 폭 0 이라 clampPanelW 가 하한(380px)을 돌려준다.
+      // 그게 인라인으로 박히면 .open 의 clamp 를 영구히 덮어써서 이후 아무리 열어도 380px 고정.
+      if (!panel.classList.contains('open')) return;
       const cur = panel.getBoundingClientRect().width;
       const clamped = clampPanelW(cur);
       if (clamped !== cur) applyPanelWidth(clamped);
@@ -2906,6 +3099,8 @@
     sum.replaceChildren();
     sum.appendChild(el('b', { text: String(list.length) }));
     sum.appendChild(document.createTextNode('건'));
+    const sr = document.getElementById('sr-status');
+    if (sr) sr.textContent = `${list.length}건 표시 중` + (hi ? `, 별점 4 이상 ${hi}건` : '');
     if (hi) {
       sum.appendChild(document.createTextNode(' · ★4↑ '));
       sum.appendChild(el('b', { text: String(hi) }));
