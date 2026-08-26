@@ -205,8 +205,20 @@
     }
     var RESULTS = window.AUCTION_RESULTS || {}, CASES = window.AUCTION_CASES || [];
     var ids = Object.keys(H);
-    var sel = ids[0];
+    // L3 — URL 해시로 물건 선택. 캘린더에서 넘어오는 링크(#h-<id>)의 착지점이자,
+    // 새로고침 시 선택 유지에도 필요하다(구 코드는 ids[0] 하드코딩).
+    function idFromHash() {
+      var m = /^#h-(.+)$/.exec(location.hash || '');
+      if (!m) return null;
+      var want = 'h-' + m[1];
+      return ids.indexOf(want) >= 0 ? want : (ids.indexOf(m[1]) >= 0 ? m[1] : null);
+    }
+    var sel = idFromHash() || ids[0];
     app.innerHTML = '<div class="col-list" id="list"></div><div class="col-detail" id="detail"></div>';
+    window.addEventListener('hashchange', function () {
+      var id = idFromHash();
+      if (id && id !== sel) { sel = id; draw(); }
+    });
     function draw() {
       var list = document.getElementById('list'); list.innerHTML = '';
       ids.forEach(function (id) {
@@ -217,7 +229,11 @@
         el.innerHTML = '<div class="cx">' + (f.complex || h.holdingId) + '</div>' +
           '<div class="sub">낙찰 ' + (f.wonDate || '—') + ' · ' + won(f.wonPrice) + '</div>' +
           '<div class="sub">' + badge + ' · 집행지출 ' + won(window.CalLib.splitCosts(h.costs, today()).executed) + '</div>';
-        el.onclick = function () { sel = id; draw(); };
+        el.onclick = function () {
+          sel = id; draw();
+          // 해시를 갱신해 특정 물건 링크를 공유할 수 있게 한다(히스토리는 쌓지 않는다).
+          try { history.replaceState(null, '', '#' + id); } catch (e) {}
+        };
         list.appendChild(el);
       });
       drawDetail();

@@ -739,6 +739,14 @@
   .rs-note { display: block; width: 100%; margin-top: var(--sp-1); font-size: var(--fs-sm);
              color: var(--text-mute); line-height: var(--lh-base); }
   .rs-note.warn { color: var(--loss); }
+  /* L1 — 내 입찰 결과 배지. 채도 예산: 낙찰은 별점과 같은 계열(성취), 패찰은 무채색. */
+  .chip .my-badge { font-size: 9.5px; font-weight: 700; padding: 0 4px; border-radius: var(--r-sm);
+                    white-space: nowrap; line-height: 1.55; }
+  .chip .my-badge.won  { background: var(--accent); color: var(--n-0); }
+  .chip .my-badge.lost { background: var(--muted-bg); color: var(--text-mute);
+                         border: 1px solid var(--border); }
+  .tl-link { display: inline-block; margin-top: var(--sp-2); font-size: var(--fs-md);
+             color: var(--accent); font-weight: 600; }
 </style>
 <script src="../shared/cal-lib.js"></script>
 <script src="../shared/icons.js"></script>
@@ -1565,6 +1573,14 @@
         const trail = el('span', { cls: 'chip-trail' });
         { const _tm = { primary: '★', watch: '◇', watchlist: '▷' }; if (c.interestTier && _tm[c.interestTier]) trail.appendChild(el('span', { cls: 'chip-tier tier-' + (c.interestTier === 'primary' ? 'star' : c.interestTier === 'watch' ? 'watch' : 'watchlist'), text: _tm[c.interestTier] })); }
         { const _b = resultChipBadge(resultFor(c)); if (_b) trail.appendChild(_b); }
+        // L1 — 내 입찰 결과. results.js 에 myResult(won 1 · lost 3)가 있는데 화면에 없었다.
+        { const _ar = resultFor(c);
+          if (_ar && _ar.myResult) {
+            const mine = el('span', { cls: 'my-badge ' + _ar.myResult,
+              text: _ar.myResult === 'won' ? '낙찰' : '패찰',
+              title: _ar.myResult === 'won' ? '내가 낙찰받은 물건' : '내가 입찰했으나 패찰' });
+            trail.appendChild(mine);
+          } }
         // 최저매각가만 남긴다. 마진바 제거 — 24px 소비(bar22+gap2), kbPrice 커버리지 64%,
         // 22px 안에서 실질 4~5단계뿐이고, 그라디언트가 채도 예산(별점·손실 2개)에 없는
         // 세 번째 색 채널이었다. 미시 마진은 상세 패널의 숫자로 남는다.
@@ -2000,7 +2016,17 @@
     numSec.appendChild(grid);
     inner.appendChild(numSec);
 
-    // 📄 상세 분석 보고서 (deep-dive 케이스) — 같은 디렉토리의 report HTML로 링크
+    // L2 — 낙찰 물건이면 타임라인으로 이어준다(여정·비용·손익).
+    {
+      const tl = timelineLinkFor(c);
+      if (tl) {
+        const tlSec = section('낙찰 후 여정', { boxed: true, accent: 'report', key: 'timeline' });
+        tlSec.appendChild(tl);
+        inner.appendChild(tlSec);
+      }
+    }
+
+    // 상세 분석 보고서 (deep-dive 케이스) — 같은 디렉토리의 report HTML로 링크
     if (c.reportUrl) {
       const rpSec = section('상세 분석 보고서', { boxed: true, accent: 'report', key: 'report' });
       const a = el('a', { cls: 'report-link', attrs: { href: c.reportUrl, target: '_blank', rel: 'noopener' } });
@@ -2748,6 +2774,18 @@
   })();
 
 
+
+  // L2 — 낙찰 물건은 타임라인으로 이어준다. 조인 키는 이미 완성돼 있다:
+  // results.js 의 복합키(사건번호@saleDate) = 원장의 sourceResultKey.
+  function timelineLinkFor(c) {
+    const ar = resultFor(c);
+    if (!ar || ar.myResult !== 'won') return null;
+    const a = el('a', { cls: 'tl-link', text: '이 물건의 타임라인 보기' });
+    // 원장 holdingId 는 h-<사건번호 뒷자리> 규약. 사건번호에서 숫자만 취한다.
+    const num = String(c.caseNumber || c.id || '').replace(/[^0-9]/g, '').slice(-6);
+    a.setAttribute('href', '../timeline/#h-' + num);
+    return a;
+  }
 
   // ===== 모바일 아젠다 (§6.4) =====
   // 375px 에서 4열 그리드는 칸 폭 ~80px 이라 단지명이 들어갈 수 없다(첫 화면 노출 0건).
