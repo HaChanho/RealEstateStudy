@@ -639,26 +639,58 @@
   /* 종료·변경 건은 취소선 대신 물러남 — 취소선은 글자를 더 못 읽게 만든다. */
   .chip.fail, .chip.expired { opacity: 0.45; }
   .chip.fail .chip-text, .chip.expired .chip-text { text-decoration: none; }
+  /* ── 앱 셸 (§6) — 세로에 쌓인 크롬 237px 을 가로축 레일 64px 로 옮긴다 ── */
+  body.shell-mode { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+  .shell { display: flex; flex: 1; min-height: 0; position: relative; }
+  .rail { width: 64px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border);
+          display: flex; flex-direction: column; align-items: center; padding: var(--sp-2) 0; gap: 2px;
+          z-index: 25; }
+  .rail-item { width: 56px; min-height: 50px; display: flex; flex-direction: column; align-items: center;
+               justify-content: center; gap: 3px; border-radius: var(--r-md); cursor: pointer;
+               border: none; background: none; color: var(--text-dim); font-size: var(--fs-xs);
+               font-weight: 600; text-decoration: none; position: relative; padding: 4px 2px;
+               font-family: inherit; }
+  .rail-item:hover { background: var(--surface-2); color: var(--text); }
+  .rail-item.active { background: var(--surface-2); color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+  .rail-sep { width: 32px; height: 1px; background: var(--border); margin: var(--sp-2) 0; flex-shrink: 0; }
+  .rail-badge { position: absolute; top: 2px; right: 6px; min-width: 15px; height: 15px; padding: 0 3px;
+                border-radius: var(--r-pill); background: var(--accent); color: var(--n-0);
+                font-size: 9px; font-weight: 700; line-height: 15px; text-align: center; }
+  .rail-brand { font-size: 9px; font-weight: 700; color: var(--text-mute); letter-spacing: .02em;
+                text-align: center; padding: 2px 0 6px; line-height: 1.2; }
+  .topbar { display: flex; align-items: center; gap: var(--sp-3); height: 48px; flex-shrink: 0;
+            padding: 0 var(--sp-4); border-bottom: 1px solid var(--border); background: var(--surface);
+            overflow-x: auto; }
+  .topbar .month-nav { display: flex; align-items: center; gap: var(--sp-1); flex-shrink: 0; }
+  .topbar .month-label { font-size: var(--fs-lg); font-weight: 700; min-width: 108px; text-align: center; }
+  .topbar .nav-btn { background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+                     padding: 5px 9px; border-radius: var(--r-sm); cursor: pointer; font-size: var(--fs-md);
+                     font-family: inherit; line-height: 1; }
+  .topbar .nav-btn:hover { background: var(--surface-3); border-color: var(--accent); }
+  .topbar #f-search { background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+                      padding: 5px 9px; border-radius: var(--r-sm); font-size: var(--fs-md); min-width: 180px;
+                      font-family: inherit; }
+  .topbar .stats-meta { color: var(--text-mute); font-size: var(--fs-sm); white-space: nowrap; }
+  .topbar .tb-sum { color: var(--text-dim); font-size: var(--fs-md); white-space: nowrap; }
+  .topbar .tb-sum b { color: var(--text); }
+  .topbar .tb-right { margin-left: auto; display: flex; align-items: center; gap: var(--sp-2); }
+  .view-area { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  /* 플라이아웃 — 그리드를 밀지 않는 오버레이 */
+  .flyout { position: absolute; left: 64px; top: 0; bottom: 0; width: 280px; z-index: 24;
+            background: var(--surface); border-right: 1px solid var(--border);
+            box-shadow: 8px 0 24px rgb(15 23 42 / var(--a-2)); overflow-y: auto;
+            padding: var(--sp-4); transform: translateX(-100%); transition: transform .18s ease;
+            visibility: hidden; }
+  .flyout.open { transform: translateX(0); visibility: visible; }
+  .flyout h4 { margin: 0 0 var(--sp-2); font-size: var(--fs-md); color: var(--text-mute);
+               text-transform: uppercase; letter-spacing: .04em; }
+  .shell-mode .stats { border-bottom: none; padding: 0; background: none; }
 </style>
 <script src="../shared/cal-lib.js"></script>
 <script src="../shared/icons.js"></script>
-<script src="../site-nav.js" defer></script>
 </head>
-<body>
+<body class="shell-mode">
 
-<header>
-  <h1>경매 캘린더</h1>
-  <div class="tabs">
-    <button class="tab active" data-view="calendar" data-icon="calendar">캘린더</button>
-    <button class="tab" data-view="list" data-icon="list">리스트</button>
-  </div>
-  <div class="month-nav" id="month-nav">
-    <button class="nav-btn" id="prev-month" title="이전 달">←</button>
-    <div class="month-label" id="month-label">—</div>
-    <button class="nav-btn" id="next-month" title="다음 달">→</button>
-    <button class="nav-btn today-btn" id="today-btn">오늘</button>
-  </div>
-</header>
 
 <div class="stats">
   <span class="pill total">총 <span id="stat-total">0</span>건</span>
@@ -744,6 +776,18 @@
 </div>
 <div class="active-filters" id="active-filters"></div>
 
+<div class="shell">
+  <nav class="rail" id="rail"></nav>
+  <aside class="flyout" id="flyout"></aside>
+  <div class="view-area">
+  <div class="topbar" id="topbar">
+    <div class="month-nav" id="month-nav">
+      <button class="nav-btn" id="prev-month" title="이전 달" type="button">←</button>
+      <div class="month-label" id="month-label">—</div>
+      <button class="nav-btn" id="next-month" title="다음 달" type="button">→</button>
+      <button class="nav-btn today-btn" id="today-btn" type="button">오늘</button>
+    </div>
+  </div>
 <main>
   <div class="view-wrap">
     <div id="calendar-view" class="calendar-wrap">
@@ -763,6 +807,8 @@
     <div class="detail-inner" id="detail-inner"></div>
   </aside>
 </main>
+  </div>
+</div>
 
 <!-- results.js + predictions.js + cases.js: cache-buster 인라인 로더 (수정 즉시 반영 보장) -->
 <!-- results.js(회고 실측) → predictions.js(내 예상 낙찰가) → cases.js(모델 예측) 순 로드 → cases-loaded 발화. -->
@@ -1191,6 +1237,7 @@
 
   // ===== Stats =====
   function updateStats() {
+    if (typeof updateTopbarSummary === 'function') updateTopbarSummary();
     const filtered = getFiltered();
     const counts = { pending: 0, candidate: 0, pass: 0, hold: 0, fail: 0, expired: 0 };
     const ratings = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
@@ -1224,6 +1271,7 @@
   // 🏁 경매 결과 스코어카드 — 필터와 무관하게 전체 결과 기준(FN은 기본 숨김 Fail에 있으므로).
   // 결과(낙찰/유찰/무산) 분포 + 캘리브레이션 4분면 + 평균 낙찰가율.
   function renderResultStats() {
+    updateTopbarSummary();
     const cont = document.getElementById('result-stats');
     if (!cont) return;
     const rs = { sold: 0, failed: 0, nosale: 0, TP: 0, FP: 0, FN: 0, TN: 0, rateSum: 0, rateN: 0, total: 0 };
@@ -2462,7 +2510,7 @@
     if (state.currentMonth.m > 11) { state.currentMonth.m = 0; state.currentMonth.y++; }
     renderCalendar();
   });
-  document.getElementById('today-btn').addEventListener('click', () => {
+  document.getElementById('today-btn')?.addEventListener('click', () => {
     const d = new Date();
     state.currentMonth = { y: d.getFullYear(), m: d.getMonth() };
     renderCalendar();
@@ -2617,7 +2665,104 @@
     });
   })();
 
+
+  // ===== 앱 셸 (§6) =====
+  // 세로에 쌓여 있던 크롬(header + stats + result-stats + filters = 237px)을
+  // 레일 64px(가로축)로 옮기고, 필터·범례는 그리드를 밀지 않는 플라이아웃으로 분리한다.
+  function activeFilterCount() {
+    const f = state.filters;
+    let n = 0;
+    for (const k of ['region', 'priority', 'risk', 'rating', 'result', 'search']) if (f[k]) n++;
+    if (f.verdictHidden && f.verdictHidden.size) n++;
+    return n;
+  }
+
+  function toggleFlyout(force) {
+    const fo = document.getElementById('flyout');
+    const open = force != null ? force : !fo.classList.contains('open');
+    fo.classList.toggle('open', open);
+    renderRail();
+  }
+
+  function renderRail() {
+    const rail = document.getElementById('rail');
+    if (!rail) return;
+    rail.replaceChildren();
+    rail.appendChild(el('div', { cls: 'rail-brand', text: '경매' }));
+    const mk = (icon, label, opts) => {
+      const o = opts || {};
+      const n = el(o.href ? 'a' : 'button', { cls: 'rail-item' + (o.active ? ' active' : ''), title: o.title || label });
+      if (o.href) n.setAttribute('href', o.href);
+      else n.setAttribute('type', 'button');
+      n.appendChild(window.Icons.svg(icon, 19));
+      n.appendChild(el('span', { text: label }));
+      if (o.onClick) n.addEventListener('click', o.onClick);
+      return n;
+    };
+    rail.appendChild(mk('home', '홈', { href: '../' }));
+    rail.appendChild(mk('chart', '타임라인', { href: '../timeline/' }));
+    rail.appendChild(el('div', { cls: 'rail-sep' }));
+    rail.appendChild(mk('calendar', '달력', { active: state.view === 'calendar', onClick: () => setView('calendar') }));
+    rail.appendChild(mk('list', '목록', { active: state.view === 'list', onClick: () => setView('list') }));
+    rail.appendChild(el('div', { cls: 'rail-sep' }));
+    const fo = document.getElementById('flyout');
+    const f = mk('filter', '필터', { active: fo && fo.classList.contains('open'), onClick: () => toggleFlyout() });
+    const n = activeFilterCount();
+    if (n) f.appendChild(el('span', { cls: 'rail-badge', text: String(n) }));
+    rail.appendChild(f);
+  }
+
+  // 상단바 — 월 이동 + 요약. 기존 #month-nav 노드를 재사용해 이벤트 바인딩을 보존한다.
+  function mountTopbar() {
+    const tb = document.getElementById('topbar');
+    if (!tb) return;
+    const sum = el('span', { cls: 'tb-sum' });
+    sum.id = 'tb-sum';   // el() 헬퍼는 id 옵션을 지원하지 않는다
+    tb.appendChild(sum);
+    const right = el('span', { cls: 'tb-right' });
+    const search = document.getElementById('f-search');
+    if (search) right.appendChild(search);
+    const meta = document.querySelector('.stats-meta');
+    if (meta) right.appendChild(meta);
+    tb.appendChild(right);
+  }
+
+  function updateTopbarSummary() {
+    const sum = document.getElementById('tb-sum');
+    if (!sum) return;
+    const list = getFiltered();
+    const hi = list.filter((c) => (effectiveRating(c) || 0) >= 4).length;
+    sum.replaceChildren();
+    sum.appendChild(el('b', { text: String(list.length) }));
+    sum.appendChild(document.createTextNode('건'));
+    if (hi) {
+      sum.appendChild(document.createTextNode(' · ★4↑ '));
+      sum.appendChild(el('b', { text: String(hi) }));
+    }
+  }
+
+  // 필터·범례를 플라이아웃으로 이동 (기존 노드를 옮겨 이벤트 바인딩 보존)
+  function mountFlyout() {
+    const fo = document.getElementById('flyout');
+    if (!fo) return;
+    fo.appendChild(el('h4', { text: '필터' }));
+    const filters = document.getElementById('filters');
+    if (filters) { filters.hidden = false; fo.appendChild(filters); }
+    const af = document.getElementById('active-filters');
+    if (af) fo.appendChild(af);
+    fo.appendChild(el('h4', { text: '요약' }));
+    const stats = document.querySelector('.stats');
+    if (stats) fo.appendChild(stats);
+    const rs = document.getElementById('result-stats');
+    if (rs) fo.appendChild(rs);
+    const ft = document.getElementById('filter-toggle');
+    if (ft) ft.remove();
+  }
+
   // ===== Init =====
+  mountTopbar();
+  mountFlyout();
+  renderRail();
   // data-icon 이 있는 요소 앞에 SVG 주입 (정적 SVG 를 HTML 에 인라인하면 파일이 커진다)
   for (const node of document.querySelectorAll('[data-icon]')) {
     const ic = window.Icons.svg(node.dataset.icon, 14);
