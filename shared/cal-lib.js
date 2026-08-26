@@ -112,9 +112,26 @@
     return parts.join(' · ');
   }
 
+  // 아젠다 뷰용 — 날짜 오름차순 그룹, 그룹 안은 별점 내림차순.
+  // 사건 없는 날은 그룹 자체가 생기지 않는다(그리드와 달리 빈 칸이 없다).
+  // 375px 에서 4열 그리드는 칸 폭 ~80px 이라 단지명이 들어갈 수 없어 이 뷰로 전환한다.
+  function groupByDate(cases, ratingOf) {
+    const map = new Map();
+    for (const c of (cases || [])) {
+      if (!c || !c.saleDate) continue;
+      if (!map.has(c.saleDate)) map.set(c.saleDate, []);
+      map.get(c.saleDate).push(c);
+    }
+    return [...map.keys()].sort().map((date) => {
+      const items = sortByRating(map.get(date), ratingOf);
+      return { date: date, items: items, count: items.length };
+    });
+  }
+
   return {
     todayKST: todayKST,
     chipLabel: chipLabel,
+    groupByDate: groupByDate,
     chipTitle: chipTitle,
     monthKeyOf: monthKeyOf,
     pickEntryMonth: pickEntryMonth,
