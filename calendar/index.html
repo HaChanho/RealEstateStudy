@@ -1368,15 +1368,21 @@
       const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
       if (dateStr === todayStr) dayCell.classList.add('today');
 
+      // 이 칸의 사건 목록을 먼저 구한다 — D-Day 배지가 사건 유무에 의존하므로.
+      // 정렬은 별점 내림차순 고정: +N건으로 접히는 게 최고 물건이면 안 된다.
+      const cases = window.CalLib.sortByRating(byDate.get(dateStr) || [], effectiveRating);
+
       const dateRow = el('div', { cls: 'date-row' });
       dateRow.appendChild(el('div', { cls: 'date-num', text: String(dateObj.getDate()) }));
       const days = daysUntil(dateStr);
       const dCls = ddayClass(days);
-      if (dCls) dateRow.appendChild(el('span', { cls: 'dday-badge ' + dCls, text: ddayLabel(days) }));
+      // 사건이 있는 칸에만 D-Day 배지. 빈 칸의 배지는 아무것도 가리키지 않는다.
+      if (dCls && cases.length) {
+        dateRow.appendChild(el('span', { cls: 'dday-badge ' + dCls, text: ddayLabel(days) }));
+      }
       dayCell.appendChild(dateRow);
 
       const chipsWrap = el('div', { cls: 'chips' });
-      const cases = byDate.get(dateStr) || [];
       const MAX_VISIBLE = 4;
       function appendChip(c) {
         const r = effectiveRating(c);
