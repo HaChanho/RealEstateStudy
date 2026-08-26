@@ -733,6 +733,12 @@
                           white-space: nowrap; }
   .agenda-row.rank-r5 { background: var(--r5-tint); box-shadow: inset 2px 0 0 var(--r5-bg); }
   .agenda-row.rank-r4 { background: var(--r4-tint); box-shadow: inset 2px 0 0 var(--r4-bg); }
+  /* 성적표 — 캘리브레이션 지표(§7.4) */
+  .rs-calib { display: inline-flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+  .rs-calib-label { font-weight: 700; color: var(--text); }
+  .rs-note { display: block; width: 100%; margin-top: var(--sp-1); font-size: var(--fs-sm);
+             color: var(--text-mute); line-height: var(--lh-base); }
+  .rs-note.warn { color: var(--loss); }
 </style>
 <script src="../shared/cal-lib.js"></script>
 <script src="../shared/icons.js"></script>
@@ -1357,26 +1363,51 @@
     cont.appendChild(pill('sold', '낙찰', rs.sold, 'sold'));
     cont.appendChild(pill('', '유찰', rs.failed, 'failed'));
     cont.appendChild(pill('', '무산', rs.nosale, 'nosale'));
-    cont.appendChild(el('span', { cls: 'rs-sep', text: '│' }));
-    cont.appendChild(pill('tp', 'TP 정확GO', rs.TP, 'TP'));
-    cont.appendChild(pill('fp', 'FP 헛GO', rs.FP, ''));
-    cont.appendChild(pill('fn', 'FN 놓친기회', rs.FN, 'FN'));
-    cont.appendChild(pill('tn', 'TN 정확NO-GO', rs.TN, ''));
-    cont.appendChild(el('span', { cls: 'rs-sep', text: '│' }));
-    const goN = rs.TP + rs.FP, nogoN = rs.TN + rs.FN;
-    if (nogoN > 0) {
-      const m = el('span', { cls: 'rs-metric' });
-      m.appendChild(el('span', { text: 'NO-GO 정확도 ' }));
-      m.appendChild(el('b', { text: Math.round(rs.TN / nogoN * 100) + '%' }));
-      m.title = 'TN / (TN+FN) — 우리가 거른 사건이 실제로도 안 팔렸을 비율';
-      cont.appendChild(m);
+    // ── 매각가율 예측 오차 (§7.4) ──
+    // 구 TP/FP/FN/TN 은 폐기했다. quadrant 정의가 `verdict GO/NO-GO × sold/failed` 인데
+    // 매각 41:유찰 5 시장에서 "GO 했는데 유찰"이 구조적으로 발생하지 않아 FP=0 이고,
+    // 그래서 "GO 적중률 100%" 가 실력이 아니라 정의의 부산물이 된다. 표본의 절반은 quadrant 가 null.
+    // 대신 예측 매각가율 vs 실제 낙찰가율의 오차를 쓴다 — 입찰가를 얼마나 믿을지 직접 말해준다.
+    const cal = window.CalLib.calibration(RESULTS);
+    if (cal.n > 0) {
+      cont.appendChild(el('span', { cls: 'rs-sep', text: '│' }));
+      const g = el('span', { cls: 'rs-calib' });
+      g.appendChild(el('span', { cls: 'rs-calib-label', text: '매각가율 예측 오차' }));
+      const fmtP = (v) => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1) + '%p';
+      const kv = (label, value, title) => {
+        const m = el('span', { cls: 'rs-metric', title: title || '' });
+        m.appendChild(el('span', { text: label + ' ' }));
+        m.appendChild(el('b', { text: value }));
+        return m;
+      };
+      g.appendChild(kv('평균', fmtP(cal.meanErr),
+        '실제 낙찰가율 − 예측 매각가율의 평균. 음수면 모델이 높게 본 것.'));
+      g.appendChild(kv('절대오차', cal.mae.toFixed(1) + '%p',
+        '부호를 무시한 평균 오차(MAE). 입찰가를 얼마나 믿을지의 기준.'));
+      g.appendChild(kv('±5%p 이내', cal.within5 + '/' + cal.n, ''));
+      g.appendChild(kv('±10%p 이내', cal.within10 + '/' + cal.n, ''));
+      cont.appendChild(g);
+      cont.appendChild(el('span', {
+        cls: 'rs-note',
+        text: `모델이 예측한 매각가율 vs 실제 낙찰가율 — ${cal.n}건에서 평균 ${Math.abs(cal.meanErr).toFixed(1)}%p ` +
+              `${cal.meanErr < 0 ? '높게' : '낮게'} 봤고, 보통 ±${cal.mae.toFixed(1)}%p 안에 들어옵니다.`,
+      }));
     }
-    if (goN > 0) {
-      const m = el('span', { cls: 'rs-metric' });
-      m.appendChild(el('span', { text: 'GO 적중률 ' }));
-      m.appendChild(el('b', { text: Math.round(rs.TP / goN * 100) + '%' }));
-      m.title = 'TP / (TP+FP) — 우리가 GO한 사건이 실제 낙찰된 비율';
-      cont.appendChild(m);
+    // NO-GO 정확도는 아픈 진실이라 지우지 않고 문장으로 보존한다.
+    const nogoN = rs.TN + rs.FN;
+    if (nogoN > 0) {
+      const missed = Math.round(rs.FN / nogoN * 100);
+      cont.appendChild(el('span', {
+        cls: 'rs-note warn',
+        text: `우리가 거른 ${nogoN}건 중 ${missed}%(${rs.FN}건)는 실제로 팔렸습니다.`,
+      }));
+    }
+    // 고아 레코드 — 조용히 누락되면 표본이 왜곡된다.
+    {
+      const ids = new Set(CASES.map((c) => c.id));
+      const orphan = Object.keys(RESULTS).filter((k) => !ids.has(k) && !ids.has(k.split('@')[0])).length;
+      if (orphan) cont.appendChild(el('span', { cls: 'rs-note',
+        text: `표본 제외 ${orphan}건 (results 에는 있으나 cases 에 없음)` }));
     }
     if (rs.rateN > 0) {
       const m = el('span', { cls: 'rs-metric' });
