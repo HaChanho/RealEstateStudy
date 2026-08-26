@@ -41,13 +41,14 @@
   .pnl .kv .l{color:var(--text-mute);font-size:12px} .pnl .kv .v{font-size:18px;font-weight:700}
   @media (max-width:900px){ main{flex-direction:column} .col-list{flex:1 1 auto;width:100%} }
 </style>
+<script src="../shared/cal-lib.js"></script>
+<script src="../site-nav.js" defer></script>
 </head>
 <body>
 <header><h1>📈 낙찰물건 타임라인</h1></header>
 <main id="app"><div class="stub">로딩 중…</div></main>
 
 <!-- 파생 소스(공개): ../calendar/{results,cases}.js. 원장·lib(로컬 전용): ../../_holdings/* (공개선 404→stub). -->
-<script src="../site-nav.js"></script>
 <script>
 (function () {
   var v = Date.now();
