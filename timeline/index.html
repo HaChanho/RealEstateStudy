@@ -40,6 +40,13 @@
   .pnl{display:flex;gap:20px;flex-wrap:wrap}
   .pnl .kv .l{color:var(--text-mute);font-size:12px} .pnl .kv .v{font-size:18px;font-weight:700}
   @media (max-width:900px){ main{flex-direction:column} .col-list{flex:1 1 auto;width:100%} }
+  /* 375px 에서 표가 카드 폭을 초과해 body 가 가로 스크롤되던 것을 컨테이너로 가둔다. */
+  .ledger-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table.ledger{min-width:340px}
+  table.ledger th:nth-child(1),table.ledger td:nth-child(1),
+  table.ledger th:nth-child(2),table.ledger td:nth-child(2){white-space:nowrap}
+  /* main 이 flex 라 .stub 이 콘텐츠 폭으로 줄어 text-align:center 가 무력화된다. */
+  main > .stub{flex:1 1 auto;width:100%;max-width:560px;margin-inline:auto}
 </style>
 <script src="../shared/cal-lib.js"></script>
 <script src="../site-nav.js" defer></script>
@@ -74,15 +81,37 @@
       .then(function (blob) { if (blob && blob.ct) promptPassword(blob); else render(); }); // 3계층: stub
   }
 
+  // 잠금 화면용 상태 요약. 금액은 절대 포함하지 않는다 — 건수만.
+  // 반환값은 정수만 보간하므로 innerHTML 삽입 경로가 안전하다.
+  function wonSummary() {
+    var n = 0;
+    try {
+      var R = window.AUCTION_RESULTS || {};
+      for (var k in R) if (R[k] && R[k].myResult === 'won') n++;
+    } catch (e) { return ''; }
+    return n ? '<br>현재 낙찰 ' + n + '건을 보유 중입니다.' : '';
+  }
+
   function promptPassword(blob) {
     var app = document.getElementById('app');
-    app.innerHTML = '<div class="stub">🔒 낙찰물건 타임라인은 <b>비공개</b>입니다. 비밀번호를 입력하면 열람합니다.'
+    // 공개 배포에서 지인이 실제로 마주치는 화면은 여기다(enc.json 이 있으면 항상 이 분기).
+    // 상태만 노출한다 — 낙찰가·응찰자수 등 금액은 넣지 않는다.
+    // wonCount 는 정수 카운터라 innerHTML 삽입 경로가 안전하다.
+    app.innerHTML = '<div class="stub"><b>낙찰물건 타임라인은 비공개입니다.</b>'
+      + (wonSummary() || '')
+      + '<br>여정·비용·손익 상세는 비밀번호로 열람합니다.'
       + '<form id="pwf" style="margin-top:16px">'
-      + '<input id="pw" type="password" autocomplete="off" placeholder="비밀번호" '
+      + '<label for="pw" style="display:block;font-size:12px;color:var(--text-mute);margin-bottom:6px">비밀번호</label>'
+      + '<input id="pw" type="password" autocomplete="off" placeholder="비밀번호" autofocus '
       + 'style="padding:8px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;min-width:260px" />'
       + '<button type="submit" style="margin-left:8px;padding:8px 16px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:8px;cursor:pointer">열람</button>'
-      + '<div id="pwe" style="color:var(--negative);font-size:12px;margin-top:8px;min-height:16px"></div>'
-      + '</form></div>';
+      + '<div id="pwe" role="status" aria-live="polite" style="color:var(--negative);font-size:12px;margin-top:8px;min-height:16px"></div>'
+      + '</form>'
+      + '<span style="display:block;margin-top:10px;font-size:12px;color:var(--text-mute)">'
+      + '낙찰 결과 요약은 <a href="../calendar/">캘린더</a>에서 볼 수 있습니다.</span></div>';
+    // innerHTML 로 삽입된 요소에는 autofocus 속성이 동작하지 않는다 — 명시 호출.
+    var pwEl = document.getElementById('pw');
+    if (pwEl) pwEl.focus();
     document.getElementById('pwf').addEventListener('submit', function (e) {
       e.preventDefault();
       var el = document.getElementById('pw'), err = document.getElementById('pwe');
@@ -93,7 +122,8 @@
     });
   }
 
-  function today() { return new Date().toISOString().slice(0, 10); }
+  // KST 기준. toISOString()은 UTC라 KST 00:00~09:00(하루의 37.5%)에 전날을 반환한다.
+  function today() { return window.CalLib.todayKST(); }
   function won(n) { return n == null ? '—' : '₩' + Number(n).toLocaleString('ko-KR'); }
   var STEP_LABEL = { won:'낙찰', balance:'잔금납부', eviction:'명도완료', repair:'수리완료', listed:'매물등록', sold:'매도' };
 
@@ -102,7 +132,12 @@
     var L = window.HoldingsLib, H = window.AUCTION_HOLDINGS;
     // 공개 배포(원장·lib 미도달) 또는 데이터 없음 → stub
     if (!L || !H || !Object.keys(H).length) {
-      app.innerHTML = '<div class="stub">🔒 낙찰물건 타임라인은 <b>비공개</b>입니다.<br>전체 여정·비용·손익은 로컬 환경에서만 열람합니다.<br><span style="font-size:12px;color:var(--text-mute)">(공개 페이지는 위계·네비게이션용입니다)</span></div>';
+      // 3계층 stub — enc.json 도 없는 배포에서만 도달한다(공개 사이트는 2계층으로 간다).
+      app.innerHTML = '<div class="stub"><b>낙찰물건 타임라인은 비공개입니다.</b>'
+        + (wonSummary() || '')
+        + '<br>여정·비용·손익 상세는 로컬 환경에서만 열람합니다.'
+        + '<span style="display:block;margin-top:10px;font-size:12px;color:var(--text-mute)">'
+        + '낙찰 결과 요약은 <a href="../calendar/">캘린더</a>에서 볼 수 있습니다.</span></div>';
       return;
     }
     var RESULTS = window.AUCTION_RESULTS || {}, CASES = window.AUCTION_CASES || [];
@@ -118,7 +153,7 @@
         var badge = h.disposition === 'sold' ? '<span class="badge sold">매도완료</span>' : '<span class="badge holding">보유중 D+' + (L.holdingDays(h, today()) || 0) + '</span>';
         el.innerHTML = '<div class="cx">' + (f.complex || h.holdingId) + '</div>' +
           '<div class="sub">낙찰 ' + (f.wonDate || '—') + ' · ' + won(f.wonPrice) + '</div>' +
-          '<div class="sub">' + badge + ' · 누적지출 ' + won(L.costTotal(h)) + '</div>';
+          '<div class="sub">' + badge + ' · 집행지출 ' + won(window.CalLib.splitCosts(h.costs, today()).executed) + '</div>';
         el.onclick = function () { sel = id; draw(); };
         list.appendChild(el);
       });
@@ -163,26 +198,31 @@
       var fundingHtml = (loanKv || fundRows)
         ? '<div class="sec-title">💳 자금·대출</div>' +
           (loanKv ? '<div class="pnl">' + loanKv + (ln.memo ? '<div class="kv"><div class="l">비고</div><div class="v" style="text-align:right">' + ln.memo + '</div></div>' : '') + '</div>' : '') +
-          (fundRows ? '<table class="ledger"><thead><tr><th>조달처</th><th style="text-align:right">금액</th><th>금리</th><th>메모</th></tr></thead><tbody>' + fundRows +
-            '<tr><td><b>합계</b></td><td class="amt"><b>' + won(fundTotal) + '</b></td><td></td><td></td></tr></tbody></table>' : '')
+          (fundRows ? '<div class="ledger-wrap"><table class="ledger"><thead><tr><th>조달처</th><th style="text-align:right">금액</th><th>금리</th><th>메모</th></tr></thead><tbody>' + fundRows +
+            '<tr><td><b>합계</b></td><td class="amt"><b>' + won(fundTotal) + '</b></td><td></td><td></td></tr></tbody></table></div>' : '')
         : '';
       var notesHtml = h.notes
         ? '<div class="sec-title">📝 메모</div><div class="card" style="white-space:pre-wrap;font-size:12.5px;line-height:1.65;background:var(--surface-2)">' +
           String(h.notes).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }) + '</div>'
         : '';
       var dispLabel = h.disposition === 'sold' ? '매도완료' : '보유중 D+' + (L.holdingDays(h, today()) || 0);
-      var realized = h.disposition === 'sold' ? won((f.wonPrice != null && h.resalePrice != null) ? (h.resalePrice - f.wonPrice - L.costTotal(h)) : null) + ' <span style="font-size:11px;color:var(--text-mute)">(세전·잠정)</span>' : '매도 전 (미정)';
+      // 비용을 집행분/예정분으로 분리한다. costTotal 은 날짜를 보지 않아 미래 예정 비용까지
+      // "누적지출"에 섞였다 — 라벨과 값이 어긋난 것이 원인.
+      var split = window.CalLib.splitCosts(h.costs, today());
+      // 실현손익은 집행분만 반영한다 — "실현"의 정의상 미집행 비용을 빼면 안 된다.
+      var realized = h.disposition === 'sold' ? won((f.wonPrice != null && h.resalePrice != null) ? (h.resalePrice - f.wonPrice - split.executed) : null) + ' <span style="font-size:11px;color:var(--text-mute)">(세전·잠정)</span>' : '매도 전 (미정)';
       d.innerHTML =
         '<div class="card">' +
           '<div class="ctx">' + chips + '</div>' +
           (f.reportUrl ? '<a href="../calendar/' + f.reportUrl + '" style="font-size:12px">📄 상세 분석 보고서</a>' : '') +
           '<div class="sec-title">⏱ 여정</div><ul class="steps">' + steps + '</ul>' +
           '<div class="sec-title">🧾 비용 원장</div>' +
-          '<table class="ledger"><thead><tr><th>일자</th><th>항목</th><th style="text-align:right">금액</th><th>메모</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+          '<div class="ledger-wrap"><table class="ledger"><thead><tr><th>일자</th><th>항목</th><th style="text-align:right">금액</th><th>메모</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
           fundingHtml +
           '<div class="sec-title">💰 손익</div>' +
           '<div class="pnl"><div class="kv"><div class="l">상태</div><div class="v">' + dispLabel + '</div></div>' +
-          '<div class="kv"><div class="l">누적지출</div><div class="v" style="color:var(--price)">' + won(L.costTotal(h)) + '</div></div>' +
+          '<div class="kv"><div class="l">집행 지출</div><div class="v" style="color:var(--price)">' + won(split.executed) + '</div></div>' +
+          (split.planned ? '<div class="kv"><div class="l">예정 지출</div><div class="v" style="color:var(--text-mute)">' + won(split.planned) + '</div></div>' : '') +
           '<div class="kv"><div class="l">실현손익</div><div class="v">' + realized + '</div></div></div>' +
           notesHtml +
         '</div>';
