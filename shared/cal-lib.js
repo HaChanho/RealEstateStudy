@@ -128,10 +128,36 @@
     });
   }
 
+  // 매각가율 예측 오차 — TP/FP/FN/TN 을 대체하는 캘리브레이션 지표.
+  // quadrant 는 FP 가 구조적으로 0(매각 41:유찰 5 시장에서 "GO 했는데 유찰"이 없음)이라
+  // "GO 적중률 100%" 가 실력이 아니라 정의의 부산물이 된다. 표본의 절반은 quadrant 자체가 null.
+  // results.js 의 rate 는 분수(0.876)이므로 ×100 해서 %p 로 만든다.
+  function calibration(results) {
+    const errs = [];
+    for (const k in (results || {})) {
+      const r = results[k];
+      if (!r || r.predictedSaleRate == null || r.soldRate == null) continue;
+      errs.push((r.soldRate - r.predictedSaleRate) * 100);
+    }
+    const n = errs.length;
+    if (!n) return { n: 0, meanErr: null, mae: null, sd: null, min: null, max: null, within5: 0, within10: 0 };
+    const mean = errs.reduce((a, b) => a + b, 0) / n;
+    const mae = errs.reduce((a, b) => a + Math.abs(b), 0) / n;
+    const sd = n > 1 ? Math.sqrt(errs.reduce((a, e) => a + Math.pow(e - mean, 2), 0) / (n - 1)) : 0;
+    const sorted = [...errs].sort((a, b) => a - b);
+    return {
+      n: n, meanErr: mean, mae: mae, sd: sd,
+      min: sorted[0], max: sorted[n - 1],
+      within5: errs.filter((e) => Math.abs(e) <= 5).length,
+      within10: errs.filter((e) => Math.abs(e) <= 10).length,
+    };
+  }
+
   return {
     todayKST: todayKST,
     chipLabel: chipLabel,
     groupByDate: groupByDate,
+    calibration: calibration,
     chipTitle: chipTitle,
     monthKeyOf: monthKeyOf,
     pickEntryMonth: pickEntryMonth,
