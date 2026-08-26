@@ -33,7 +33,7 @@
   .steps .k{font-weight:600;min-width:64px} .steps .d{color:var(--text-mute);font-size:12px}
   table.ledger{width:100%;border-collapse:collapse;font-size:13px}
   table.ledger th,table.ledger td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border)}
-  table.ledger td.amt{text-align:right;font-variant-numeric:tabular-nums;color:var(--price)}
+  table.ledger td.amt{text-align:right;font-variant-numeric:tabular-nums;color:var(--text)}
   .pnl{display:flex;gap:20px;flex-wrap:wrap}
   .pnl .kv .l{color:var(--text-mute);font-size:12px} .pnl .kv .v{font-size:18px;font-weight:700}
   @media (max-width:900px){ main{flex-direction:column} .col-list{flex:1 1 auto;width:100%} }
@@ -64,6 +64,141 @@
   .card { box-shadow: var(--sh-1); }
   .badge.holding { background: rgb(2 132 199 / var(--a-2)); color: var(--r3-bg); }
   .badge.sold { background: rgb(5 150 105 / var(--a-2)); color: var(--positive); }
+  /* ══ 재무 대시보드 (데스크톱) ══
+     색은 부호(sign) 하나만 인코딩한다. --price amber 를 모든 금액에 칠하면
+     "이건 숫자다"라는 뜻밖에 안 되고 손실 신호를 낼 색이 남지 않는다. */
+  main { max-width: 1180px; margin: 0 auto; padding: 20px 20px 64px; display: block; }
+  .col-list { display: none; }              /* 물건 1건에서 300px 고정 컬럼은 낭비 */
+  body.multi .col-list { display: flex; }
+  .card { padding: 16px 18px; margin-top: 18px; }
+  .sec-title { font-size: 12px; font-weight: 700; color: var(--text-mute);
+               text-transform: none; letter-spacing: .02em; margin: 0 0 10px;
+               display: flex; justify-content: space-between; align-items: baseline; }
+  .sec-sum { font-weight: 600; color: var(--text-dim); font-size: 12px; }
+  .dim { color: var(--text-mute); }
+
+  /* #0 식별 바 */
+  .idbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 4px; }
+  .idbar .rep { margin-left: auto; font-size: 12px; color: var(--accent); font-weight: 600; text-decoration: none; }
+  .idbar .rep:hover { text-decoration: underline; }
+
+  /* #1 HERO — 결론 */
+  .hero { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 16px; }
+  .hero-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+               padding: 16px 18px; box-shadow: 0 1px 2px rgb(15 23 42 / .04); min-height: 108px; }
+  .hero-card .l { font-size: 12px; color: var(--text-mute); margin-bottom: 6px; }
+  .hero-card .v { font-size: 24px; font-weight: 700; line-height: 1.2;
+                  font-variant-numeric: tabular-nums; color: var(--text); }
+  .hero-card .v.pos { color: var(--positive); }
+  .hero-card .v.neg { color: var(--negative); }
+  .hero-card .s { font-size: 12px; color: var(--text-dim); margin-top: 8px; line-height: 1.55; }
+  .hero-card .s .warn { color: var(--negative); }
+
+  /* #2 리스크 스트립 */
+  .risk-strip { margin-top: 14px; background: var(--surface); border: 1px solid var(--border);
+                border-left: 3px solid var(--negative); border-radius: 10px; padding: 12px 16px; }
+  .risk-row { display: flex; gap: 10px; align-items: baseline; padding: 3px 0; font-size: 12.5px; line-height: 1.55; }
+  .risk-row b { color: var(--negative); white-space: nowrap; }
+  .risk-row span { color: var(--text-dim); }
+
+  /* #3 시나리오 */
+  .sim-svg { width: 100%; height: auto; display: block; }
+  .sim-svg .grid line { stroke: var(--border); stroke-width: 1; }
+  .sim-svg .ylab text, .sim-svg .xlab text { fill: var(--text-mute); font-size: 11px;
+                        font-variant-numeric: tabular-nums; }
+  .sim-svg .ylab text { text-anchor: end; }
+  .sim-svg .xlab text { text-anchor: middle; }
+  .sim-svg .be { fill: none; stroke: var(--accent); stroke-width: 2.5; }
+  .sim-svg .be.dashed { stroke-dasharray: 6 5; opacity: .75; }
+  .sim-svg .ref { stroke: var(--border-strong); stroke-width: 1; stroke-dasharray: 1 4; }
+  .sim-svg .ref-t { fill: var(--text-mute); font-size: 10px; text-anchor: end; }
+  .sim-svg #saleline { stroke: var(--text); stroke-width: 1.5; stroke-dasharray: 3 3; }
+  .sim-svg .now { stroke: var(--text-dim); stroke-width: 1; }
+  .sim-svg .now-t { fill: var(--text-dim); font-size: 10px; }
+  .sim-svg #zone.gain { fill: rgb(5 150 105 / .13); }
+  .sim-svg #zone.loss { fill: rgb(220 38 38 / .13); }
+  .sim-svg .cross { fill: var(--text); font-size: 11px; font-weight: 700; }
+  .sim-ctl { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: center; margin-top: 16px; }
+  .sim-ctl label { font-size: 12px; color: var(--text-mute); }
+  .sim-ctl output { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .sim-ctl input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); }
+  .sim-anchors { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
+  .anchor { font-size: 11px; padding: 3px 9px; border-radius: 999px; cursor: pointer;
+            border: 1px solid var(--border); background: var(--surface-2); color: var(--text-dim);
+            font-family: inherit; font-variant-numeric: tabular-nums; }
+  .anchor:hover { border-color: var(--accent); color: var(--text); }
+  .sim-out { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px;
+             padding-top: 14px; border-top: 1px solid var(--border); }
+  .sim-out div { display: flex; flex-direction: column; gap: 3px; }
+  .sim-out span { font-size: 12px; color: var(--text-mute); }
+  .sim-out b { font-size: 18px; font-variant-numeric: tabular-nums; }
+  .sim-out b.pos { color: var(--positive); } .sim-out b.neg { color: var(--negative); }
+
+  /* #4 자금 구조 */
+  .fund-bar { display: flex; height: 46px; border-radius: 8px; overflow: hidden; }
+  .fund-bar i { display: flex; flex-direction: column; justify-content: center; padding: 0 12px;
+                font-style: normal; font-size: 12px; color: var(--text); min-width: 0;
+                font-variant-numeric: tabular-nums; }
+  .fund-bar i b { font-size: 12px; font-weight: 700; }
+  .fund-bar .fs0 { background: var(--surface-3); }
+  .fund-bar .fs1 { background: var(--n-100); }
+  .fund-eq { font-size: 12px; color: var(--text-dim); margin-top: 8px; }
+  .fund-eq.warn { color: var(--negative); font-weight: 600; }
+  .fund-terms { font-size: 12.5px; color: var(--text-dim); margin-top: 10px; line-height: 1.6; }
+
+  /* #5 비용 원장 */
+  .cost-bar { display: flex; height: 26px; border-radius: 6px; overflow: hidden; margin-bottom: 16px; }
+  .cost-bar i { display: flex; align-items: center; padding: 0 8px; font-style: normal;
+                font-size: 11px; color: var(--text-dim); white-space: nowrap; overflow: hidden; min-width: 0; }
+  .cost-bar i b { font-weight: 700; color: var(--text); margin-right: 4px; }
+  .cost-bar .cs0 { background: var(--n-200); } .cost-bar .cs1 { background: var(--n-100); }
+  .cost-bar .cs2 { background: var(--surface-3); }
+  .grp { margin-bottom: 14px; }
+  .grp-head { display: flex; justify-content: space-between; align-items: baseline;
+              padding: 7px 0 6px; border-bottom: 1px solid var(--border-strong);
+              font-size: 12px; font-weight: 700; color: var(--text-dim); }
+  .grp-head b { font-size: 14px; color: var(--text); font-variant-numeric: tabular-nums; }
+  .grp-head em { font-style: normal; font-size: 10px; color: var(--text-mute);
+                 border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; margin-left: 4px; }
+  .grp.planned .grp-head b, .grp.planned .crow .a { color: var(--text-mute); }
+  .grp.unbooked .grp-head { color: var(--negative); border-bottom-color: var(--negative); }
+  .grp.unbooked .grp-head b, .grp.unbooked .crow .a { color: var(--negative); }
+  .crow { display: grid; grid-template-columns: 130px 1fr; gap: 4px 12px; padding: 8px 0 5px;
+          border-bottom: 1px solid var(--border); }
+  .crow .c { font-size: 13px; color: var(--text); }
+  .crow .c em { font-style: normal; font-size: 10px; color: var(--text-mute); }
+  .crow .a { font-size: 13px; font-weight: 600; text-align: right; color: var(--text);
+             font-variant-numeric: tabular-nums; }
+  .crow .m { grid-column: 1 / -1; font-size: 12px; color: var(--text-mute);
+             line-height: 1.55; max-width: 820px; }   /* 줄길이 상한 */
+
+  /* #6·#7 접힘 섹션 */
+  details.fold { margin-top: 18px; background: var(--surface); border: 1px solid var(--border);
+                 border-radius: 10px; padding: 0 18px; }
+  details.fold > summary { cursor: pointer; padding: 14px 0; font-size: 12px; font-weight: 700;
+                           color: var(--text-mute); list-style: none; }
+  details.fold > summary::-webkit-details-marker { display: none; }
+  details.fold > summary::before { content: '▸ '; color: var(--text-mute); }
+  details.fold[open] > summary::before { content: '▾ '; }
+  details.fold[open] > summary { border-bottom: 1px solid var(--border); }
+  details.fold > *:last-child { padding-bottom: 16px; }
+  .nb { font-size: 10px; padding: 1px 5px; border-radius: 4px; margin-left: 4px; }
+  .nb.star { background: rgb(59 111 222 / .12); color: var(--accent); }
+  .nb.warn { background: rgb(220 38 38 / .12); color: var(--negative); }
+  .notes p { max-width: 820px; font-size: 13px; line-height: 1.7; margin: 8px 0; color: var(--text-dim); }
+  .notes p.star { border-left: 2px solid var(--accent); padding-left: 10px; }
+  .notes p.warn { border-left: 2px solid var(--negative); padding-left: 10px; color: var(--text); }
+
+  /* 포커스링 — 없었다 */
+  :where(a, button, input, [tabindex], summary):focus-visible {
+    outline: 2px solid var(--accent-strong); outline-offset: 2px; border-radius: 6px; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; } }
+  table.ledger.fc .over { color: var(--negative); font-weight: 600; }
+  table.ledger.fc .under { color: var(--positive); font-weight: 600; }
+  table.ledger.fc .prog { color: var(--text); font-weight: 600; }
+  table.ledger.fc .dimc { color: var(--text-mute); }
+  table.ledger.fc em.ip { font-style: normal; font-size: 10px; color: var(--text-mute);
+                          border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; }
 </style>
 <script src="../shared/cal-lib.js"></script>
 <script src="../site-nav.js" defer></script>
@@ -141,7 +276,7 @@
 
   // KST 기준. toISOString()은 UTC라 KST 00:00~09:00(하루의 37.5%)에 전날을 반환한다.
   function today() { return window.CalLib.todayKST(); }
-  function won(n) { return n == null ? '—' : '₩' + Number(n).toLocaleString('ko-KR'); }
+  function won(n) { return n == null ? '—' : '₩' + Math.round(Number(n)).toLocaleString('ko-KR'); }
   var STEP_LABEL = { won:'낙찰', balance:'잔금납부', eviction:'명도완료', repair:'수리완료', listed:'매물등록', sold:'매도' };
 
 
@@ -162,21 +297,40 @@
       actual[e.category] = (actual[e.category] || 0) + (Number(e.amount) || 0);
     });
     var rows = [];
+    // 진행 중 항목(대출이자 등)은 계획이 '기간 총액'이고 실제는 '경과분'이라 같은 기간이 아니다.
+    // 구 코드는 이걸 '−90.1% 절감'으로 초록 표시했다 — 손실 신호를 이익 신호로 렌더링한 셈.
+    // 진행형은 진행률로, 완결형만 초과/절감으로 판정한다.
+    var IN_PROGRESS = ['대출이자', '재산세', '공실관리비', '보험'];
     var pushRow = function (label, planned, real) {
       if (planned == null && real == null) return;
-      var diff = (planned != null && real != null) ? real - planned : null;
-      var pct = (diff != null && planned) ? (diff / planned * 100) : null;
-      rows.push('<tr><td>' + esc(label) + '</td>' +
+      var inProg = IN_PROGRESS.indexOf(label) >= 0;
+      var cell;
+      if (planned == null) {
+        cell = '<span class="over">계획 없음 · 전액 초과</span>';
+      } else if (real == null) {
+        cell = '<span class="dimc">미집행</span>';
+      } else if (inProg) {
+        var p2 = planned ? (real / planned * 100) : 0;
+        cell = '<span class="prog">' + p2.toFixed(0) + '% 경과</span>' +
+               '<span class="pct"> 잔여 ' + won(Math.max(0, planned - real)).slice(1) + '</span>';
+      } else {
+        var diff = real - planned;
+        var pct = planned ? (diff / planned * 100) : null;
+        cell = '<span class="' + (diff > 0 ? 'over' : 'under') + '">' +
+          (diff > 0 ? '+' : '−') + won(Math.abs(diff)).slice(1) +
+          (pct == null ? '' : ' <span class="pct">' + (pct > 0 ? '+' : '−') + Math.abs(pct).toFixed(1) + '%</span>') +
+          '</span>';
+      }
+      rows.push('<tr><td>' + esc(label) + (inProg ? ' <em class="ip">진행중</em>' : '') + '</td>' +
         '<td class="amt">' + won(planned) + '</td>' +
         '<td class="amt">' + won(real) + '</td>' +
-        '<td class="amt ' + (diff == null ? '' : (diff > 0 ? 'over' : 'under')) + '">' +
-        (diff == null ? '—' : (diff > 0 ? '+' : '−') + won(Math.abs(diff)).slice(1) +
-          (pct == null ? '' : ' <span class="pct">' + (pct > 0 ? '+' : '−') + Math.abs(pct).toFixed(1) + '%</span>')) +
-        '</td></tr>');
+        '<td class="amt">' + cell + '</td></tr>');
     };
     pushRow('낙찰가', fc.projectedBid, f && f.wonPrice);
     var ac = fc.assumedCosts || {};
     Object.keys(ac).forEach(function (k) { pushRow(k, ac[k], actual[k] != null ? actual[k] : null); });
+    // 계획에 아예 없던 실제 지출 — forecast 가 과소 잡히는 구조적 원인이라 드러내야 한다
+    Object.keys(actual).forEach(function (k) { if (ac[k] == null) pushRow(k, null, actual[k]); });
     if (!rows.length) return '';
     var cap = [];
     if (fc.assumedAt) cap.push(esc(fc.assumedAt) + ' 기준');
@@ -238,87 +392,358 @@
       });
       drawDetail();
     }
-    function drawDetail() {
-      var h = H[sel], f = L.deriveAuctionFacts(h, RESULTS, CASES), d = document.getElementById('detail');
-      var chips = [
-        f.complex && '<span class="chip"><b>' + f.complex + '</b></span>',
-        f.dongHo && '<span class="chip">' + f.dongHo + '</span>',
-        f.court && '<span class="chip">' + f.court + '</span>',
-        f.areaSqm && '<span class="chip">전용 ' + f.areaSqm + '㎡</span>',
-        '<span class="chip">낙찰가 <b>' + won(f.wonPrice) + '</b></span>',
-        f.appraisalPrice && '<span class="chip">감정 ' + won(f.appraisalPrice) + '</span>',
-        f.bidderCount != null && '<span class="chip">' + f.bidderCount + '명 응찰</span>'
-      ].filter(Boolean).join('');
-      var steps = (h.milestones || []).map(function (m) {
-        var done = !!m.at;
-        return '<li class="' + (done ? 'done' : 'pending') + '"><span class="k">' + (STEP_LABEL[m.key] || m.key) + '</span>' +
-          '<span class="d">' + (m.at || '예정') + (m.memo ? ' · ' + m.memo : '') + '</span></li>';
-      }).join('');
-      var rows = (h.costs || []).length
-        ? h.costs.map(function (e) {
-            return '<tr><td>' + (e.occurredAt || '') + '</td><td>' + e.category + (e.direction === 'in' ? ' (환급)' : '') + '</td>' +
-              '<td class="amt">' + (e.direction === 'in' ? '−' : '') + won(e.amount) + '</td><td>' + (e.memo || '') + '</td></tr>';
-          }).join('')
-        : '<tr><td colspan="4" style="color:var(--text-mute);text-align:center;padding:16px">기록된 비용 없음</td></tr>';
-      // 💳 자금·대출 — loan(주 담보대출) + funding(조달 구성). 값 없는 필드는 생략.
-      var pct = function (r) { return r == null ? null : (r * 100).toFixed(2).replace(/\.?0+$/, '') + '%'; };
-      var ln = h.loan || {};
-      // R2 — loan.repayment 승격. monthlyPayment 등이 구조화 필드로 있는데
-      // render() 가 안 읽어서 같은 사실이 2,257자 메모 산문에만 있었다.
-      var rp = ln.repayment || {};
-      // S3 — .kv .v 는 18px/700 이라 숫자 전용이다. 서술형은 .kv-text 로 분리한다
-      // (구 구조에서는 회사명·59자 문장이 금액과 같은 위계였다).
-      var kvNum = function (l, v) { return v ? '<div class="kv"><div class="l">' + l + '</div><div class="v">' + v + '</div></div>' : ''; };
-      var kvTxt = function (l, v) { return v ? '<div class="kv kv-text"><div class="l">' + l + '</div><div class="t">' + v + '</div></div>' : ''; };
-      var loanKv = [
-        kvNum('원금', ln.principal != null ? won(ln.principal) : null),
-        kvNum('금리', pct(ln.rate)),
-        kvNum('월 납입금', rp.monthlyPayment != null ? won(rp.monthlyPayment) : null),
-        kvNum('중도상환수수료', pct(ln.prepayFeeRate)),
-        kvTxt('대출기관', ln.lender),
-        kvTxt('실행일', ln.executedAt),
-        kvTxt('상환방식', [rp.type, ln.term].filter(Boolean).join(' · ')),
-        kvTxt('납입일', rp.dayOfMonth ? '매월 ' + rp.dayOfMonth + '일' : null),
-        kvTxt('출구 계획', rp.exitPlan)
-      ].filter(Boolean).join('');
-      var fundRows = (h.funding || []).map(function (x) {
-        return '<tr><td>' + x.source + '</td><td class="amt">' + (x.amount != null ? won(x.amount) : '—') + '</td>' +
-          '<td>' + (pct(x.rate) || '—') + '</td><td>' + (x.memo || '') + '</td></tr>';
-      }).join('');
-      var fundTotal = (h.funding || []).reduce(function (s, x) { return s + (Number(x.amount) || 0); }, 0);
-      var fundingHtml = (loanKv || fundRows)
-        ? '<div class="sec-title">💳 자금·대출</div>' +
-          (loanKv ? '<div class="pnl">' + loanKv + (ln.memo ? '<div class="kv kv-text"><div class="l">비고</div><div class="t">' + ln.memo + '</div></div>' : '') + '</div>' : '') +
-          (fundRows ? '<div class="ledger-wrap"><table class="ledger"><thead><tr><th>조달처</th><th style="text-align:right">금액</th><th>금리</th><th>메모</th></tr></thead><tbody>' + fundRows +
-            '<tr><td><b>합계</b></td><td class="amt"><b>' + won(fundTotal) + '</b></td><td></td><td></td></tr></tbody></table></div>' : '')
-        : '';
-      var notesHtml = h.notes
-        ? '<div class="sec-title">📝 메모</div><div class="card" style="white-space:pre-wrap;font-size:12.5px;line-height:1.65;background:var(--surface-2)">' +
-          String(h.notes).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }) + '</div>'
-        : '';
-      var dispLabel = h.disposition === 'sold' ? '매도완료' : '보유중 D+' + (L.holdingDays(h, today()) || 0);
-      // 비용을 집행분/예정분으로 분리한다. costTotal 은 날짜를 보지 않아 미래 예정 비용까지
-      // "누적지출"에 섞였다 — 라벨과 값이 어긋난 것이 원인.
-      var split = window.CalLib.splitCosts(h.costs, today());
-      // 실현손익은 집행분만 반영한다 — "실현"의 정의상 미집행 비용을 빼면 안 된다.
-      var realized = h.disposition === 'sold' ? won((f.wonPrice != null && h.resalePrice != null) ? (h.resalePrice - f.wonPrice - split.executed) : null) + ' <span style="font-size:11px;color:var(--text-mute)">(세전·잠정)</span>' : '매도 전 (미정)';
-      d.innerHTML =
-        '<div class="card">' +
-          '<div class="ctx">' + chips + '</div>' +
-          (f.reportUrl ? '<a href="../calendar/' + f.reportUrl + '" style="font-size:12px">📄 상세 분석 보고서</a>' : '') +
-          '<div class="sec-title">⏱ 여정</div><ul class="steps">' + steps + '</ul>' +
-          '<div class="sec-title">🧾 비용 원장</div>' +
-          '<div class="ledger-wrap"><table class="ledger"><thead><tr><th>일자</th><th>항목</th><th style="text-align:right">금액</th><th>메모</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
-          fundingHtml +
-          forecastHtml(h, f, split) +
-          '<div class="sec-title">💰 손익</div>' +
-          '<div class="pnl"><div class="kv"><div class="l">상태</div><div class="v">' + dispLabel + '</div></div>' +
-          '<div class="kv"><div class="l">집행 지출</div><div class="v" style="color:var(--price)">' + won(split.executed) + '</div></div>' +
-          (split.planned ? '<div class="kv"><div class="l">예정 지출</div><div class="v" style="color:var(--text-mute)">' + won(split.planned) + '</div></div>' : '') +
-          '<div class="kv"><div class="l">실현손익</div><div class="v">' + realized + '</div></div></div>' +
-          notesHtml +
-        '</div>';
+    // ── 공용 헬퍼 ──
+    function esc(t) {
+      return String(t == null ? '' : t).replace(/[&<>]/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c];
+      });
     }
+    function signed(n) { var v = Math.round(n); return (v >= 0 ? '+' : '−') + won(Math.abs(v)).slice(1); }
+    function eok(n) { return (n / 100000000).toFixed(2) + '억'; }
+
+    // 매도가 앵커 — 전부 실제 데이터에서 온다. 임의 시나리오를 만들지 않는다.
+    function saleAnchors(f, cd, h, m) {
+      var a = [];
+      if (f.wonPrice) a.push({ v: f.wonPrice, label: '낙찰' });
+      if (cd && cd.neutralSalePrice) a.push({ v: cd.neutralSalePrice, label: '중립' });
+      a.push({ v: Math.round(L.breakEvenPrice(h, f, m, cd)), label: '본전' });
+      if (f.appraisalPrice) a.push({ v: f.appraisalPrice, label: '감정' });
+      return a.sort(function (x, y) { return x.v - y.v; });
+    }
+
+
+    // ── 매도 시나리오: 손익분기 곡선 + 매도가 슬라이더 ──
+    // 곡선은 사실상 직선이지만 기울기 자체가 답이다. 사용자 매도가 수평선과의 "교차점 = 마감 기한"은
+    // 표로는 안 읽히고 그림으로는 즉시 보인다. 그것 하나가 이 차트의 존재 이유다.
+    var SIM = { W: 1040, H: 300, X0: 76, X1: 1004, Y0: 24, Y1: 216, MMAX: 12 };
+
+    function simScale(h, f, cd) {
+      var lo = Infinity, hi = -Infinity;
+      for (var m = 0; m <= SIM.MMAX; m++) {
+        var v = L.breakEvenPrice(h, f, m, cd);
+        if (v < lo) lo = v; if (v > hi) hi = v;
+      }
+      [f.wonPrice, f.appraisalPrice, cd && cd.neutralSalePrice].forEach(function (v) {
+        if (v) { if (v < lo) lo = v; if (v > hi) hi = v; }
+      });
+      var pad = (hi - lo) * 0.18 || 10000000;
+      lo -= pad; hi += pad;
+      return {
+        lo: lo, hi: hi,
+        x: function (m) { return SIM.X0 + (SIM.X1 - SIM.X0) * (m / SIM.MMAX); },
+        y: function (v) { return SIM.Y1 - (SIM.Y1 - SIM.Y0) * ((v - lo) / (hi - lo)); },
+      };
+    }
+
+    function buildScenario(h, f, cd, anchors, defaultSale, M0) {
+      var sc = simScale(h, f, cd);
+      var pts = [];
+      for (var m = 0; m <= SIM.MMAX; m++) pts.push(sc.x(m).toFixed(1) + ',' + sc.y(L.breakEvenPrice(h, f, m, cd)).toFixed(1));
+      var nowM = Math.max(0, Math.min(SIM.MMAX, monthsSinceBalance(h)));
+      var cut = Math.round(nowM) + 1;
+      var solid = pts.slice(0, cut).join(' ');
+      var dashed = pts.slice(Math.max(0, cut - 1)).join(' ');
+
+      var grid = '', labels = '';
+      for (var g = 0; g <= 4; g++) {
+        var vy = sc.lo + (sc.hi - sc.lo) * g / 4, py = sc.y(vy);
+        grid += '<line x1="' + SIM.X0 + '" y1="' + py.toFixed(1) + '" x2="' + SIM.X1 + '" y2="' + py.toFixed(1) + '"/>';
+        labels += '<text x="' + (SIM.X0 - 10) + '" y="' + (py + 4).toFixed(1) + '">' + eok(vy) + '</text>';
+      }
+      var refs = '';
+      [{ v: f.appraisalPrice, t: '감정' }, { v: cd && cd.neutralSalePrice, t: '중립' }, { v: f.wonPrice, t: '낙찰' }]
+        .filter(function (r) { return r.v; }).forEach(function (r) {
+          var ry = sc.y(r.v);
+          refs += '<line class="ref" x1="' + SIM.X0 + '" y1="' + ry.toFixed(1) + '" x2="' + SIM.X1 + '" y2="' + ry.toFixed(1) + '"/>' +
+                  '<text class="ref-t" x="' + (SIM.X1 - 4) + '" y="' + (ry - 5).toFixed(1) + '">' + r.t + ' ' + eok(r.v) + '</text>';
+        });
+      var ticks = '';
+      for (var t2 = 0; t2 <= SIM.MMAX; t2 += 3) {
+        ticks += '<text class="xt" x="' + sc.x(t2).toFixed(1) + '" y="' + (SIM.Y1 + 20) + '">' + (t2 === 0 ? '잔금' : t2 + '개월') + '</text>';
+      }
+      var nowX = sc.x(nowM);
+
+      return '<div class="card sim-card">' +
+        '<div class="sec-title">매도 시나리오</div>' +
+        '<svg class="sim-svg" viewBox="0 0 ' + SIM.W + ' ' + SIM.H + '" role="img" ' +
+             'aria-label="보유 기간에 따른 손익분기 매도가 추이">' +
+          '<g class="grid">' + grid + '</g><g class="ylab">' + labels + '</g>' +
+          '<polygon id="zone" points=""/>' +
+          refs +
+          '<polyline class="be solid" points="' + solid + '"/>' +
+          '<polyline class="be dashed" points="' + dashed + '"/>' +
+          '<line id="saleline" x1="' + SIM.X0 + '" x2="' + SIM.X1 + '" y1="0" y2="0"/>' +
+          '<line class="now" x1="' + nowX.toFixed(1) + '" y1="' + SIM.Y0 + '" x2="' + nowX.toFixed(1) + '" y2="' + SIM.Y1 + '"/>' +
+          '<text class="now-t" x="' + (nowX + 5).toFixed(1) + '" y="' + (SIM.Y0 + 12) + '">오늘</text>' +
+          '<g class="xlab">' + ticks + '</g>' +
+          '<text id="crosslab" class="cross" x="0" y="0"></text>' +
+        '</svg>' +
+        '<div class="sim-ctl">' +
+          '<label for="saleRange">매도가 가정</label>' +
+          '<output id="saleOut">' + won(defaultSale) + '</output>' +
+          '<input type="range" id="saleRange" min="' + Math.round(sc.lo) + '" max="' + Math.round(sc.hi) + '" ' +
+                 'step="1000000" value="' + defaultSale + '" aria-describedby="saleOut">' +
+          '<div class="sim-anchors">' + anchors.map(function (a) {
+            return '<button type="button" class="anchor" data-v="' + a.v + '">' + a.label + ' ' + eok(a.v) + '</button>';
+          }).join('') + '</div>' +
+        '</div>' +
+        '<div class="sim-out">' +
+          [3, 4, 6].map(function (m) {
+            return '<div><span>' + m + '개월</span><b data-m="' + m + '"></b></div>';
+          }).join('') +
+        '</div>' +
+      '</div>';
+    }
+
+    function monthsSinceBalance(h) {
+      var b = (h.milestones || []).find(function (m) { return m.key === 'balance'; });
+      if (!b || !b.at) return 0;
+      return Math.max(0, L.daysBetween(b.at, today()) / 30.44);
+    }
+
+    function bindScenario(h, f, cd, M0) {
+      var range = document.getElementById('saleRange');
+      if (!range) return;
+      var sc = simScale(h, f, cd);
+      var out = document.getElementById('saleOut');
+      var line = document.getElementById('saleline');
+      var zone = document.getElementById('zone');
+      var crossLab = document.getElementById('crosslab');
+      var outs = [].slice.call(document.querySelectorAll('.sim-out b'));
+
+      function paint() {
+        var P = Number(range.value);
+        out.textContent = won(P);
+        var y = sc.y(P);
+        line.setAttribute('y1', y); line.setAttribute('y2', y);
+        // 교차점 = 이 가격으로 본전이 되는 마지막 시점 = 마감 기한
+        var cross = null;
+        for (var m = 0; m <= SIM.MMAX; m++) { if (L.breakEvenPrice(h, f, m, cd) > P) { cross = m; break; } }
+        var cx = cross == null ? SIM.X1 : sc.x(cross);
+        zone.setAttribute('points',
+          SIM.X0 + ',' + y + ' ' + cx.toFixed(1) + ',' + y + ' ' + cx.toFixed(1) + ',' + SIM.Y1 + ' ' + SIM.X0 + ',' + SIM.Y1);
+        zone.setAttribute('class', cross === 0 ? 'loss' : 'gain');
+        if (cross != null && cross > 0) {
+          crossLab.setAttribute('x', Math.min(cx + 6, SIM.X1 - 90));
+          crossLab.setAttribute('y', y - 8);
+          crossLab.textContent = '이 가격 마감 ' + cross + '개월';
+        } else if (cross === 0) { crossLab.textContent = '이미 본전 아래'; crossLab.setAttribute('x', SIM.X0 + 6); crossLab.setAttribute('y', y - 8); }
+        else { crossLab.textContent = ''; }
+        outs.forEach(function (b) {
+          var m = Number(b.dataset.m);
+          var v = L.pretaxProfit(h, f, P, m, cd);
+          b.textContent = signed(v);
+          b.className = v >= 0 ? 'pos' : 'neg';
+        });
+      }
+      range.addEventListener('input', paint);
+      [].slice.call(document.querySelectorAll('.anchor')).forEach(function (btn) {
+        btn.addEventListener('click', function () { range.value = btn.dataset.v; paint(); });
+      });
+      paint();
+    }
+
+    // ── 비용 원장: 날짜 그룹 + 소계 + 카테고리 스택바 ──
+    function buildLedger(h, today0, split) {
+      var costs = (h.costs || []).slice().sort(function (a, b) {
+        return String(a.occurredAt || '').localeCompare(String(b.occurredAt || ''));
+      });
+      if (!costs.length) return '<div class="sec-title">비용 원장</div><div class="dim">기록된 비용 없음</div>';
+
+      // 카테고리 집계 — 도넛/파이 대신 CSS flex 스택바(세그먼트 5개, 라벨 필요)
+      var byCat = {};
+      costs.forEach(function (e) {
+        if (e.direction === 'in') return;
+        byCat[e.category] = (byCat[e.category] || 0) + (Number(e.amount) || 0);
+      });
+      var catTotal = Object.keys(byCat).reduce(function (s2, k) { return s2 + byCat[k]; }, 0);
+      var bar = Object.keys(byCat).sort(function (a, b) { return byCat[b] - byCat[a]; }).map(function (k, i) {
+        return '<i style="flex-grow:' + byCat[k] + '" class="cs' + (i % 3) + '" title="' + esc(k) + ' ' + won(byCat[k]) + '">' +
+          '<b>' + esc(k) + '</b> ' + (byCat[k] / catTotal * 100).toFixed(0) + '%</i>';
+      }).join('');
+
+      // 날짜 그룹
+      var groups = [], cur = null;
+      costs.forEach(function (e) {
+        var key = e.occurredAt || '미지정';
+        if (!cur || cur.key !== key) { cur = { key: key, items: [], sum: 0 }; groups.push(cur); }
+        cur.items.push(e);
+        cur.sum += (e.direction === 'in' ? -1 : 1) * (Number(e.amount) || 0);
+      });
+
+      var body = groups.map(function (g) {
+        var future = g.key !== '미지정' && g.key > today0;
+        return '<div class="grp' + (future ? ' planned' : '') + '">' +
+          '<div class="grp-head"><span>' + esc(g.key) + (future ? ' <em>예정</em>' : '') + '</span>' +
+            '<b>' + won(g.sum) + '</b></div>' +
+          g.items.map(function (e) {
+            return '<div class="crow">' +
+              '<span class="c">' + esc(e.category) + (e.direction === 'in' ? ' <em>환급</em>' : '') + '</span>' +
+              '<span class="a">' + (e.direction === 'in' ? '−' : '') + won(e.amount) + '</span>' +
+              (e.memo ? '<span class="m">' + esc(e.memo) + '</span>' : '') +
+            '</div>';
+          }).join('') +
+        '</div>';
+      }).join('');
+
+      // 미계상 확정 부채 — 원장 합계 어디에도 안 들어가던 것
+      var ub = (h.unbookedLiabilities || []);
+      var ubHtml = ub.length ? '<div class="grp unbooked">' +
+        '<div class="grp-head"><span>미계상 확정 부채</span><b>' + won(L.unbookedTotal(h)) + '</b></div>' +
+        ub.map(function (x) {
+          return '<div class="crow"><span class="c">' + esc(x.label) + '</span>' +
+            '<span class="a">' + won(x.amount) + '</span>' +
+            (x.basis ? '<span class="m">' + esc(x.basis) + '</span>' : '') + '</div>';
+        }).join('') + '</div>' : '';
+
+      return '<div class="sec-title">비용 원장 ' +
+          '<span class="sec-sum">집행 ' + won(split.executed) +
+          (split.planned ? ' · 예정 ' + won(split.planned) : '') + '</span></div>' +
+        (bar ? '<div class="cost-bar">' + bar + '</div>' : '') +
+        body + ubHtml;
+    }
+
+    function drawDetail() {
+      var h = H[sel];
+      var f = L.deriveAuctionFacts(h, RESULTS, CASES);
+      var cd = (CASES || []).find(function (c) { return c.id === L.caseIdOf(h.sourceResultKey); }) || null;
+      var d = document.getElementById('detail');
+      var today0 = today();
+      var split = window.CalLib.splitCosts(h.costs, today0);
+
+      // ── 지표 (전부 holdings-lib. 여기서 산식을 만들지 않는다) ──
+      var C   = L.totalCost(h, f);
+      var E   = L.equity(h, f);
+      var V   = L.variableCosts(h, cd);
+      var rr  = L.monthlyRunRate(h);
+      var M0  = 4;                                   // 기본 가정: 잔금 후 4개월 매도
+      var BE  = L.breakEvenPrice(h, f, M0, cd);
+      var slope = L.breakEvenPrice(h, f, M0 + 1, cd) - BE;
+      var anchors = saleAnchors(f, cd, h, M0);
+      var defaultSale = (cd && cd.neutralSalePrice) || f.appraisalPrice || Math.round(BE);
+      var profit0 = L.pretaxProfit(h, f, defaultSale, M0, cd);
+      var realized = L.realizedPretax(h, f);
+
+      // ── #0 식별 바 ──
+      var chips = [
+        f.complex && '<span class="chip"><b>' + esc(f.complex) + '</b></span>',
+        f.dongHo && '<span class="chip">' + esc(f.dongHo) + '</span>',
+        f.court && '<span class="chip">' + esc(f.court) + '</span>',
+        f.areaSqm && '<span class="chip">전용 ' + f.areaSqm + '㎡</span>',
+        '<span class="chip">낙찰 <b>' + won(f.wonPrice) + '</b></span>',
+        f.appraisalPrice && '<span class="chip">감정 ' + won(f.appraisalPrice) + '</span>',
+        f.bidderCount != null && '<span class="chip">' + f.bidderCount + '명 응찰</span>',
+        '<span class="chip">' + (h.disposition === 'sold' ? '매도완료' : '보유 D+' + (L.holdingDays(h, today0) || 0)) + '</span>'
+      ].filter(Boolean).join('');
+
+      // ── #1 HERO — 결론을 맨 위로. 구 구조는 손익이 6번째였고 그마저 "미정"이었다 ──
+      function heroCard(label, value, sub, cls) {
+        return '<div class="hero-card"><div class="l">' + esc(label) + '</div>' +
+          '<div class="v ' + (cls || '') + '">' + value + '</div>' +
+          '<div class="s">' + sub + '</div></div>';
+      }
+      var heroProfit = (realized != null)
+        ? heroCard('실현 손익', signed(realized), '매도 ' + esc(h.resaleClosedAt || '') + ' · 세전',
+                   realized >= 0 ? 'pos' : 'neg')
+        : heroCard((cd && cd.neutralSalePrice ? '중립가' : '감정가') + ' 매도 시', signed(profit0),
+                   eok(defaultSale) + ' · ' + M0 + '개월 · 세전<br>본전 ' + eok(BE),
+                   profit0 >= 0 ? 'pos' : 'neg');
+      var hero =
+        '<div class="hero">' +
+          heroCard('투입 원가', won(C),
+            '낙찰 ' + eok(f.wonPrice) + ' + 부대비 ' + won(L.acquisitionCosts(h)).slice(1) + '<br>' +
+            (E === 0 ? '<b class="warn">자기자본 0 · 전액 차입</b>' : '자기자본 ' + won(E))) +
+          heroCard('손익분기 매도가', won(Math.round(BE)),
+            '낙찰가 +' + ((BE / f.wonPrice - 1) * 100).toFixed(2) + '%<br>' +
+            '<b class="warn">매월 +' + won(Math.round(slope)).slice(1) + '</b> · ' + M0 + '개월 기준') +
+          heroCard('월 부담', won(Math.round(rr.cash)),
+            '현금 기준 · 손익 기준 ' + won(Math.round(rr.interest)).slice(1) + '<br>원금상환분은 비용이 아니라 부채 감소') +
+          heroProfit +
+        '</div>';
+
+      // ── #2 리스크 스트립 — 결론을 무효화할 수 있는 것 ──
+      var riskItems = [];
+      var unbooked = L.unbookedTotal(h);
+      if (unbooked > 0) {
+        riskItems.push({ t: '미계상 부채', d: '확정 채무 ' + won(unbooked) + ' 이 위 손익에 반영됐다 — 원장 costs 에는 아직 없다.' });
+      }
+      (h.risks || []).forEach(function (r) { riskItems.push({ t: r.label, d: r.detail }); });
+      if (!riskItems.length && h.notes) {
+        String(h.notes).split('\n').forEach(function (ln2) {
+          var m2 = /^\s*⚠️?\s*(.{0,300})/.exec(ln2);
+          if (m2 && riskItems.length < 3) {
+            var txt = m2[1];
+            var i2 = txt.indexOf(':');
+            riskItems.push({ t: i2 > 0 && i2 < 20 ? txt.slice(0, i2) : '주의', d: i2 > 0 && i2 < 20 ? txt.slice(i2 + 1) : txt });
+          }
+        });
+      }
+      var riskHtml = riskItems.length
+        ? '<div class="risk-strip">' + riskItems.map(function (r) {
+            return '<div class="risk-row"><b>' + esc(r.t) + '</b><span>' + esc(r.d) + '</span></div>';
+          }).join('') + '</div>'
+        : '';
+
+      // ── #3 매도 시나리오 — 손익분기 곡선 + 슬라이더 ──
+      var simHtml = (realized != null) ? '' : buildScenario(h, f, cd, anchors, defaultSale, M0);
+
+      // ── #4 자금 구조 — 구 §자금·대출 + §조달내역 통합(같은 사실의 두 표현이었다) ──
+      var pctf = function (r) { return r == null ? null : (r * 100).toFixed(2).replace(/\.?0+$/, '') + '%'; };
+      var ln = h.loan || {}, rp = ln.repayment || {};
+      var fundTotal = (h.funding || []).reduce(function (s2, x) { return s2 + (Number(x.amount) || 0); }, 0);
+      var fundBar = (h.funding || []).map(function (x, i) {
+        var w = fundTotal ? (x.amount / fundTotal * 100) : 0;
+        return '<i style="flex-grow:' + x.amount + '" class="fs' + (i % 2) + '">' +
+          '<b>' + esc(x.source) + '</b> ' + eok(x.amount) + ' · ' + w.toFixed(0) + '%' +
+          (x.rate ? ' · ' + pctf(x.rate) : '') + '</i>';
+      }).join('');
+      var fundHtml =
+        '<div class="sec-title">자금 구조</div>' +
+        (fundBar ? '<div class="fund-bar">' + fundBar + '</div>' : '') +
+        '<div class="fund-eq' + (E === 0 ? ' warn' : '') + '">자기자본 ' + won(E) +
+          (E === 0 ? ' (100% 차입)' : '') + '</div>' +
+        '<div class="fund-terms">' +
+          [ rp.type && ln.term && esc(ln.term) + ' ' + esc(rp.type),
+            rp.monthlyPayment && '월 ' + won(rp.monthlyPayment) + (rp.dayOfMonth ? ' (매월 ' + rp.dayOfMonth + '일)' : ''),
+            ln.prepayFeeRate != null && '중도상환 ' + pctf(ln.prepayFeeRate)
+          ].filter(Boolean).join(' · ') +
+          (rp.exitPlan ? '<br><span class="dim">출구: ' + esc(rp.exitPlan) + '</span>' : '') +
+        '</div>';
+
+      // ── #5 비용 원장 — 날짜 그룹 + 소계. 6건 중 4건이 같은 날이라 날짜 컬럼이 낭비였다 ──
+      var ledgerHtml = buildLedger(h, today0, split);
+
+      // ── #6 계획 vs 실제 (접힘) ──
+      var fcHtml = forecastHtml(h, f, split);
+      var fcSec = fcHtml ? '<details class="fold"><summary>계획 vs 실제 (모델 검증)</summary>' + fcHtml + '</details>' : '';
+
+      // ── #7 메모 (접힘, ★/⚠️ 배지) ──
+      var notesHtml = '';
+      if (h.notes) {
+        var lines = String(h.notes).split('\n');
+        var stars = lines.filter(function (x) { return /^\s*★/.test(x); }).length;
+        var warns = lines.filter(function (x) { return /^\s*⚠/.test(x); }).length;
+        notesHtml = '<details class="fold"><summary>메모' +
+          (stars ? ' <span class="nb star">★' + stars + '</span>' : '') +
+          (warns ? ' <span class="nb warn">⚠' + warns + '</span>' : '') +
+          '</summary><div class="notes">' + lines.map(function (x) {
+            var cls = /^\s*★/.test(x) ? ' class="star"' : (/^\s*⚠/.test(x) ? ' class="warn"' : '');
+            return x.trim() ? '<p' + cls + '>' + esc(x) + '</p>' : '';
+          }).join('') + '</div></details>';
+      }
+
+      d.innerHTML =
+        '<div class="idbar">' + chips +
+          (f.reportUrl ? '<a class="rep" href="../calendar/' + esc(f.reportUrl) + '">상세 분석 보고서 ↗</a>' : '') +
+        '</div>' +
+        hero + riskHtml + simHtml +
+        '<div class="card">' + fundHtml + '</div>' +
+        '<div class="card">' + ledgerHtml + '</div>' +
+        fcSec + notesHtml;
+
+      if (!realized) bindScenario(h, f, cd, M0);
+    }
+
     draw();
   }
 })();
