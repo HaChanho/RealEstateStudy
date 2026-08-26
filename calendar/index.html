@@ -112,7 +112,7 @@
   .chip .chip-rating.r2 { background: #7c3aed; color: #ffffff; }
   .chip .chip-rating.r1 { background: #94a3b8; color: #ffffff; }
   .chip .chip-rating.none { background: var(--surface-3); color: var(--text-mute); }
-  .chip .chip-trail { display: flex; align-items: center; gap: 3px; min-width: 0; }
+  .chip .chip-trail { display: flex; align-items: center; gap: 5px; min-width: 0; flex-shrink: 0; }
   .chip .chip-trail > * { margin-left: 0; }
   .chip .chip-mini { display: flex; gap: 2px; align-items: center; }
   .chip .mini-bar { width: 22px; height: 4px; background: var(--surface-3); border-radius: 2px; overflow: hidden; }
@@ -1403,7 +1403,6 @@
         const trail = el('span', { cls: 'chip-trail' });
         { const _tm = { primary: '★', watch: '◇', watchlist: '▷' }; if (c.interestTier && _tm[c.interestTier]) trail.appendChild(el('span', { cls: 'chip-tier tier-' + (c.interestTier === 'primary' ? 'star' : c.interestTier === 'watch' ? 'watch' : 'watchlist'), text: _tm[c.interestTier] })); }
         { const _b = resultChipBadge(resultFor(c)); if (_b) trail.appendChild(_b); }
-        if (trail.childNodes.length) chip.appendChild(trail);
         // Mini: 최저가(매매사업자 핵심 지표) + margin bar
         const mini = el('span', { cls: 'chip-mini' });
         if (c.minimumPrice != null) mini.appendChild(el('span', { cls: 'chip-price', text: fmtMoneyShort(c.minimumPrice) }));
@@ -1418,7 +1417,11 @@
           bar.title = `미시 마진 ${fmtMoneySigned(margin)}`;
           mini.appendChild(bar);
         }
-        chip.appendChild(mini);
+        // mini(가격·마진바)를 trail에 합쳐 칩 자식을 3개로 유지한다.
+        // .chip 은 grid 3열(22px 1fr auto)이라 자식이 4개면 4번째가 2행으로 밀린다.
+        // v0.5.0이 chip-trail을 도입했으나 mini가 4번째로 남아 15/20이 2줄로 깨져 있었다.
+        while (mini.firstChild) trail.appendChild(mini.firstChild);
+        chip.appendChild(trail);
         chip.addEventListener('click', (e) => { e.stopPropagation(); openDetail(c.id); });
         chipsWrap.appendChild(chip);
       }
