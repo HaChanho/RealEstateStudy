@@ -189,7 +189,7 @@
     position: relative;
     margin-left: 12px;                                   /* visible gutter — strong separation cue */
   }
-  .detail-panel.open { flex-basis: var(--panel-w); }
+  .detail-panel.open { flex-basis: clamp(380px, calc(100vw - 1020px), 480px); }
   .detail-inner { width: var(--panel-w); padding: 20px 20px 20px 26px; overflow-y: auto; height: 100%; scroll-behavior: smooth; }
   /* Resize handle — drag the left edge to widen/narrow the panel */
   .resize-handle {
@@ -685,6 +685,54 @@
   .flyout h4 { margin: 0 0 var(--sp-2); font-size: var(--fs-md); color: var(--text-mute);
                text-transform: uppercase; letter-spacing: .04em; }
   .shell-mode .stats { border-bottom: none; padding: 0; background: none; }
+  /* ── 브레이크포인트 4단 (§6.4) ── */
+  /* ≥1400: 패널 나란히 (기본 규칙). 1400 미만은 나란히 유지 시 칸 폭이 합격선(211px) 아래로 떨어진다. */
+  @media (max-width: 1399px) {
+    .detail-panel { position: fixed; top: 0; right: 0; bottom: 0; z-index: 30; margin-left: 0;
+                    width: 0; border-left-width: 0; }
+    .detail-panel.open { flex-basis: auto; width: min(480px, 46vw); border-left-width: 3px; }
+    .panel-backdrop { display: none; }
+    .detail-panel.open ~ .panel-backdrop,
+    .panel-backdrop.show { display: block; position: fixed; inset: 0; z-index: 29;
+                           background: rgb(15 23 42 / var(--a-4)); }
+  }
+  /* 992 미만: 4열 그리드는 칸 폭 156px 로 별점+3자밖에 안 나온다 → 아젠다 리스트 */
+  @media (max-width: 991px) {
+    #calendar { display: none !important; }
+    #agenda { display: block; }
+  }
+  @media (min-width: 992px) { #agenda { display: none; } }
+  /* 768 미만: 레일을 하단 탭바로 */
+  @media (max-width: 767px) {
+    .rail { position: fixed; bottom: 0; left: 0; right: 0; top: auto; width: 100%; height: 56px;
+            flex-direction: row; justify-content: space-around; align-items: center;
+            border-right: none; border-top: 1px solid var(--border); padding: 0; }
+    .rail-brand, .rail-sep { display: none; }
+    .rail-item { min-height: 46px; }
+    .flyout { left: 0; width: 100vw; bottom: 56px; }
+    .detail-panel.open { width: 100vw; }
+    .view-area { padding-bottom: 56px; }
+    .topbar { padding: 0 var(--sp-2); gap: var(--sp-2); }
+    .topbar .stats-meta { display: none; }
+    .topbar #f-search { min-width: 110px; }
+  }
+  /* 아젠다 리스트 */
+  #agenda { padding: var(--sp-2) var(--sp-3) var(--sp-5); }
+  .agenda-head { position: sticky; top: 0; z-index: 2; background: var(--surface-2);
+                 padding: var(--sp-1) var(--sp-2); font-size: var(--fs-md); font-weight: 700;
+                 color: var(--text-dim); border-radius: var(--r-sm); margin: var(--sp-3) 0 var(--sp-1); }
+  .agenda-row { display: grid; grid-template-columns: 26px 1fr auto; gap: var(--sp-2); align-items: center;
+                padding: var(--sp-2); border-bottom: 1px solid var(--border); cursor: pointer; }
+  .agenda-row:active { background: var(--surface-2); }
+  .agenda-row > span:nth-child(2) { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .agenda-row .ar-name { font-size: var(--fs-base); font-weight: 600; color: var(--text);
+                         overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .agenda-row .ar-sub { font-size: var(--fs-sm); color: var(--text-mute);
+                        overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .agenda-row .ar-price { font-size: var(--fs-base); font-weight: 700; font-variant-numeric: tabular-nums;
+                          white-space: nowrap; }
+  .agenda-row.rank-r5 { background: var(--r5-tint); box-shadow: inset 2px 0 0 var(--r5-bg); }
+  .agenda-row.rank-r4 { background: var(--r4-tint); box-shadow: inset 2px 0 0 var(--r4-bg); }
 </style>
 <script src="../shared/cal-lib.js"></script>
 <script src="../shared/icons.js"></script>
@@ -792,6 +840,7 @@
   <div class="view-wrap">
     <div id="calendar-view" class="calendar-wrap">
       <div id="calendar" class="calendar"></div>
+      <div id="agenda"></div>
     </div>
     <div id="list-view" class="list-wrap" hidden>
       <table class="list-table">
@@ -998,8 +1047,9 @@
   function applyPanelWidth(w) {
     const panel = document.getElementById('detail-panel');
     if (!panel) return;
-    if (w == null) panel.style.removeProperty('--panel-w');
-    else panel.style.setProperty('--panel-w', w + 'px');
+    // flex-basis 를 직접 설정한다. var() 간접 참조는 flex-basis 에서 해석되지 않는다.
+    if (w == null) { panel.style.removeProperty('flex-basis'); panel.style.removeProperty('--panel-w'); }
+    else { panel.style.setProperty('--panel-w', w + 'px'); panel.style.setProperty('flex-basis', w + 'px'); }
   }
   function savePanelWidth(w) {
     try { localStorage.setItem(LS_PANEL_W, String(w)); } catch (e) {}
@@ -1399,6 +1449,7 @@
   // ===== Calendar view =====
 
   function renderCalendar() {
+    renderAgenda();
     const { y, m } = state.currentMonth;
     document.getElementById('month-label').textContent = `${y}년 ${m + 1}월`;
     const firstDay = new Date(y, m, 1);
@@ -2665,6 +2716,54 @@
     });
   })();
 
+
+
+  // ===== 모바일 아젠다 (§6.4) =====
+  // 375px 에서 4열 그리드는 칸 폭 ~80px 이라 단지명이 들어갈 수 없다(첫 화면 노출 0건).
+  // 날짜별 리스트로 전환하면 사건 없는 날이 아예 사라져 첫 화면에 실제 사건이 보인다.
+  const AGENDA_DOWS = ['일', '월', '화', '수', '목', '금', '토'];
+
+  function buildAgendaRow(c) {
+    const r = effectiveRating(c);
+    const cls = ['agenda-row'];
+    if (r === 5) cls.push('rank-r5'); else if (r === 4) cls.push('rank-r4');
+    const row = el('div', { cls: cls.join(' '), title: window.CalLib.chipTitle(c, r, fmtMoneyShort) });
+    row.appendChild(el('span', {
+      cls: 'chip-rating ' + (r != null ? 'r' + r : 'none'),
+      text: r != null ? String(r) : '·',
+    }));
+    const mid = el('span');
+    mid.appendChild(el('span', { cls: 'ar-name', text: window.CalLib.chipLabel(c) }));
+    const bits = [verdictLabel(c.verdict)];
+    if (c.rounds != null) bits.push(c.rounds === 0 ? '신건' : c.rounds + '회 유찰');
+    mid.appendChild(el('span', { cls: 'ar-sub', text: bits.filter(Boolean).join(' · ') }));
+    row.appendChild(mid);
+    if (c.minimumPrice != null) row.appendChild(el('span', { cls: 'ar-price', text: fmtMoneyShort(c.minimumPrice) }));
+    row.addEventListener('click', () => openDetail(c.id));
+    return row;
+  }
+
+  function renderAgenda() {
+    const wrap = document.getElementById('agenda');
+    if (!wrap) return;
+    wrap.replaceChildren();
+    const { y, m } = state.currentMonth;
+    const prefix = `${y}-${String(m + 1).padStart(2, '0')}`;
+    const groups = window.CalLib.groupByDate(
+      getFiltered().filter((c) => String(c.saleDate || '').startsWith(prefix)), effectiveRating);
+    if (!groups.length) {
+      wrap.appendChild(el('div', { cls: 'cal-empty', text: '이 달에는 표시할 매각기일이 없습니다.' }));
+      return;
+    }
+    for (const g of groups) {
+      const d = new Date(g.date + 'T00:00:00');
+      wrap.appendChild(el('div', {
+        cls: 'agenda-head',
+        text: `${d.getMonth() + 1}월 ${d.getDate()}일 (${AGENDA_DOWS[d.getDay()]}) · ${g.count}건`,
+      }));
+      for (const c of g.items) wrap.appendChild(buildAgendaRow(c));
+    }
+  }
 
   // ===== 앱 셸 (§6) =====
   // 세로에 쌓여 있던 크롬(header + stats + result-stats + filters = 237px)을
