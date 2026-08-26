@@ -4,12 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>낙찰물건 타임라인</title>
+<link rel="stylesheet" href="../shared/theme.css" />
 <style>
-  :root{
-    --bg:#eef1f7; --surface:#fff; --surface-2:#f3f5fb; --surface-3:#e4e8f3;
-    --border:#dde3f0; --border-strong:#c1cad9; --text:#1a1f2e; --text-dim:#4a5570; --text-mute:#8b95a7;
-    --accent:#3b6fde; --accent-strong:#1e40af; --price:#b45309; --positive:#059669; --negative:#dc2626; --pending:#0284c7;
-  }
+  :root{ --price:#b45309; --positive:#059669; --negative:var(--loss); --pending:#0284c7; }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Segoe UI",Roboto,sans-serif;font-size:14px}

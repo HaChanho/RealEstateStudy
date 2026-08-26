@@ -4,34 +4,21 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>경매 케이스 캘린더</title>
+<link rel="stylesheet" href="../shared/theme.css" />
 <style>
   :root {
-    /* Light theme — calendar is the working surface (pure white), panel is a different paper (pale lavender) */
-    --bg: #eef1f7;               /* Page bg — pale cool gray, makes white day cells pop */
-    --surface: #ffffff;          /* Day cells, list table, header — pure white */
-    --surface-2: #f3f5fb;        /* Subtle tinted bg for pills, chip defaults */
-    --surface-3: #e4e8f3;        /* Stronger tint for inner accents, mini bars */
-    --panel-bg: #f7f8fc;         /* Detail panel — neutral cool gray, slightly cooler than calendar bg */
-    --panel-bg-2: #eef0f7;       /* Inner panel accents */
-    --panel-border: #cdd3e2;
-    --panel-accent: #8b5cf6;     /* Violet stripe — only remaining hue accent, signals "active surface" */
-    --border: #dde3f0;
-    --border-strong: #c1cad9;
-    --text: #1a1f2e;             /* Dark charcoal — primary text on white */
-    --text-dim: #4a5570;
-    --text-mute: #8b95a7;
-    --accent: #3b6fde;            /* Blue accent — darker than dark-theme version for contrast on white */
-    --accent-strong: #1e40af;
-    --price: #b45309;             /* Darker amber — readable on white */
+    /* 캘린더 전용 — shared/theme.css 에 없는 것만. 공용 토큰은 그쪽 참조. */
+    --panel-bg:     var(--n-50);
+    --panel-bg-2:   var(--n-100);
+    --panel-border: var(--n-300);
+    --panel-accent: #8b5cf6;
+    --price:    #b45309;
     --positive: #059669;
-    --negative: #dc2626;
-    --pending: #0284c7;
-    --candidate: #7c3aed;
-    --pass: #059669;
-    --hold: #d97706;
-    --fail: #6b7280;
-    --expired: #9ca3af;
-    --naver: #03c75a;
+    --negative: var(--loss);
+    --naver:    #03c75a;
+    /* verdict — 채도 강등(§5.2). 구분은 점 형태로 한다(§10). */
+    --pending: var(--muted-dot); --candidate: var(--muted-dot); --pass: var(--muted-dot);
+    --hold:    var(--muted-dot); --fail:      var(--muted-dot); --expired: var(--muted-dot);
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Segoe UI", Roboto, sans-serif; font-size: 14px; }
