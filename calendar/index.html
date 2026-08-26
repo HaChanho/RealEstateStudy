@@ -170,9 +170,13 @@
 
   /* Detail panel — uses CSS var --panel-w so JS drag can resize without touching layout */
   .detail-panel {
-    --panel-w: 460px;
-    width: 0;
-    transition: width .25s ease;
+    --panel-w: clamp(380px, calc(100vw - 1020px), 480px);
+    /* flex 컨테이너 안에서는 width 가 아니라 flex-basis 로 폭을 준다.
+       width 만 쓰면 flex-basis:auto 가 베이스의 width:0 을 물고 0 으로 굳어 패널이
+       3px(테두리만)로 붕괴한다 — >900px 데스크톱에서 패널이 열리지 않던 원인. */
+    flex: 0 0 0px;
+    width: auto;
+    transition: flex-basis .25s ease;
     background: var(--panel-bg);
     /* Refined separation: thin violet stripe + soft layered shadow */
     border-left: 3px solid var(--panel-accent);
@@ -185,7 +189,7 @@
     position: relative;
     margin-left: 12px;                                   /* visible gutter — strong separation cue */
   }
-  .detail-panel.open { width: var(--panel-w); }
+  .detail-panel.open { flex-basis: var(--panel-w); }
   .detail-inner { width: var(--panel-w); padding: 20px 20px 20px 26px; overflow-y: auto; height: 100%; scroll-behavior: smooth; }
   /* Resize handle — drag the left edge to widen/narrow the panel */
   .resize-handle {
@@ -588,7 +592,7 @@
   @media (max-width: 900px) {
     /* 데스크톱 거터(margin-left)·좌측 stripe는 모바일 전체화면에서 오버플로 유발 → 제거 */
     .detail-panel { margin-left: 0; border-left: none; }
-    .detail-panel.open { width: 100vw; position: fixed; top: 0; left: 0; right: auto; bottom: 0; z-index: 20; }
+    .detail-panel.open { flex-basis: 100vw; width: 100vw; position: fixed; top: 0; left: 0; right: auto; bottom: 0; z-index: 20; }
     .detail-inner { width: 100%; padding: 16px 14px; overflow-x: hidden; }  /* 모바일 가로 오버플로 차단 */
     /* 모바일: 대시보드 2컬럼 → 1컬럼 복귀 (좁은 화면 잘림 방지) */
     .detail-money { grid-template-columns: 1fr; }
@@ -931,25 +935,25 @@
   }
   const LS_PANEL_W = 'calendar.panelWidth.v3'; // v3: 기본폭을 뷰포트 비율(캘린더:상세 35:65)로 전환. 구 키 저장값 무시.
   const PANEL_W_MIN = 380;
-  const PANEL_W_MAX_RATIO = 0.85; // up to 85% of viewport
-  const PANEL_W_DEFAULT_RATIO = 0.65; // 기본 분할 = 캘린더:상세 ≈ 35:65 (상세뷰가 화면의 65%)
+  // 구 PANEL_W_DEFAULT_RATIO = 0.65 삭제. 1440에서 패널 936px → 칸 폭 90px 이었다
+  // (별점 원 하나와 잘린 두 글자만 남는다). 기본값은 CSS clamp 에 위임한다.
+  const PANEL_W_MAX = () => Math.max(PANEL_W_MIN, Math.min(560, window.innerWidth - 900));
   function clampPanelW(w) {
-    return Math.max(PANEL_W_MIN, Math.min(Math.round(window.innerWidth * PANEL_W_MAX_RATIO), w));
+    return Math.max(PANEL_W_MIN, Math.min(PANEL_W_MAX(), w));
   }
-  // 미저장(기본값)일 때만 비율 적용 — 사용자가 핸들로 조절한 px는 그대로 존중.
-  function defaultPanelWidth() {
-    return clampPanelW(Math.round(window.innerWidth * PANEL_W_DEFAULT_RATIO));
-  }
+  // 저장값이 있으면 그것만 존중한다. 없으면 null → CSS clamp(380, 100vw-1020, 480) 사용.
   function loadPanelWidth() {
     try {
       const v = parseInt(localStorage.getItem(LS_PANEL_W), 10);
-      if (Number.isFinite(v)) return clampPanelW(v);
+      if (Number.isFinite(v) && v > 0) return clampPanelW(v);
     } catch (e) {}
-    return defaultPanelWidth();
+    return null;
   }
   function applyPanelWidth(w) {
     const panel = document.getElementById('detail-panel');
-    if (panel) panel.style.setProperty('--panel-w', w + 'px');
+    if (!panel) return;
+    if (w == null) panel.style.removeProperty('--panel-w');
+    else panel.style.setProperty('--panel-w', w + 'px');
   }
   function savePanelWidth(w) {
     try { localStorage.setItem(LS_PANEL_W, String(w)); } catch (e) {}
@@ -2601,9 +2605,9 @@
     handle.addEventListener('pointercancel', endDrag);
     // Double-click handle → reset to default width
     handle.addEventListener('dblclick', () => {
-      const d = defaultPanelWidth();
-      applyPanelWidth(d);
-      savePanelWidth(d);
+      // CSS clamp 기본값으로 리셋 — 저장값을 지워야 다음 로드에도 기본값이 적용된다.
+      applyPanelWidth(null);
+      try { localStorage.removeItem(LS_PANEL_W); } catch (e) {}
     });
     // Re-clamp on viewport resize so user can't get stuck wider than the window
     window.addEventListener('resize', () => {
