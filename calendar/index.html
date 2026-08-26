@@ -623,6 +623,7 @@
     .panel-backdrop.show { display: block; position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 19; }
   }
 </style>
+<script src="../shared/cal-lib.js"></script>
 </head>
 <body>
 
@@ -1616,7 +1617,13 @@
     const v = params.get('view');
     if (v === 'list' || v === 'calendar') state.view = v;
     const id = params.get('case');
-    if (id) state.selectedId = id;
+    if (id) {
+      state.selectedId = id;
+      // 딥링크는 그 사건의 매각기일이 있는 달을 보여준다.
+      // (없으면 currentMonth 유지 — Init의 진입월 로직이 처리)
+      const mo = window.CalLib.monthOfCase(CASES, id);
+      if (mo) state.currentMonth = mo;
+    }
   }
 
   // 자동선택 대상 — 딥링크 없을 때 데스크톱 로드 시 가장 임박한 '관심' 물건을 연다.
@@ -2560,6 +2567,11 @@
   // ===== Init =====
   initRegionFilter();
   updateStats();
+  // 진입 월 — 데이터가 있는 가장 가까운 달. 딥링크가 있으면 applyUrl이 덮어쓴다.
+  {
+    const entry = window.CalLib.pickEntryMonth(CASES.map((c) => c.saleDate), todayStr);
+    if (entry) state.currentMonth = entry;
+  }
   applyUrl();
   setView(state.view);
   if (state.selectedId) {
