@@ -4,44 +4,31 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>경매 케이스 캘린더</title>
+<link rel="stylesheet" href="../shared/theme.css" />
 <style>
   :root {
-    /* Light theme — calendar is the working surface (pure white), panel is a different paper (pale lavender) */
-    --bg: #eef1f7;               /* Page bg — pale cool gray, makes white day cells pop */
-    --surface: #ffffff;          /* Day cells, list table, header — pure white */
-    --surface-2: #f3f5fb;        /* Subtle tinted bg for pills, chip defaults */
-    --surface-3: #e4e8f3;        /* Stronger tint for inner accents, mini bars */
-    --panel-bg: #f7f8fc;         /* Detail panel — neutral cool gray, slightly cooler than calendar bg */
-    --panel-bg-2: #eef0f7;       /* Inner panel accents */
-    --panel-border: #cdd3e2;
-    --panel-accent: #8b5cf6;     /* Violet stripe — only remaining hue accent, signals "active surface" */
-    --border: #dde3f0;
-    --border-strong: #c1cad9;
-    --text: #1a1f2e;             /* Dark charcoal — primary text on white */
-    --text-dim: #4a5570;
-    --text-mute: #8b95a7;
-    --accent: #3b6fde;            /* Blue accent — darker than dark-theme version for contrast on white */
-    --accent-strong: #1e40af;
-    --price: #b45309;             /* Darker amber — readable on white */
+    /* 캘린더 전용 — shared/theme.css 에 없는 것만. 공용 토큰은 그쪽 참조. */
+    --panel-bg:     var(--n-50);
+    --panel-bg-2:   var(--n-100);
+    --panel-border: var(--n-300);
+    --panel-accent: #8b5cf6;
+    --price:    #b45309;
     --positive: #059669;
-    --negative: #dc2626;
-    --pending: #0284c7;
-    --candidate: #7c3aed;
-    --pass: #059669;
-    --hold: #d97706;
-    --fail: #6b7280;
-    --expired: #9ca3af;
-    --naver: #03c75a;
+    --negative: var(--loss);
+    --naver:    #03c75a;
+    /* verdict — 채도 강등(§5.2). 구분은 점 형태로 한다(§10). */
+    --pending: var(--muted-dot); --candidate: var(--muted-dot); --pass: var(--muted-dot);
+    --hold:    var(--muted-dot); --fail:      var(--muted-dot); --expired: var(--muted-dot);
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Segoe UI", Roboto, sans-serif; font-size: 14px; }
   body { display: flex; flex-direction: column; min-height: 100vh; }
 
-  header { display: flex; align-items: center; gap: 16px; padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--surface); box-shadow: 0 1px 3px rgba(15,23,42,.04); position: sticky; top: 0; z-index: 10; }
+  header { display: flex; align-items: center; gap: 16px; padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--surface); box-shadow: 0 1px 3px rgb(15 23 42 / var(--a-1)); position: sticky; top: 0; z-index: 10; }
   header h1 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
   header .tabs { display: flex; gap: 4px; margin-left: 12px; }
   header .tab { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; }
-  header .tab.active { background: var(--accent); color: #ffffff; border-color: var(--accent); font-weight: 600; }
+  header .tab.active { background: var(--accent); color: var(--n-0); border-color: var(--accent); font-weight: 600; }
   header .tab:hover:not(.active) { color: var(--text); border-color: var(--accent); }
   header .month-nav { display: flex; align-items: center; gap: 6px; margin-left: auto; }
   header .month-label { font-size: 16px; font-weight: 600; padding: 4px 12px; min-width: 130px; text-align: center; }
@@ -68,12 +55,12 @@
   .vtog { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); padding: 3px 9px; border-radius: 999px; cursor: pointer; font-size: 11px; font-weight: 600; user-select: none; transition: opacity .15s, border-color .15s, transform .1s; letter-spacing: 0.02em; }
   .vtog:hover { transform: translateY(-1px); }
   .vtog.hidden { opacity: 0.35; text-decoration: line-through; color: var(--text-mute); }
-  .vtog[data-verdict="pending"]   { border-color: rgba(56,189,248,.55); }
-  .vtog[data-verdict="candidate"] { border-color: rgba(167,139,250,.55); }
-  .vtog[data-verdict="pass"]      { border-color: rgba(16,185,129,.55); }
-  .vtog[data-verdict="hold"]      { border-color: rgba(245,158,11,.55); }
-  .vtog[data-verdict="fail"]      { border-color: rgba(107,114,128,.55); }
-  .vtog[data-verdict="expired"]   { border-color: rgba(75,85,99,.55); }
+  .vtog[data-verdict="pending"]   { border-color: rgb(56 189 248 / var(--a-4)); }
+  .vtog[data-verdict="candidate"] { border-color: rgb(167 139 250 / var(--a-4)); }
+  .vtog[data-verdict="pass"]      { border-color: rgb(16 185 129 / var(--a-4)); }
+  .vtog[data-verdict="hold"]      { border-color: rgb(245 158 11 / var(--a-4)); }
+  .vtog[data-verdict="fail"]      { border-color: rgb(107 114 128 / var(--a-4)); }
+  .vtog[data-verdict="expired"]   { border-color: rgb(75 85 99 / var(--a-4)); }
   /* Collapse pill — appears when a day is expanded */
   .more-count.collapse { color: var(--text-mute); }
   .more-count.collapse:hover { color: var(--text); }
@@ -87,9 +74,9 @@
   .calendar .weekday { padding: 8px 6px; text-align: center; color: var(--text-mute); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
   .calendar .weekday.sun { color: #dc2626; }
   .calendar .weekday.sat { color: #2563eb; }
-  .calendar .day { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; min-height: 120px; padding: 6px; display: flex; flex-direction: column; gap: 4px; transition: border-color .15s; position: relative; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+  .calendar .day { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; min-height: 120px; padding: 6px; display: flex; flex-direction: column; gap: 4px; transition: border-color .15s; position: relative; box-shadow: 0 1px 2px rgb(15 23 42 / var(--a-1)); }
   .calendar .day.other-month { opacity: 0.45; background: var(--surface-2); }
-  .calendar .day.today { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset, 0 1px 4px rgba(59,111,222,.18); }
+  .calendar .day.today { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset, 0 1px 4px rgb(59 111 222 / var(--a-2)); }
   .calendar .day .date-row { display: flex; align-items: center; justify-content: space-between; }
   .calendar .day .date-num { font-size: 12px; color: var(--text-dim); font-weight: 600; }
   .calendar .day.sun .date-num { color: #dc2626; }
@@ -106,31 +93,32 @@
   .chip:hover { border-color: var(--accent); transform: translateX(1px); }
   .chip .chip-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .chip .chip-rating { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 10px; line-height: 1; letter-spacing: -0.02em; flex-shrink: 0; }
-  .chip .chip-rating.r5 { background: #f59e0b; color: #422006; }
-  .chip .chip-rating.r4 { background: #65a30d; color: #ffffff; }
-  .chip .chip-rating.r3 { background: #0284c7; color: #ffffff; }
-  .chip .chip-rating.r2 { background: #7c3aed; color: #ffffff; }
-  .chip .chip-rating.r1 { background: #94a3b8; color: #ffffff; }
+  /* 별점 — 채도 예산 1(유일한 풀채도). theme.css 의 --rN-bg/--rN-fg 만 쓴다. */
+  .chip .chip-rating.r5 { background: var(--r5-bg); color: var(--r5-fg); }
+  .chip .chip-rating.r4 { background: var(--r4-bg); color: var(--r4-fg); }
+  .chip .chip-rating.r3 { background: var(--r3-bg); color: var(--r3-fg); }
+  .chip .chip-rating.r2 { background: var(--r2-bg); color: var(--r2-fg); }
+  .chip .chip-rating.r1 { background: var(--r1-bg); color: var(--r1-fg); }
   .chip .chip-rating.none { background: var(--surface-3); color: var(--text-mute); }
-  .chip .chip-trail { display: flex; align-items: center; gap: 3px; min-width: 0; }
+  .chip .chip-trail { display: flex; align-items: center; gap: 5px; min-width: 0; flex-shrink: 0; }
   .chip .chip-trail > * { margin-left: 0; }
-  .chip .chip-mini { display: flex; gap: 2px; align-items: center; }
-  .chip .mini-bar { width: 22px; height: 4px; background: var(--surface-3); border-radius: 2px; overflow: hidden; }
-  .chip .mini-bar-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #84cc16, #fcd34d); }
-  .chip .chip-price { font-weight: 700; font-size: 10px; white-space: nowrap; letter-spacing: -0.02em; }
-  /* Outlined soft chips — pale tint + colored border + colored verdict-text. Modern light-admin look. */
-  .chip.pending   { background: rgba(56,189,248,.10); border-color: rgba(2,132,199,.60); color: #075985; }
-  .chip.candidate { background: rgba(167,139,250,.10); border-color: rgba(124,58,237,.55); color: #5b21b6; }
-  .chip.pass      { background: rgba(16,185,129,.10); border-color: rgba(5,150,105,.60); color: #065f46; }
-  .chip.hold      { background: rgba(245,158,11,.12); border-color: rgba(217,119,6,.60); color: #92400e; }
-  .chip.fail      { background: rgba(107,114,128,.08); border-color: rgba(107,114,128,.45); color: var(--text-mute); }
-  .chip.expired   { background: rgba(156,163,175,.06); border-color: rgba(156,163,175,.30); color: var(--text-mute); }
-  .chip.expired .chip-text { text-decoration: line-through; }
+  .chip .chip-price { font-weight: 700; font-size: var(--fs-xs); white-space: nowrap; letter-spacing: -0.02em;
+                      font-variant-numeric: tabular-nums; color: var(--text); }
+  /* verdict — 무채색. 채도 예산(별점·손실 2개)에 verdict 는 없다.
+     구 규칙은 6종이 각자 배경+테두리+글자색을 칠해 채도 원천 6개를 만들었다.
+     구분은 .vdot 형태로 한다(§10): candidate ● / hold ◐ / pass ○ / pending ◌ / fail·expired 없음. */
+  .chip.pending, .chip.candidate, .chip.pass, .chip.hold, .chip.fail, .chip.expired {
+    background: var(--muted-bg); border-color: var(--border); color: var(--text-dim);
+  }
+  .chip .chip-text { color: var(--text); font-weight: 500; }
+  /* 채도 예산 1 — ★5·★4 만 칸 안에서 눈에 띄게 한다. */
+  .chip.rank-r5 { background: var(--r5-tint); box-shadow: inset 2px 0 0 var(--r5-bg); }
+  .chip.rank-r4 { background: var(--r4-tint); box-shadow: inset 2px 0 0 var(--r4-bg); }
   .chip.selected {
     outline: 3px solid var(--accent-strong);
     outline-offset: 2px;
-    background: rgba(59,111,222,.18) !important;
-    box-shadow: 0 0 0 1px var(--accent-strong), 0 6px 20px rgba(30,64,175,.30);
+    background: rgb(59 111 222 / var(--a-2)) !important;
+    box-shadow: 0 0 0 1px var(--accent-strong), 0 6px 20px rgb(30 64 175 / var(--a-3));
     transform: translateX(2px) scale(1.04);
     z-index: 2;
     position: relative;
@@ -146,15 +134,17 @@
     color: var(--accent-strong);
     font-size: 14px;
     font-weight: 900;
-    text-shadow: 0 0 8px rgba(168,196,255,.8);
+    text-shadow: 0 0 8px rgb(168 196 255 / var(--a-4));
     animation: chip-pointer-pulse 1.4s ease-in-out infinite;
   }
   @keyframes chip-pointer-pulse {
     0%, 100% { opacity: 1; transform: translateY(-50%) translateX(0); }
     50%      { opacity: 0.5; transform: translateY(-50%) translateX(-2px); }
   }
-  .chip.dday-urgent { box-shadow: 0 0 0 1px #ef4444, 0 0 12px rgba(239,68,68,.45); }
-  .chip.dday-soon   { box-shadow: 0 0 0 1px #f59e0b, 0 0 8px rgba(245,158,11,.35); }
+  /* D-Day 는 채도 예산에서 제외(§5.2) — 달력의 x·y 좌표가 이미 시간축이라 색은 중복 인코딩이다.
+     실제로 이 중복이 '사건 0개 칸에서 뛰는 빨간 배지' 버그를 낳았다. 무채색 링으로 대체. */
+  .chip.dday-urgent { box-shadow: 0 0 0 2px var(--text); }
+  .chip.dday-soon   { box-shadow: 0 0 0 1px var(--n-400); }
   .more-count { font-size: 10px; color: var(--text-mute); padding: 2px 6px; cursor: pointer; }
   .more-count:hover { color: var(--accent); }
 
@@ -168,7 +158,7 @@
   .list-table tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 12px; vertical-align: middle; }
   .list-table tbody tr { cursor: pointer; transition: background .1s; }
   .list-table tbody tr:hover { background: var(--surface-2); }
-  .list-table tbody tr.selected { background: rgba(168,196,255,.18); box-shadow: inset 4px 0 0 var(--accent-strong); }
+  .list-table tbody tr.selected { background: rgb(168 196 255 / var(--a-2)); box-shadow: inset 4px 0 0 var(--accent-strong); }
   .list-table tbody tr.selected td { color: var(--text); font-weight: 600; }
   .list-table tbody tr.dday-urgent td:first-child { border-left: 3px solid #ef4444; }
   .list-table tbody tr.dday-soon   td:first-child { border-left: 3px solid #f59e0b; }
@@ -180,22 +170,26 @@
 
   /* Detail panel — uses CSS var --panel-w so JS drag can resize without touching layout */
   .detail-panel {
-    --panel-w: 460px;
-    width: 0;
-    transition: width .25s ease;
+    --panel-w: clamp(380px, calc(100vw - 1020px), 480px);
+    /* flex 컨테이너 안에서는 width 가 아니라 flex-basis 로 폭을 준다.
+       width 만 쓰면 flex-basis:auto 가 베이스의 width:0 을 물고 0 으로 굳어 패널이
+       3px(테두리만)로 붕괴한다 — >900px 데스크톱에서 패널이 열리지 않던 원인. */
+    flex: 0 0 0px;
+    width: auto;
+    transition: flex-basis .25s ease;
     background: var(--panel-bg);
     /* Refined separation: thin violet stripe + soft layered shadow */
     border-left: 3px solid var(--panel-accent);
     box-shadow:
-      -1px 0 0 rgba(139,92,246,.25),                    /* hairline next to stripe */
-      -16px 0 32px rgba(31,41,55,.08),                   /* soft outer shadow */
-      -4px 0 10px rgba(31,41,55,.05);                    /* near shadow */
+      -1px 0 0 rgb(139 92 246 / var(--a-3)),                    /* hairline next to stripe */
+      -16px 0 32px rgb(31 41 55 / var(--a-1)),                   /* soft outer shadow */
+      -4px 0 10px rgb(31 41 55 / var(--a-1));                    /* near shadow */
     overflow: hidden;
     flex-shrink: 0;
     position: relative;
     margin-left: 12px;                                   /* visible gutter — strong separation cue */
   }
-  .detail-panel.open { width: var(--panel-w); }
+  .detail-panel.open { flex-basis: clamp(380px, calc(100vw - 1020px), 480px); }
   .detail-inner { width: var(--panel-w); padding: 20px 20px 20px 26px; overflow-y: auto; height: 100%; scroll-behavior: smooth; }
   /* Resize handle — drag the left edge to widen/narrow the panel */
   .resize-handle {
@@ -218,14 +212,14 @@
     background: var(--panel-border);
     transition: background .15s, height .15s;
   }
-  .resize-handle:hover, .resize-handle.dragging { background: rgba(139,92,246,.16); }
+  .resize-handle:hover, .resize-handle.dragging { background: rgb(139 92 246 / var(--a-2)); }
   .resize-handle:hover::before, .resize-handle.dragging::before { background: var(--panel-accent); height: 56px; }
   body.resizing { cursor: ew-resize !important; user-select: none; }
   body.resizing * { cursor: ew-resize !important; user-select: none; }
   @keyframes detail-flash {
-    0%   { box-shadow: inset 0 0 0 2px rgba(139,92,246,.55); background: rgba(139,92,246,.10); }
-    60%  { box-shadow: inset 0 0 0 2px rgba(139,92,246,.25); background: rgba(139,92,246,.05); }
-    100% { box-shadow: inset 0 0 0 2px rgba(139,92,246,0);   background: transparent; }
+    0%   { box-shadow: inset 0 0 0 2px rgb(139 92 246 / var(--a-4)); background: rgb(139 92 246 / var(--a-1)); }
+    60%  { box-shadow: inset 0 0 0 2px rgb(139 92 246 / var(--a-3)); background: rgb(139 92 246 / var(--a-1)); }
+    100% { box-shadow: inset 0 0 0 2px rgb(139 92 246 / var(--a-1));   background: transparent; }
   }
   .detail-inner.flash { animation: detail-flash .55s ease-out; }
   .detail-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; position: sticky; top: 0; z-index: 5; background: var(--surface); padding-bottom: 10px; border-bottom: 1px solid var(--border); }
@@ -238,20 +232,20 @@
   .detail-header .close:hover { color: var(--text); }
   .detail-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; font-size: 12px; }
   .verdict-badge { padding: 3px 10px; border-radius: 999px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
-  .verdict-badge.pending   { background: rgba(56,189,248,.18); color: #0369a1; }
-  .verdict-badge.candidate { background: rgba(167,139,250,.20); color: #6d28d9; }
-  .verdict-badge.pass      { background: rgba(16,185,129,.18); color: #047857; }
-  .verdict-badge.hold      { background: rgba(245,158,11,.20); color: #b45309; }
-  .verdict-badge.fail      { background: rgba(107,114,128,.15); color: #4b5563; }
-  .verdict-badge.expired   { background: rgba(156,163,175,.18); color: #6b7280; }
+  .verdict-badge.pending   { background: rgb(56 189 248 / var(--a-2)); color: #0369a1; }
+  .verdict-badge.candidate { background: rgb(167 139 250 / var(--a-2)); color: #6d28d9; }
+  .verdict-badge.pass      { background: rgb(16 185 129 / var(--a-2)); color: #047857; }
+  .verdict-badge.hold      { background: rgb(245 158 11 / var(--a-2)); color: var(--price); }
+  .verdict-badge.fail      { background: rgb(107 114 128 / var(--a-2)); color: #4b5563; }
+  .verdict-badge.expired   { background: rgb(156 163 175 / var(--a-2)); color: var(--n-600); }
   .risk-badge { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-  .risk-badge.safe     { background: rgba(16,185,129,.18); color: #047857; }
-  .risk-badge.moderate { background: rgba(245,158,11,.20); color: #b45309; }
-  .risk-badge.risky    { background: rgba(239,68,68,.18); color: #b91c1c; }
+  .risk-badge.safe     { background: rgb(16 185 129 / var(--a-2)); color: #047857; }
+  .risk-badge.moderate { background: rgb(245 158 11 / var(--a-2)); color: var(--price); }
+  .risk-badge.risky    { background: rgb(239 68 68 / var(--a-2)); color: #b91c1c; }
   .dday-detail { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
-  .dday-detail.urgent { background: rgba(239,68,68,.18); color: #b91c1c; }
-  .dday-detail.soon   { background: rgba(245,158,11,.22); color: #b45309; }
-  .dday-detail.near   { background: rgba(56,189,248,.18); color: #0369a1; }
+  .dday-detail.urgent { background: rgb(239 68 68 / var(--a-2)); color: #b91c1c; }
+  .dday-detail.soon   { background: rgb(245 158 11 / var(--a-3)); color: var(--price); }
+  .dday-detail.near   { background: rgb(56 189 248 / var(--a-2)); color: #0369a1; }
   .dday-detail.future { background: var(--surface-2); color: var(--text-mute); }
 
   .detail-section { margin-bottom: 18px; }
@@ -260,15 +254,15 @@
   .detail-section .value.dim { color: var(--text-dim); }
   /* 단락 구획 — 재무 의사결정 스택(핵심수치→수익분석→내예상)을 흰 카드 on 회색 패널로 분리.
      좌측 accent 색으로 단계 구분: 파랑(원시수치)→앰버(모델수익)→인디고(내 베팅) */
-  .detail-section.boxed { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 13px 15px; margin-bottom: 14px; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+  .detail-section.boxed { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 13px 15px; margin-bottom: 14px; box-shadow: 0 1px 2px rgb(15 23 42 / var(--a-1)); }
   .detail-section.boxed > h3 { color: var(--text-dim); font-size: 11.5px; font-weight: 700; margin-bottom: 11px; }
-  .detail-section.boxed.acc-profit { border-left-color: var(--price); }   /* 💰 수익·입찰 */
-  .detail-section.boxed.acc-pred   { border-left-color: #6366f1; }         /* 🎯 예측·결과 (내예상) */
-  .detail-section.boxed.acc-market { border-left-color: #10b981; }         /* 🟢 시장 시세 */
-  .detail-section.boxed.acc-num    { border-left-color: #64748b; }         /* 🔢 경매 수치 */
-  .detail-section.boxed.acc-rights { border-left-color: var(--accent); }   /* ⚖️ 권리·판정 (권리+판정사유 공유) */
-  .detail-section.boxed.acc-result { border-left-color: #6366f1; }         /* 🎯 예측·결과 (경매결과 — pred와 동일 색) */
-  .detail-section.boxed.acc-report { border-left-color: #94a3b8; }         /* 📄 보고서 */
+  .detail-section.boxed.acc-profit { border-left-color: var(--price); }   /* 수익·입찰 */
+  .detail-section.boxed.acc-pred   { border-left-color: #6366f1; }         /* 예측·결과 (내예상) */
+  .detail-section.boxed.acc-market { border-left-color: #10b981; }         /* 시장 시세 */
+  .detail-section.boxed.acc-num    { border-left-color: #64748b; }         /* 경매 수치 */
+  .detail-section.boxed.acc-rights { border-left-color: var(--accent); }   /* 권리·판정 (권리+판정사유 공유) */
+  .detail-section.boxed.acc-result { border-left-color: #6366f1; }         /* 예측·결과 (경매결과 — pred와 동일 색) */
+  .detail-section.boxed.acc-report { border-left-color: #94a3b8; }         /* 보고서 */
   /* 대시보드 레이아웃 (넓은 상세뷰, ≥901px) — 머니 로우(수익|시세 2-up) + 근거 머손리(2컬럼).
      v9.1 위계(의사결정→근거→참고)는 DOM 순서로 유지하고, 가로 공간만 2컬럼으로 활용. */
   .detail-money { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; align-items: start; }
@@ -282,14 +276,14 @@
   .detail-grid .field .v.muted { color: var(--text-dim); }
   .detail-grid .field.wide { grid-column: span 2; }
   /* Price-emphasis variant — big, amber, draws the eye to decision-critical numbers */
-  .detail-grid .field.price { background: rgba(252,211,77,.05); border-left: 2px solid rgba(252,211,77,.4); padding: 6px 10px; border-radius: 4px; }
+  .detail-grid .field.price { background: rgb(252 211 77 / var(--a-1)); border-left: 2px solid rgb(252 211 77 / var(--a-3)); padding: 6px 10px; border-radius: 4px; }
   .detail-grid .field.price .k { color: var(--price); }
   .detail-grid .field.price .v { font-size: 18px; font-weight: 700; color: var(--price); letter-spacing: -0.01em; line-height: 1.25; }
   .detail-grid .field.price .v.muted { color: var(--text-dim); font-weight: 600; font-size: 15px; }
-  .detail-grid .field.price.positive { background: rgba(110,231,183,.06); border-left-color: rgba(110,231,183,.5); }
+  .detail-grid .field.price.positive { background: rgb(110 231 183 / var(--a-1)); border-left-color: rgb(110 231 183 / var(--a-4)); }
   .detail-grid .field.price.positive .k { color: var(--positive); }
   .detail-grid .field.price.positive .v { color: var(--positive); }
-  .detail-grid .field.price.negative { background: rgba(252,165,165,.06); border-left-color: rgba(252,165,165,.5); }
+  .detail-grid .field.price.negative { background: rgb(252 165 165 / var(--a-1)); border-left-color: rgb(252 165 165 / var(--a-4)); }
   .detail-grid .field.price.negative .k { color: var(--negative); }
   .detail-grid .field.price.negative .v { color: var(--negative); }
   .detail-grid .field.price .v .sub-note { font-size: 12px; font-weight: 500; color: var(--text-mute); }
@@ -298,10 +292,10 @@
   .priority-tag { color: var(--text-mute); font-size: 10px; margin-left: 4px; }
   /* v6.1 관심 tier 배지 */
   .tier-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin: 0 0 8px; letter-spacing: -.2px; }
-  .tier-badge.tier-star      { background: rgba(250,204,21,.16);  color: #facc15; border: 1px solid rgba(250,204,21,.4); }
-  .tier-badge.tier-watch     { background: rgba(96,165,250,.16);  color: #60a5fa; border: 1px solid rgba(96,165,250,.4); }
-  .tier-badge.tier-watchlist { background: rgba(148,163,184,.14); color: #94a3b8; border: 1px solid rgba(148,163,184,.35); }
-  .tier-badge.tier-excl      { background: rgba(252,165,165,.12); color: var(--negative); border: 1px solid rgba(252,165,165,.35); }
+  .tier-badge.tier-star      { background: rgb(250 204 21 / var(--a-2));  color: #facc15; border: 1px solid rgb(250 204 21 / var(--a-3)); }
+  .tier-badge.tier-watch     { background: rgb(96 165 250 / var(--a-2));  color: #60a5fa; border: 1px solid rgb(96 165 250 / var(--a-3)); }
+  .tier-badge.tier-watchlist { background: rgb(148 163 184 / var(--a-2)); color: #94a3b8; border: 1px solid rgb(148 163 184 / var(--a-3)); }
+  .tier-badge.tier-excl      { background: rgb(252 165 165 / var(--a-2)); color: var(--negative); border: 1px solid rgb(252 165 165 / var(--a-3)); }
   /* 칩 tier 미니배지 */
   .chip-tier { font-size: 9px; font-weight: 800; margin-left: 3px; }
   .chip-tier.tier-star { color: #facc15; } .chip-tier.tier-watch { color: #60a5fa; } .chip-tier.tier-watchlist { color: #94a3b8; }
@@ -321,7 +315,7 @@
   .ctx-chip .ctx-val { color: var(--text); font-weight: 700; letter-spacing: -.01em; }
   .ctx-chip .ctx-sub { color: var(--text-mute); font-weight: 600; font-size: 10px; }
   /* 전용면적 — 같은 칩 패밀리지만 accent 틴트 + 큰 값으로 "섞이되 도드라지게" */
-  .ctx-chip.ctx-area { background: rgba(59,111,222,.10); border-color: rgba(59,111,222,.45); }
+  .ctx-chip.ctx-area { background: rgb(59 111 222 / var(--a-1)); border-color: rgb(59 111 222 / var(--a-4)); }
   .ctx-chip.ctx-area .ctx-ico { opacity: 1; }
   .ctx-chip.ctx-area .ctx-val { color: var(--accent-strong); font-size: 13px; }
 
@@ -353,24 +347,24 @@
   .reason-foot { margin-top: 11px; padding-top: 8px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-mute); display: flex; align-items: center; gap: 5px; }
   /* 회고 결과 박스 (예측 vs 실측) */
   .result-box { padding: 12px; border-radius: 6px; background: var(--panel-bg-2); border-left: 3px solid var(--text-mute); margin-top: 4px; }
-  .result-box.q-FN { border-left-color: #dc2626; background: rgba(220,38,38,.06); }
-  .result-box.q-FP { border-left-color: #f59e0b; background: rgba(245,158,11,.06); }
-  .result-box.q-TP { border-left-color: #10b981; background: rgba(16,185,129,.06); }
+  .result-box.q-FN { border-left-color: #dc2626; background: rgb(220 38 38 / var(--a-1)); }
+  .result-box.q-FP { border-left-color: #f59e0b; background: rgb(245 158 11 / var(--a-1)); }
+  .result-box.q-TP { border-left-color: #10b981; background: rgb(16 185 129 / var(--a-1)); }
   .result-box.q-TN { border-left-color: #10b981; }
   .result-head { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
-  .result-status { font-weight: 700; font-size: 13px; padding: 2px 10px; border-radius: 999px; background: rgba(16,185,129,.16); color: #047857; }
-  .result-status.failed, .result-status.unknown, .result-status.withdrawn, .result-status.changed, .result-status.postponed { background: rgba(107,114,128,.16); color: #4b5563; }
+  .result-status { font-weight: 700; font-size: 13px; padding: 2px 10px; border-radius: 999px; background: rgb(16 185 129 / var(--a-2)); color: #047857; }
+  .result-status.failed, .result-status.unknown, .result-status.withdrawn, .result-status.changed, .result-status.postponed { background: rgb(107 114 128 / var(--a-2)); color: #4b5563; }
   .result-quadrant { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: .03em; }
-  .result-quadrant.FN { background: rgba(220,38,38,.16); color: #b91c1c; }
-  .result-quadrant.FP { background: rgba(245,158,11,.18); color: #b45309; }
-  .result-quadrant.TP, .result-quadrant.TN { background: rgba(16,185,129,.16); color: #047857; }
+  .result-quadrant.FN { background: rgb(220 38 38 / var(--a-2)); color: #b91c1c; }
+  .result-quadrant.FP { background: rgb(245 158 11 / var(--a-2)); color: var(--price); }
+  .result-quadrant.TP, .result-quadrant.TN { background: rgb(16 185 129 / var(--a-2)); color: #047857; }
   .result-compare { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; flex-wrap: wrap; }
   .result-compare .k { color: var(--text-mute); }
   .result-compare .v { font-weight: 700; font-variant-numeric: tabular-nums; }
   .result-compare .arrow { color: var(--text-mute); }
   .result-compare .err { font-weight: 700; font-size: 11px; padding: 1px 6px; border-radius: 4px; }
-  .result-compare .err.neg { background: rgba(220,38,38,.14); color: #b91c1c; }
-  .result-compare .err.pos { background: rgba(16,185,129,.14); color: #047857; }
+  .result-compare .err.neg { background: rgb(220 38 38 / var(--a-2)); color: #b91c1c; }
+  .result-compare .err.pos { background: rgb(16 185 129 / var(--a-2)); color: #047857; }
   .result-lesson { margin-top: 10px; font-size: 12px; line-height: 1.5; color: var(--text); padding: 8px 10px; background: var(--panel-bg); border-radius: 4px; }
   .result-foot { margin-top: 8px; display: flex; gap: 12px; font-size: 10px; color: var(--text-mute); }
   /* 🎯 내 예상 낙찰가 — 3자 비교 박스 (result 팔레트와 색상 통일) */
@@ -378,31 +372,33 @@
   .pred-cmp { display: grid; grid-template-columns: auto auto auto auto 1fr; align-items: center; gap: 8px; font-size: 12px; padding: 4px 6px; border-radius: 4px; }
   .pred-cmp + .pred-cmp { margin-top: 2px; }
   .pred-cmp.model { opacity: .82; }
-  .pred-cmp.best { background: rgba(99,102,241,.12); }
+  .pred-cmp.best { background: rgb(99 102 241 / var(--a-2)); }
   .pred-cmp .pk { color: var(--text-mute); white-space: nowrap; }
   .pred-cmp .pv, .pred-cmp .pa { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .pred-cmp .arrow { color: var(--text-mute); }
   .pred-cmp .perr { justify-self: end; font-weight: 700; font-size: 11px; padding: 1px 6px; border-radius: 4px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .pred-cmp .perr.neg { background: rgba(220,38,38,.14); color: #b91c1c; }
-  .pred-cmp .perr.pos { background: rgba(16,185,129,.14); color: #047857; }
+  .pred-cmp .perr.neg { background: rgb(220 38 38 / var(--a-2)); color: #b91c1c; }
+  .pred-cmp .perr.pos { background: rgb(16 185 129 / var(--a-2)); color: #047857; }
   .pred-winner { margin-top: 8px; font-size: 12px; font-weight: 700; color: #4338ca; }
   .pred-winner.win { color: #047857; }
   .pred-winner.neg { color: #b91c1c; }
   /* 칩 결과 배지 (캘린더 한눈 가시성) */
   .chip-result-badge { font-size: 9.5px; font-weight: 700; padding: 0 4px; border-radius: 4px; margin-left: 3px; line-height: 1.55; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .chip-result-badge.sold   { background: rgba(16,185,129,.18); color: #047857; }
-  .chip-result-badge.TP     { background: rgba(16,185,129,.24); color: #047857; }
-  .chip-result-badge.FN     { background: rgba(220,38,38,.20);  color: #b91c1c; }
-  .chip-result-badge.FP     { background: rgba(245,158,11,.20); color: #b45309; }
-  .chip-result-badge.failed { background: rgba(107,114,128,.16); color: #6b7280; }
-  .chip-result-badge.muted  { background: rgba(107,114,128,.12); color: #9ca3af; font-weight: 600; }
+  /* 결과 배지 — 회고 정보라 무채색. 채도 예산은 '행동을 바꾸는 정보'에만.
+     FN(걸렀는데 실제로 좋았던 물건)만 예외 — 배울 게 있는 유일한 손실 신호(예산 2). */
+  .chip-result-badge.sold, .chip-result-badge.TP,
+  .chip-result-badge.FP, .chip-result-badge.failed {
+    background: var(--muted-bg); color: var(--text-dim); border: 1px solid var(--border);
+  }
+  .chip-result-badge.FN     { background: var(--loss-tint); color: var(--loss); border: 1px solid rgb(220 38 38 / var(--a-3)); }
+  .chip-result-badge.muted  { background: var(--muted-bg); color: var(--n-400); font-weight: 600; }
   /* 리스트 결과 플래그 */
   .list-result-flag { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; font-variant-numeric: tabular-nums; }
-  .list-result-flag.sold { background: rgba(16,185,129,.16); color: #047857; }
-  .list-result-flag.failed, .list-result-flag.unknown, .list-result-flag.changed, .list-result-flag.withdrawn, .list-result-flag.postponed { background: rgba(107,114,128,.16); color: #4b5563; }
-  .list-result-flag.FN { background: rgba(220,38,38,.16); color: #b91c1c; }
-  .list-result-flag.TP { background: rgba(16,185,129,.22); color: #047857; }
-  .list-result-flag.FP { background: rgba(245,158,11,.18); color: #b45309; }
+  .list-result-flag.sold { background: rgb(16 185 129 / var(--a-2)); color: #047857; }
+  .list-result-flag.failed, .list-result-flag.unknown, .list-result-flag.changed, .list-result-flag.withdrawn, .list-result-flag.postponed { background: rgb(107 114 128 / var(--a-2)); color: #4b5563; }
+  .list-result-flag.FN { background: rgb(220 38 38 / var(--a-2)); color: #b91c1c; }
+  .list-result-flag.TP { background: rgb(16 185 129 / var(--a-3)); color: #047857; }
+  .list-result-flag.FP { background: rgb(245 158 11 / var(--a-2)); color: var(--price); }
 
   /* 🏁 경매 결과 스코어카드 (stats 아래, 필터 무관 전체 기준) */
   .result-stats { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; padding: 7px 16px; background: var(--panel-bg-2); border-bottom: 1px solid var(--border); font-size: 12px; }
@@ -410,10 +406,10 @@
   .result-stats .rs-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; background: var(--panel-bg); font-variant-numeric: tabular-nums; border: 1px solid transparent; }
   .result-stats .rs-pill b { font-weight: 700; }
   .result-stats .rs-pill.sold b { color: #047857; }
-  .result-stats .rs-pill.fn   { background: rgba(220,38,38,.12);  color: #b91c1c; }
-  .result-stats .rs-pill.tp   { background: rgba(16,185,129,.12); color: #047857; }
-  .result-stats .rs-pill.fp   { background: rgba(245,158,11,.14); color: #b45309; }
-  .result-stats .rs-pill.tn   { background: rgba(16,185,129,.08); color: #047857; }
+  .result-stats .rs-pill.fn   { background: rgb(220 38 38 / var(--a-2));  color: #b91c1c; }
+  .result-stats .rs-pill.tp   { background: rgb(16 185 129 / var(--a-2)); color: #047857; }
+  .result-stats .rs-pill.fp   { background: rgb(245 158 11 / var(--a-2)); color: var(--price); }
+  .result-stats .rs-pill.tn   { background: rgb(16 185 129 / var(--a-1)); color: #047857; }
   .result-stats.clickable .rs-pill { cursor: pointer; }
   .result-stats.clickable .rs-pill:hover { border-color: var(--accent); }
   .result-stats .rs-pill.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
@@ -423,8 +419,8 @@
 
   /* Naver section */
   .naver-section .naver-links { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-  .naver-link { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 6px; background: rgba(3,199,90,.14); border: 1px solid rgba(3,199,90,.5); color: #047857; text-decoration: none; font-size: 11px; font-weight: 600; }
-  .naver-link:hover { background: rgba(3,199,90,.22); }
+  .naver-link { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 6px; background: rgb(3 199 90 / var(--a-2)); border: 1px solid rgb(3 199 90 / var(--a-4)); color: #047857; text-decoration: none; font-size: 11px; font-weight: 600; }
+  .naver-link:hover { background: rgb(3 199 90 / var(--a-3)); }
   .naver-link .ico { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; background: var(--naver); color: #fff; border-radius: 3px; font-weight: 800; font-size: 9px; }
   .naver-data { padding: 10px 12px; background: var(--panel-bg-2); border-radius: 6px; margin-top: 6px; font-size: 12px; }
   .naver-data .row { display: flex; justify-content: space-between; padding: 3px 0; }
@@ -437,15 +433,15 @@
   .naver-data .trade-item .area { color: var(--text-dim); font-variant-numeric: tabular-nums; }
   .naver-data .trade-item .floor { color: var(--text-mute); }
   .naver-data .trade-item .price .trade-tag { margin-left: 5px; font-size: 9px; font-weight: 600; padding: 1px 4px; border-radius: 4px; vertical-align: middle; }
-  .naver-data .trade-item .price .trade-tag.direct { color: #b45309; background: rgba(245,158,11,.15); }
+  .naver-data .trade-item .price .trade-tag.direct { color: var(--price); background: rgb(245 158 11 / var(--a-2)); }
   .naver-data .empty { color: var(--text-mute); font-size: 11px; font-style: italic; }
   .naver-updated { color: var(--text-mute); font-size: 10px; margin-top: 6px; text-align: right; }
   /* 호가 분포 바 (v9.1 — track + ticks + legend, 라벨 오버플로 없음) */
   .hoga-range { margin: 6px 0 2px; }
   .hoga-range .hr-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 11px; color: var(--text-mute); margin-bottom: 9px; }
   .hoga-range .hr-head b { color: var(--text-dim); font-weight: 700; }
-  .hoga-range .hr-track { position: relative; height: 8px; background: linear-gradient(90deg, rgba(96,165,250,.2), rgba(96,165,250,.5)); border-radius: 999px; }
-  .hoga-range .hr-tick { position: absolute; top: 50%; transform: translate(-50%,-50%); width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 0 0 1px rgba(15,23,42,.25); }
+  .hoga-range .hr-track { position: relative; height: 8px; background: linear-gradient(90deg, rgb(96 165 250 / var(--a-2)), rgb(96 165 250 / var(--a-4))); border-radius: 999px; }
+  .hoga-range .hr-tick { position: absolute; top: 50%; transform: translate(-50%,-50%); width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 0 0 1px rgb(15 23 42 / var(--a-3)); }
   .hoga-range .hr-tick.trade  { background: #3b82f6; }
   .hoga-range .hr-tick.anchor { background: var(--price); }
   .hoga-range .hr-ends { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; margin-top: 6px; }
@@ -457,7 +453,7 @@
   .hoga-range .hr-legend .lg .dot.trade { background: #3b82f6; }
   .hoga-range .hr-legend .lg .dot.anchor { background: var(--price); }
   .hoga-range .hr-legend .lg b { color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; }
-  .last-trade { display: flex; align-items: baseline; gap: 8px; padding: 8px 10px; background: rgba(16,185,129,.08); border-left: 3px solid var(--positive); border-radius: 6px; margin: 8px 0 4px; }
+  .last-trade { display: flex; align-items: baseline; gap: 8px; padding: 8px 10px; background: rgb(16 185 129 / var(--a-1)); border-left: 3px solid var(--positive); border-radius: 6px; margin: 8px 0 4px; }
   .last-trade .lt-date { font-size: 11px; color: var(--text-dim); }
   .last-trade .lt-price { font-size: 16px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
   .last-trade .lt-meta { font-size: 10px; color: var(--text-mute); margin-left: auto; }
@@ -469,9 +465,9 @@
   .int-table th { color: var(--text-mute); font-weight: 600; font-size: 10px; }
   .int-table col.c-lbl { width: 34%; }
   .int-table td.lbl, .int-table th.lbl { text-align: left; color: var(--text-dim); white-space: nowrap; }
-  .int-table td.anchor { color: var(--price); font-weight: 700; background: rgba(245,158,11,.08); }
+  .int-table td.anchor { color: var(--price); font-weight: 700; background: rgb(245 158 11 / var(--a-1)); }
   /* 세금 서브박스 (v9) */
-  .tax-box { margin-top: 10px; padding: 9px 11px; background: rgba(99,102,241,.07); border-left: 3px solid #6366f1; border-radius: 6px; }
+  .tax-box { margin-top: 10px; padding: 9px 11px; background: rgb(99 102 241 / var(--a-1)); border-left: 3px solid #6366f1; border-radius: 6px; }
   .tax-box .tb-title { font-size: 10.5px; font-weight: 700; color: #818cf8; margin-bottom: 6px; }
   .tax-box .tb-row { display: flex; justify-content: space-between; font-size: 12px; padding: 2px 0; font-variant-numeric: tabular-nums; }
   .tax-box .tb-row .k { color: var(--text-dim); }
@@ -492,14 +488,14 @@
   .verdict-banner .vb-key .kk { color: var(--text-mute); }
   .verdict-banner .vb-key .vv { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text); }
   .verdict-banner .vb-key .vv.pos { color: var(--positive); } .verdict-banner .vb-key .vv.neg { color: var(--negative); }
-  .verdict-banner.v-candidate, .verdict-banner.v-pass { border-left-color: var(--positive); background: rgba(110,231,183,.06); }
-  .verdict-banner.v-hold { border-left-color: var(--price); background: rgba(252,211,77,.06); }
-  .verdict-banner.v-fail { border-left-color: var(--negative); background: rgba(252,165,165,.07); }
+  .verdict-banner.v-candidate, .verdict-banner.v-pass { border-left-color: var(--positive); background: rgb(110 231 183 / var(--a-1)); }
+  .verdict-banner.v-hold { border-left-color: var(--price); background: rgb(252 211 77 / var(--a-1)); }
+  .verdict-banner.v-fail { border-left-color: var(--negative); background: rgb(252 165 165 / var(--a-1)); }
   .verdict-banner.v-pending, .verdict-banner.v-expired { border-left-color: var(--text-mute); }
-  .vb-tier.t-primary { background: rgba(250,204,21,.16); color: #facc15; border: 1px solid rgba(250,204,21,.4); }
-  .vb-tier.t-watch { background: rgba(96,165,250,.16); color: #60a5fa; border: 1px solid rgba(96,165,250,.4); }
-  .vb-tier.t-watchlist { background: rgba(148,163,184,.14); color: #94a3b8; border: 1px solid rgba(148,163,184,.35); }
-  .vb-tier.t-excl { background: rgba(252,165,165,.12); color: var(--negative); border: 1px solid rgba(252,165,165,.35); }
+  .vb-tier.t-primary { background: rgb(250 204 21 / var(--a-2)); color: #facc15; border: 1px solid rgb(250 204 21 / var(--a-3)); }
+  .vb-tier.t-watch { background: rgb(96 165 250 / var(--a-2)); color: #60a5fa; border: 1px solid rgb(96 165 250 / var(--a-3)); }
+  .vb-tier.t-watchlist { background: rgb(148 163 184 / var(--a-2)); color: #94a3b8; border: 1px solid rgb(148 163 184 / var(--a-3)); }
+  .vb-tier.t-excl { background: rgb(252 165 165 / var(--a-2)); color: var(--negative); border: 1px solid rgb(252 165 165 / var(--a-3)); }
 
   /* 접이식 참고 정보 (v9.1) */
   details.more-sections { margin-top: 16px; border-top: 1px dashed var(--border); padding-top: 6px; }
@@ -512,7 +508,7 @@
 
   /* Bid scenario matrix */
   .bid-scenarios { width: 100%; border-collapse: collapse; font-size: 11px; background: var(--panel-bg-2); border-radius: 6px; overflow: hidden; }
-  .bid-scenarios thead th { background: rgba(139,92,246,.10); color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 6px; text-align: right; font-size: 10px; white-space: nowrap; }
+  .bid-scenarios thead th { background: rgb(139 92 246 / var(--a-1)); color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 6px; text-align: right; font-size: 10px; white-space: nowrap; }
   .bid-scenarios thead th:first-child { text-align: left; }
   .bid-scenarios tbody td { padding: 6px 6px; border-top: 1px solid var(--border); color: var(--text); font-variant-numeric: tabular-nums; text-align: right; }
   .bid-scenarios tbody td:first-child { text-align: left; color: var(--text-dim); }
@@ -530,25 +526,25 @@
   .related-row:hover { border-color: var(--accent); }
   .related-row .r-rating { width: 18px; height: 18px; border-radius: 50%; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
   .related-row .r-rating.r5 { background: #f59e0b; color: #422006; }
-  .related-row .r-rating.r4 { background: #65a30d; color: #ffffff; }
-  .related-row .r-rating.r3 { background: #0284c7; color: #ffffff; }
-  .related-row .r-rating.r2 { background: #7c3aed; color: #ffffff; }
-  .related-row .r-rating.r1 { background: #94a3b8; color: #ffffff; }
+  .related-row .r-rating.r4 { background: #65a30d; color: var(--n-0); }
+  .related-row .r-rating.r3 { background: #0284c7; color: var(--n-0); }
+  .related-row .r-rating.r2 { background: #7c3aed; color: var(--n-0); }
+  .related-row .r-rating.r1 { background: #94a3b8; color: var(--n-0); }
   .related-row .r-rating.none { background: var(--surface-3); color: var(--text-mute); }
   .related-row .r-main { display: flex; flex-direction: column; min-width: 0; }
   .related-row .r-case { color: var(--text); font-size: 11px; font-variant-numeric: tabular-nums; }
   .related-row .r-meta { color: var(--text-mute); font-size: 10px; }
   .related-row .r-verdict { font-size: 10px; padding: 1px 6px; border-radius: 999px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0; }
-  .related-row .r-verdict.pending   { background: rgba(56,189,248,.18); color: #0369a1; }
-  .related-row .r-verdict.candidate { background: rgba(167,139,250,.20); color: #6d28d9; }
-  .related-row .r-verdict.pass      { background: rgba(16,185,129,.18); color: #047857; }
-  .related-row .r-verdict.hold      { background: rgba(245,158,11,.20); color: #b45309; }
-  .related-row .r-verdict.fail      { background: rgba(107,114,128,.15); color: #4b5563; }
-  .related-row .r-verdict.expired   { background: rgba(156,163,175,.18); color: #6b7280; }
+  .related-row .r-verdict.pending   { background: rgb(56 189 248 / var(--a-2)); color: #0369a1; }
+  .related-row .r-verdict.candidate { background: rgb(167 139 250 / var(--a-2)); color: #6d28d9; }
+  .related-row .r-verdict.pass      { background: rgb(16 185 129 / var(--a-2)); color: #047857; }
+  .related-row .r-verdict.hold      { background: rgb(245 158 11 / var(--a-2)); color: var(--price); }
+  .related-row .r-verdict.fail      { background: rgb(107 114 128 / var(--a-2)); color: #4b5563; }
+  .related-row .r-verdict.expired   { background: rgb(156 163 175 / var(--a-2)); color: var(--n-600); }
 
   /* Sales history table */
   .sales-history-table { width: 100%; border-collapse: collapse; font-size: 11px; background: var(--panel-bg-2); border-radius: 6px; overflow: hidden; }
-  .sales-history-table thead th { background: rgba(139,92,246,.10); color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 6px; text-align: left; font-size: 10px; white-space: nowrap; }
+  .sales-history-table thead th { background: rgb(139 92 246 / var(--a-1)); color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 6px; text-align: left; font-size: 10px; white-space: nowrap; }
   .sales-history-table tbody td { padding: 6px 6px; border-top: 1px solid var(--border); color: var(--text); font-variant-numeric: tabular-nums; }
   .sales-history-table tbody tr.outlier { opacity: 0.55; }
   .sales-history-table tbody tr.outlier td { text-decoration: line-through; }
@@ -564,8 +560,8 @@
 
   .ext-link { color: var(--accent); text-decoration: none; font-size: 12px; word-break: break-all; }
   .ext-link:hover { text-decoration: underline; }
-  .report-link { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 8px; background: rgba(245,158,11,.14); border: 1px solid rgba(245,158,11,.45); color: #f59e0b; text-decoration: none; font-size: 13px; font-weight: 700; transition: background .12s; }
-  .report-link:hover { background: rgba(245,158,11,.24); }
+  .report-link { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 8px; background: rgb(245 158 11 / var(--a-2)); border: 1px solid rgb(245 158 11 / var(--a-4)); color: #f59e0b; text-decoration: none; font-size: 13px; font-weight: 700; transition: background .12s; }
+  .report-link:hover { background: rgb(245 158 11 / var(--a-3)); }
   .report-link .rp-ico { font-size: 14px; }
   .report-link .rp-arrow { font-weight: 800; }
 
@@ -582,9 +578,9 @@
   /* 활성 필터 요약 칩 */
   .active-filters { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px; margin-top: 6px; }
   .active-filters:empty { display: none; }
-  .active-filter-chip { display: inline-flex; align-items: center; gap: 2px; background: rgba(59,111,222,.12); color: var(--accent-strong); border: 1px solid rgba(59,111,222,.30); border-radius: 999px; padding: 2px 4px 2px 10px; font-size: 11px; font-weight: 600; }
+  .active-filter-chip { display: inline-flex; align-items: center; gap: 2px; background: rgb(59 111 222 / var(--a-2)); color: var(--accent-strong); border: 1px solid rgb(59 111 222 / var(--a-3)); border-radius: 999px; padding: 2px 4px 2px 10px; font-size: 11px; font-weight: 600; }
   .active-filter-chip .afc-x { background: none; border: none; color: inherit; cursor: pointer; font-size: 14px; line-height: 1; padding: 0 4px; border-radius: 50%; }
-  .active-filter-chip .afc-x:hover { background: rgba(0,0,0,.12); }
+  .active-filter-chip .afc-x:hover { background: rgb(0 0 0 / var(--a-2)); }
   @media (max-width: 560px) {
     /* 모바일 헤더: 제목+탭 한 줄, 월 네비게이션은 다음 줄 전체폭 (가로 오버플로 방지) */
     header { flex-wrap: wrap; gap: 8px 10px; padding: 12px 14px; }
@@ -596,7 +592,7 @@
   @media (max-width: 900px) {
     /* 데스크톱 거터(margin-left)·좌측 stripe는 모바일 전체화면에서 오버플로 유발 → 제거 */
     .detail-panel { margin-left: 0; border-left: none; }
-    .detail-panel.open { width: 100vw; position: fixed; top: 0; left: 0; right: auto; bottom: 0; z-index: 20; }
+    .detail-panel.open { flex-basis: 100vw; width: 100vw; position: fixed; top: 0; left: 0; right: auto; bottom: 0; z-index: 20; }
     .detail-inner { width: 100%; padding: 16px 14px; overflow-x: hidden; }  /* 모바일 가로 오버플로 차단 */
     /* 모바일: 대시보드 2컬럼 → 1컬럼 복귀 (좁은 화면 잘림 방지) */
     .detail-money { grid-template-columns: 1fr; }
@@ -620,25 +616,143 @@
     .stats { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
     .stats .pill { flex: 0 0 auto; }
     /* P0 모바일: 패널 backdrop (탭하면 닫힘 — 딥링크 갇힘 해소) */
-    .panel-backdrop.show { display: block; position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 19; }
+    .panel-backdrop.show { display: block; position: fixed; inset: 0; background: rgb(15 23 42 / var(--a-4)); z-index: 19; }
   }
+  /* 빈 달 안내 — 진입월 자동이동으로도 못 막는 경우(필터·수동 이동) */
+  .cal-empty { padding: 48px 20px; text-align: center; color: var(--text-dim); line-height: 1.7; }
+  .cal-empty b { color: var(--text); }
+  .cal-empty .hint { display: block; margin-top: 10px; font-size: 12px; color: var(--text-mute); }
+  /* 데이터 신선도 — 30일 초과 시 경고 톤 */
+  .stale-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+                 background: var(--surface-3); color: var(--text-dim); margin-left: 6px; }
+  .stale-badge.warn { background: #fef3c7; color: #92400e; }
+  /* verdict — 채도 대신 점 형태로 구분(§10). fail·expired 는 별점과 100% 중복이라 강등.
+     실측 근거: fail 29건 전부 ★1 아니면 무등급(예외 0). candidate 는 ★1~★4 균등 분포라 직교. */
+  .chip .vdot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+                display: inline-block; box-sizing: border-box; vertical-align: 1px; margin-right: 1px; }
+  .chip.candidate .vdot { background: var(--muted-dot); }
+  .chip.hold      .vdot { background: linear-gradient(90deg, var(--muted-dot) 50%, transparent 50%);
+                          border: 1px solid var(--muted-dot); }
+  .chip.pass      .vdot { background: transparent; border: 1px solid var(--muted-dot); }
+  .chip.pending   .vdot { background: transparent; border: 1px dotted var(--muted-dot); }
+  .chip.fail .vdot, .chip.expired .vdot { display: none; }
+  /* 종료·변경 건은 취소선 대신 물러남 — 취소선은 글자를 더 못 읽게 만든다. */
+  .chip.fail, .chip.expired { opacity: 0.45; }
+  .chip.fail .chip-text, .chip.expired .chip-text { text-decoration: none; }
+  /* ── 앱 셸 (§6) — 세로에 쌓인 크롬 237px 을 가로축 레일 64px 로 옮긴다 ── */
+  body.shell-mode { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+  .shell { display: flex; flex: 1; min-height: 0; position: relative; }
+  .rail { width: 64px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border);
+          display: flex; flex-direction: column; align-items: center; padding: var(--sp-2) 0; gap: 2px;
+          z-index: 25; }
+  .rail-item { width: 56px; min-height: 50px; display: flex; flex-direction: column; align-items: center;
+               justify-content: center; gap: 3px; border-radius: var(--r-md); cursor: pointer;
+               border: none; background: none; color: var(--text-dim); font-size: var(--fs-xs);
+               font-weight: 600; text-decoration: none; position: relative; padding: 4px 2px;
+               font-family: inherit; }
+  .rail-item:hover { background: var(--surface-2); color: var(--text); }
+  .rail-item.active { background: var(--surface-2); color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+  .rail-sep { width: 32px; height: 1px; background: var(--border); margin: var(--sp-2) 0; flex-shrink: 0; }
+  .rail-badge { position: absolute; top: 2px; right: 6px; min-width: 15px; height: 15px; padding: 0 3px;
+                border-radius: var(--r-pill); background: var(--accent); color: var(--n-0);
+                font-size: 9px; font-weight: 700; line-height: 15px; text-align: center; }
+  .rail-brand { font-size: 9px; font-weight: 700; color: var(--text-mute); letter-spacing: .02em;
+                text-align: center; padding: 2px 0 6px; line-height: 1.2; }
+  .topbar { display: flex; align-items: center; gap: var(--sp-3); height: 48px; flex-shrink: 0;
+            padding: 0 var(--sp-4); border-bottom: 1px solid var(--border); background: var(--surface);
+            overflow-x: auto; }
+  .topbar .month-nav { display: flex; align-items: center; gap: var(--sp-1); flex-shrink: 0; }
+  .topbar .month-label { font-size: var(--fs-lg); font-weight: 700; min-width: 108px; text-align: center; }
+  .topbar .nav-btn { background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+                     padding: 5px 9px; border-radius: var(--r-sm); cursor: pointer; font-size: var(--fs-md);
+                     font-family: inherit; line-height: 1; }
+  .topbar .nav-btn:hover { background: var(--surface-3); border-color: var(--accent); }
+  .topbar #f-search { background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+                      padding: 5px 9px; border-radius: var(--r-sm); font-size: var(--fs-md); min-width: 180px;
+                      font-family: inherit; }
+  .topbar .stats-meta { color: var(--text-mute); font-size: var(--fs-sm); white-space: nowrap; }
+  .topbar .tb-sum { color: var(--text-dim); font-size: var(--fs-md); white-space: nowrap; }
+  .topbar .tb-sum b { color: var(--text); }
+  .topbar .tb-right { margin-left: auto; display: flex; align-items: center; gap: var(--sp-2); }
+  .view-area { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  /* 플라이아웃 — 그리드를 밀지 않는 오버레이 */
+  .flyout { position: absolute; left: 64px; top: 0; bottom: 0; width: 280px; z-index: 24;
+            background: var(--surface); border-right: 1px solid var(--border);
+            box-shadow: 8px 0 24px rgb(15 23 42 / var(--a-2)); overflow-y: auto;
+            padding: var(--sp-4); transform: translateX(-100%); transition: transform .18s ease;
+            visibility: hidden; }
+  .flyout.open { transform: translateX(0); visibility: visible; }
+  .flyout h4 { margin: 0 0 var(--sp-2); font-size: var(--fs-md); color: var(--text-mute);
+               text-transform: uppercase; letter-spacing: .04em; }
+  .shell-mode .stats { border-bottom: none; padding: 0; background: none; }
+  /* ── 브레이크포인트 4단 (§6.4) ── */
+  /* ≥1400: 패널 나란히 (기본 규칙). 1400 미만은 나란히 유지 시 칸 폭이 합격선(211px) 아래로 떨어진다. */
+  @media (max-width: 1399px) {
+    .detail-panel { position: fixed; top: 0; right: 0; bottom: 0; z-index: 30; margin-left: 0;
+                    width: 0; border-left-width: 0; }
+    .detail-panel.open { flex-basis: auto; width: min(480px, 46vw); border-left-width: 3px; }
+    .panel-backdrop { display: none; }
+    .detail-panel.open ~ .panel-backdrop,
+    .panel-backdrop.show { display: block; position: fixed; inset: 0; z-index: 29;
+                           background: rgb(15 23 42 / var(--a-4)); }
+  }
+  /* 992 미만: 4열 그리드는 칸 폭 156px 로 별점+3자밖에 안 나온다 → 아젠다 리스트 */
+  @media (max-width: 991px) {
+    #calendar { display: none !important; }
+    #agenda { display: block; }
+  }
+  @media (min-width: 992px) { #agenda { display: none; } }
+  /* 768 미만: 레일을 하단 탭바로 */
+  @media (max-width: 767px) {
+    .rail { position: fixed; bottom: 0; left: 0; right: 0; top: auto; width: 100%; height: 56px;
+            flex-direction: row; justify-content: space-around; align-items: center;
+            border-right: none; border-top: 1px solid var(--border); padding: 0; }
+    .rail-brand, .rail-sep { display: none; }
+    .rail-item { min-height: 46px; }
+    .flyout { left: 0; width: 100vw; bottom: 56px; }
+    .detail-panel.open { width: 100vw; }
+    .view-area { padding-bottom: 56px; }
+    .topbar { padding: 0 var(--sp-2); gap: var(--sp-2); }
+    .topbar .stats-meta { display: none; }
+    .topbar #f-search { min-width: 110px; }
+  }
+  /* 아젠다 리스트 */
+  #agenda { padding: var(--sp-2) var(--sp-3) var(--sp-5); }
+  .agenda-head { position: sticky; top: 0; z-index: 2; background: var(--surface-2);
+                 padding: var(--sp-1) var(--sp-2); font-size: var(--fs-md); font-weight: 700;
+                 color: var(--text-dim); border-radius: var(--r-sm); margin: var(--sp-3) 0 var(--sp-1); }
+  .agenda-row { display: grid; grid-template-columns: 26px 1fr auto; gap: var(--sp-2); align-items: center;
+                padding: var(--sp-2); border-bottom: 1px solid var(--border); cursor: pointer; }
+  .agenda-row:active { background: var(--surface-2); }
+  .agenda-row > span:nth-child(2) { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .agenda-row .ar-name { font-size: var(--fs-base); font-weight: 600; color: var(--text);
+                         overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .agenda-row .ar-sub { font-size: var(--fs-sm); color: var(--text-mute);
+                        overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .agenda-row .ar-price { font-size: var(--fs-base); font-weight: 700; font-variant-numeric: tabular-nums;
+                          white-space: nowrap; }
+  .agenda-row.rank-r5 { background: var(--r5-tint); box-shadow: inset 2px 0 0 var(--r5-bg); }
+  .agenda-row.rank-r4 { background: var(--r4-tint); box-shadow: inset 2px 0 0 var(--r4-bg); }
+  /* 성적표 — 캘리브레이션 지표(§7.4) */
+  .rs-calib { display: inline-flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+  .rs-calib-label { font-weight: 700; color: var(--text); }
+  .rs-note { display: block; width: 100%; margin-top: var(--sp-1); font-size: var(--fs-sm);
+             color: var(--text-mute); line-height: var(--lh-base); }
+  .rs-note.warn { color: var(--loss); }
+  /* L1 — 내 입찰 결과 배지. 채도 예산: 낙찰은 별점과 같은 계열(성취), 패찰은 무채색. */
+  .chip .my-badge { font-size: 9.5px; font-weight: 700; padding: 0 4px; border-radius: var(--r-sm);
+                    white-space: nowrap; line-height: 1.55; }
+  .chip .my-badge.won  { background: var(--accent); color: var(--n-0); }
+  .chip .my-badge.lost { background: var(--muted-bg); color: var(--text-mute);
+                         border: 1px solid var(--border); }
+  .tl-link { display: inline-block; margin-top: var(--sp-2); font-size: var(--fs-md);
+             color: var(--accent); font-weight: 600; }
 </style>
+<script src="../shared/cal-lib.js"></script>
+<script src="../shared/icons.js"></script>
 </head>
-<body>
+<body class="shell-mode">
 
-<header>
-  <h1>경매 캘린더</h1>
-  <div class="tabs">
-    <button class="tab active" data-view="calendar">📅 캘린더</button>
-    <button class="tab" data-view="list">📋 리스트</button>
-  </div>
-  <div class="month-nav" id="month-nav">
-    <button class="nav-btn" id="prev-month" title="이전 달">←</button>
-    <div class="month-label" id="month-label">—</div>
-    <button class="nav-btn" id="next-month" title="다음 달">→</button>
-    <button class="nav-btn today-btn" id="today-btn">오늘</button>
-  </div>
-</header>
 
 <div class="stats">
   <span class="pill total">총 <span id="stat-total">0</span>건</span>
@@ -658,7 +772,7 @@
 
 <div class="result-stats clickable" id="result-stats" hidden></div>
 
-<button class="filter-toggle" id="filter-toggle" type="button" aria-expanded="false" aria-controls="filters">🔍 필터 ▾</button>
+<button class="filter-toggle" id="filter-toggle" type="button" aria-expanded="false" aria-controls="filters">필터</button>
 <div class="filters" id="filters">
   <div class="filter-group">
     <label>판정</label>
@@ -724,10 +838,23 @@
 </div>
 <div class="active-filters" id="active-filters"></div>
 
+<div class="shell">
+  <nav class="rail" id="rail"></nav>
+  <aside class="flyout" id="flyout"></aside>
+  <div class="view-area">
+  <div class="topbar" id="topbar">
+    <div class="month-nav" id="month-nav">
+      <button class="nav-btn" id="prev-month" title="이전 달" type="button">←</button>
+      <div class="month-label" id="month-label">—</div>
+      <button class="nav-btn" id="next-month" title="다음 달" type="button">→</button>
+      <button class="nav-btn today-btn" id="today-btn" type="button">오늘</button>
+    </div>
+  </div>
 <main>
   <div class="view-wrap">
     <div id="calendar-view" class="calendar-wrap">
       <div id="calendar" class="calendar"></div>
+      <div id="agenda"></div>
     </div>
     <div id="list-view" class="list-wrap" hidden>
       <table class="list-table">
@@ -743,6 +870,8 @@
     <div class="detail-inner" id="detail-inner"></div>
   </aside>
 </main>
+  </div>
+</div>
 
 <!-- results.js + predictions.js + cases.js: cache-buster 인라인 로더 (수정 즉시 반영 보장) -->
 <!-- results.js(회고 실측) → predictions.js(내 예상 낙찰가) → cases.js(모델 예측) 순 로드 → cases-loaded 발화. -->
@@ -756,7 +885,7 @@
       s.onload = function () { window.dispatchEvent(new Event('cases-loaded')); };
       s.onerror = function () {
         const cal = document.getElementById('calendar');
-        if (cal) cal.innerHTML = '<div style="padding:40px;text-align:center;color:#b91c1c;font-size:15px;line-height:1.6">⚠️ 물건 데이터(cases.js)를 불러오지 못했습니다.<br>새로고침하거나 잠시 후 다시 시도해 주세요.</div>';
+        if (cal) cal.innerHTML = '<div style="padding:40px;text-align:center;color:#b91c1c;font-size:15px;line-height:1.6">물건 데이터(cases.js)를 불러오지 못했습니다.<br>새로고침하거나 잠시 후 다시 시도해 주세요.</div>';
       };
       document.head.appendChild(s);
     }
@@ -915,25 +1044,26 @@
   }
   const LS_PANEL_W = 'calendar.panelWidth.v3'; // v3: 기본폭을 뷰포트 비율(캘린더:상세 35:65)로 전환. 구 키 저장값 무시.
   const PANEL_W_MIN = 380;
-  const PANEL_W_MAX_RATIO = 0.85; // up to 85% of viewport
-  const PANEL_W_DEFAULT_RATIO = 0.65; // 기본 분할 = 캘린더:상세 ≈ 35:65 (상세뷰가 화면의 65%)
+  // 구 PANEL_W_DEFAULT_RATIO = 0.65 삭제. 1440에서 패널 936px → 칸 폭 90px 이었다
+  // (별점 원 하나와 잘린 두 글자만 남는다). 기본값은 CSS clamp 에 위임한다.
+  const PANEL_W_MAX = () => Math.max(PANEL_W_MIN, Math.min(560, window.innerWidth - 900));
   function clampPanelW(w) {
-    return Math.max(PANEL_W_MIN, Math.min(Math.round(window.innerWidth * PANEL_W_MAX_RATIO), w));
+    return Math.max(PANEL_W_MIN, Math.min(PANEL_W_MAX(), w));
   }
-  // 미저장(기본값)일 때만 비율 적용 — 사용자가 핸들로 조절한 px는 그대로 존중.
-  function defaultPanelWidth() {
-    return clampPanelW(Math.round(window.innerWidth * PANEL_W_DEFAULT_RATIO));
-  }
+  // 저장값이 있으면 그것만 존중한다. 없으면 null → CSS clamp(380, 100vw-1020, 480) 사용.
   function loadPanelWidth() {
     try {
       const v = parseInt(localStorage.getItem(LS_PANEL_W), 10);
-      if (Number.isFinite(v)) return clampPanelW(v);
+      if (Number.isFinite(v) && v > 0) return clampPanelW(v);
     } catch (e) {}
-    return defaultPanelWidth();
+    return null;
   }
   function applyPanelWidth(w) {
     const panel = document.getElementById('detail-panel');
-    if (panel) panel.style.setProperty('--panel-w', w + 'px');
+    if (!panel) return;
+    // flex-basis 를 직접 설정한다. var() 간접 참조는 flex-basis 에서 해석되지 않는다.
+    if (w == null) { panel.style.removeProperty('flex-basis'); panel.style.removeProperty('--panel-w'); }
+    else { panel.style.setProperty('--panel-w', w + 'px'); panel.style.setProperty('flex-basis', w + 'px'); }
   }
   function savePanelWidth(w) {
     try { localStorage.setItem(LS_PANEL_W, String(w)); } catch (e) {}
@@ -1171,6 +1301,7 @@
 
   // ===== Stats =====
   function updateStats() {
+    if (typeof updateTopbarSummary === 'function') updateTopbarSummary();
     const filtered = getFiltered();
     const counts = { pending: 0, candidate: 0, pass: 0, hold: 0, fail: 0, expired: 0 };
     const ratings = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
@@ -1189,7 +1320,14 @@
       if (node) node.textContent = ratings[i];
     }
     document.getElementById('schema-ver').textContent = window.AUCTION_SCHEMA_VERSION || '—';
-    document.getElementById('data-updated').textContent = window.AUCTION_LAST_UPDATED || '—';
+    {
+      // 데이터 신선도 — 갱신일만 찍으면 며칠 지났는지 아무도 세지 않는다.
+      const upd = window.AUCTION_LAST_UPDATED || '';
+      const slot = document.getElementById('data-updated');
+      slot.replaceChildren(document.createTextNode(upd || '—'));
+      const n = window.CalLib.staleDays(upd, todayStr);
+      if (n != null) slot.appendChild(el('span', { cls: 'stale-badge' + (n > 30 ? ' warn' : ''), text: `${n}일 전` }));
+    }
     renderResultStats();
     renderActiveFilters();
   }
@@ -1197,6 +1335,7 @@
   // 🏁 경매 결과 스코어카드 — 필터와 무관하게 전체 결과 기준(FN은 기본 숨김 Fail에 있으므로).
   // 결과(낙찰/유찰/무산) 분포 + 캘리브레이션 4분면 + 평균 낙찰가율.
   function renderResultStats() {
+    updateTopbarSummary();
     const cont = document.getElementById('result-stats');
     if (!cont) return;
     const rs = { sold: 0, failed: 0, nosale: 0, TP: 0, FP: 0, FN: 0, TN: 0, rateSum: 0, rateN: 0, total: 0 };
@@ -1228,30 +1367,55 @@
       }
       return p;
     };
-    cont.appendChild(el('span', { cls: 'rs-title', text: '🏁 경매 결과 ' + rs.total + '건' }));
+    cont.appendChild(el('span', { cls: 'rs-title', text: '경매 결과 ' + rs.total + '건' }));
     cont.appendChild(pill('sold', '낙찰', rs.sold, 'sold'));
     cont.appendChild(pill('', '유찰', rs.failed, 'failed'));
     cont.appendChild(pill('', '무산', rs.nosale, 'nosale'));
-    cont.appendChild(el('span', { cls: 'rs-sep', text: '│' }));
-    cont.appendChild(pill('tp', 'TP 정확GO', rs.TP, 'TP'));
-    cont.appendChild(pill('fp', 'FP 헛GO', rs.FP, ''));
-    cont.appendChild(pill('fn', 'FN 놓친기회', rs.FN, 'FN'));
-    cont.appendChild(pill('tn', 'TN 정확NO-GO', rs.TN, ''));
-    cont.appendChild(el('span', { cls: 'rs-sep', text: '│' }));
-    const goN = rs.TP + rs.FP, nogoN = rs.TN + rs.FN;
-    if (nogoN > 0) {
-      const m = el('span', { cls: 'rs-metric' });
-      m.appendChild(el('span', { text: 'NO-GO 정확도 ' }));
-      m.appendChild(el('b', { text: Math.round(rs.TN / nogoN * 100) + '%' }));
-      m.title = 'TN / (TN+FN) — 우리가 거른 사건이 실제로도 안 팔렸을 비율';
-      cont.appendChild(m);
+    // ── 매각가율 예측 오차 (§7.4) ──
+    // 구 TP/FP/FN/TN 은 폐기했다. quadrant 정의가 `verdict GO/NO-GO × sold/failed` 인데
+    // 매각 41:유찰 5 시장에서 "GO 했는데 유찰"이 구조적으로 발생하지 않아 FP=0 이고,
+    // 그래서 "GO 적중률 100%" 가 실력이 아니라 정의의 부산물이 된다. 표본의 절반은 quadrant 가 null.
+    // 대신 예측 매각가율 vs 실제 낙찰가율의 오차를 쓴다 — 입찰가를 얼마나 믿을지 직접 말해준다.
+    const cal = window.CalLib.calibration(RESULTS);
+    if (cal.n > 0) {
+      cont.appendChild(el('span', { cls: 'rs-sep', text: '│' }));
+      const g = el('span', { cls: 'rs-calib' });
+      g.appendChild(el('span', { cls: 'rs-calib-label', text: '매각가율 예측 오차' }));
+      const fmtP = (v) => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1) + '%p';
+      const kv = (label, value, title) => {
+        const m = el('span', { cls: 'rs-metric', title: title || '' });
+        m.appendChild(el('span', { text: label + ' ' }));
+        m.appendChild(el('b', { text: value }));
+        return m;
+      };
+      g.appendChild(kv('평균', fmtP(cal.meanErr),
+        '실제 낙찰가율 − 예측 매각가율의 평균. 음수면 모델이 높게 본 것.'));
+      g.appendChild(kv('절대오차', cal.mae.toFixed(1) + '%p',
+        '부호를 무시한 평균 오차(MAE). 입찰가를 얼마나 믿을지의 기준.'));
+      g.appendChild(kv('±5%p 이내', cal.within5 + '/' + cal.n, ''));
+      g.appendChild(kv('±10%p 이내', cal.within10 + '/' + cal.n, ''));
+      cont.appendChild(g);
+      cont.appendChild(el('span', {
+        cls: 'rs-note',
+        text: `모델이 예측한 매각가율 vs 실제 낙찰가율 — ${cal.n}건에서 평균 ${Math.abs(cal.meanErr).toFixed(1)}%p ` +
+              `${cal.meanErr < 0 ? '높게' : '낮게'} 봤고, 보통 ±${cal.mae.toFixed(1)}%p 안에 들어옵니다.`,
+      }));
     }
-    if (goN > 0) {
-      const m = el('span', { cls: 'rs-metric' });
-      m.appendChild(el('span', { text: 'GO 적중률 ' }));
-      m.appendChild(el('b', { text: Math.round(rs.TP / goN * 100) + '%' }));
-      m.title = 'TP / (TP+FP) — 우리가 GO한 사건이 실제 낙찰된 비율';
-      cont.appendChild(m);
+    // NO-GO 정확도는 아픈 진실이라 지우지 않고 문장으로 보존한다.
+    const nogoN = rs.TN + rs.FN;
+    if (nogoN > 0) {
+      const missed = Math.round(rs.FN / nogoN * 100);
+      cont.appendChild(el('span', {
+        cls: 'rs-note warn',
+        text: `우리가 거른 ${nogoN}건 중 ${missed}%(${rs.FN}건)는 실제로 팔렸습니다.`,
+      }));
+    }
+    // 고아 레코드 — 조용히 누락되면 표본이 왜곡된다.
+    {
+      const ids = new Set(CASES.map((c) => c.id));
+      const orphan = Object.keys(RESULTS).filter((k) => !ids.has(k) && !ids.has(k.split('@')[0])).length;
+      if (orphan) cont.appendChild(el('span', { cls: 'rs-note',
+        text: `표본 제외 ${orphan}건 (results 에는 있으나 cases 에 없음)` }));
     }
     if (rs.rateN > 0) {
       const m = el('span', { cls: 'rs-metric' });
@@ -1322,10 +1486,9 @@
   }
 
   // ===== Calendar view =====
-  function shortenComplex(name) { return !name ? '' : (name.length > 7 ? name.slice(0, 7) + '…' : name); }
-  function chipLabel(c) { return `${c.caseNumber.replace('타경', '·')} ${shortenComplex(c.complex)}`; }
 
   function renderCalendar() {
+    renderAgenda();
     const { y, m } = state.currentMonth;
     document.getElementById('month-label').textContent = `${y}년 ${m + 1}월`;
     const firstDay = new Date(y, m, 1);
@@ -1367,28 +1530,42 @@
       const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
       if (dateStr === todayStr) dayCell.classList.add('today');
 
+      // 이 칸의 사건 목록을 먼저 구한다 — D-Day 배지가 사건 유무에 의존하므로.
+      // 정렬은 별점 내림차순 고정: +N건으로 접히는 게 최고 물건이면 안 된다.
+      const cases = window.CalLib.sortByRating(byDate.get(dateStr) || [], effectiveRating);
+
       const dateRow = el('div', { cls: 'date-row' });
       dateRow.appendChild(el('div', { cls: 'date-num', text: String(dateObj.getDate()) }));
       const days = daysUntil(dateStr);
       const dCls = ddayClass(days);
-      if (dCls) dateRow.appendChild(el('span', { cls: 'dday-badge ' + dCls, text: ddayLabel(days) }));
+      // 사건이 있는 칸에만 D-Day 배지. 빈 칸의 배지는 아무것도 가리키지 않는다.
+      if (dCls && cases.length) {
+        dateRow.appendChild(el('span', { cls: 'dday-badge ' + dCls, text: ddayLabel(days) }));
+      }
       dayCell.appendChild(dateRow);
 
       const chipsWrap = el('div', { cls: 'chips' });
-      const cases = byDate.get(dateStr) || [];
       const MAX_VISIBLE = 4;
       function appendChip(c) {
         const r = effectiveRating(c);
         const cls = ['chip', c.verdict];
+        // 채도 예산 1 — ★5·★4 만 칸 안에서 즉시 눈에 띄게 한다(틴트 + 좌측 2px 바).
+        if (r === 5) cls.push('rank-r5');
+        else if (r === 4) cls.push('rank-r4');
         if (dCls === 'urgent' && c.verdict !== 'expired') cls.push('dday-urgent');
         else if (dCls === 'soon' && c.verdict !== 'expired') cls.push('dday-soon');
-        const chip = el('div', { cls: cls.join(' '), title: `${c.caseNumber} · ${c.complex}${r != null ? ' · ★' + r : ''}${c.minimumPrice != null ? ' · 최저 ' + fmtMoneyShort(c.minimumPrice) : ''}` });
+        const chip = el('div', { cls: cls.join(' '), title: window.CalLib.chipTitle(c, r, fmtMoneyShort) });
         if (c.id === state.selectedId) chip.classList.add('selected');
         // Rating dot
         const rd = el('span', { cls: 'chip-rating ' + (r != null ? 'r' + r : 'none'), text: r != null ? r + '' : '·' });
         chip.appendChild(rd);
         // Label
-        chip.appendChild(el('span', { cls: 'chip-text', text: chipLabel(c) }));
+        {
+          const label = el('span', { cls: 'chip-text' });
+          label.appendChild(el('span', { cls: 'vdot' }));   // verdict — 채도 대신 형태로 구분
+          label.appendChild(document.createTextNode(' ' + window.CalLib.chipLabel(c)));
+          chip.appendChild(label);
+        }
         // v6.1 관심 tier 미니배지(★/◇/▷) + 회고 결과 배지를 하나의 trailing 그룹으로 묶는다.
         // 3컬럼 grid(22px 1fr auto)는 trailing 셀이 1개일 때만 안정적이다. tier·result가
         // 동시에 존재(예: ▷watchlist 물건이 매각 당일 결과까지 도래)하면 각각 별도 grid 셀이 되어
@@ -1396,22 +1573,22 @@
         const trail = el('span', { cls: 'chip-trail' });
         { const _tm = { primary: '★', watch: '◇', watchlist: '▷' }; if (c.interestTier && _tm[c.interestTier]) trail.appendChild(el('span', { cls: 'chip-tier tier-' + (c.interestTier === 'primary' ? 'star' : c.interestTier === 'watch' ? 'watch' : 'watchlist'), text: _tm[c.interestTier] })); }
         { const _b = resultChipBadge(resultFor(c)); if (_b) trail.appendChild(_b); }
-        if (trail.childNodes.length) chip.appendChild(trail);
-        // Mini: 최저가(매매사업자 핵심 지표) + margin bar
-        const mini = el('span', { cls: 'chip-mini' });
-        if (c.minimumPrice != null) mini.appendChild(el('span', { cls: 'chip-price', text: fmtMoneyShort(c.minimumPrice) }));
-        const margin = (c.kbPrice && c.minimumPrice) ? c.kbPrice - c.minimumPrice : null;
-        if (margin != null) {
-          const bar = el('span', { cls: 'mini-bar' });
-          const pct = Math.max(0, Math.min(1, margin / (c.kbPrice * 0.4)));
-          const fill = el('span', { cls: 'mini-bar-fill' });
-          fill.style.width = (pct * 100).toFixed(0) + '%';
-          if (margin < 0) fill.style.background = '#ef4444';
-          bar.appendChild(fill);
-          bar.title = `미시 마진 ${fmtMoneySigned(margin)}`;
-          mini.appendChild(bar);
+        // L1 — 내 입찰 결과. results.js 에 myResult(won 1 · lost 3)가 있는데 화면에 없었다.
+        { const _ar = resultFor(c);
+          if (_ar && _ar.myResult) {
+            const mine = el('span', { cls: 'my-badge ' + _ar.myResult,
+              text: _ar.myResult === 'won' ? '낙찰' : '패찰',
+              title: _ar.myResult === 'won' ? '내가 낙찰받은 물건' : '내가 입찰했으나 패찰' });
+            trail.appendChild(mine);
+          } }
+        // 최저매각가만 남긴다. 마진바 제거 — 24px 소비(bar22+gap2), kbPrice 커버리지 64%,
+        // 22px 안에서 실질 4~5단계뿐이고, 그라디언트가 채도 예산(별점·손실 2개)에 없는
+        // 세 번째 색 채널이었다. 미시 마진은 상세 패널의 숫자로 남는다.
+        if (c.minimumPrice != null) {
+          trail.appendChild(el('span', { cls: 'chip-price', text: fmtMoneyShort(c.minimumPrice) }));
         }
-        chip.appendChild(mini);
+        // 칩 자식은 3개를 유지한다 — .chip 이 grid 3열(22px 1fr auto)이라 4번째는 2행으로 밀린다.
+        chip.appendChild(trail);
         chip.addEventListener('click', (e) => { e.stopPropagation(); openDetail(c.id); });
         chipsWrap.appendChild(chip);
       }
@@ -1437,6 +1614,26 @@
       }
       dayCell.appendChild(chipsWrap);
       cal.appendChild(dayCell);
+    }
+
+    // 이 달에 표시할 사건이 하나도 없으면 안내를 띄운다.
+    // 진입월 자동이동으로 첫 로드는 막히지만, 필터·수동 이동으로는 여전히 도달한다.
+    // byDate는 전체 필터 결과라 달과 무관하다 — 실제로 그려진 칩 수를 봐야 한다.
+    if (!cal.querySelector('.chip')) {
+      const all = CASES.map((c) => c.saleDate).filter(Boolean).sort();
+      const note = el('div', { cls: 'cal-empty' });
+      note.appendChild(el('div', { text: '이 달에는 표시할 매각기일이 없습니다.' }));
+      if (all.length) {
+        const fmtM = (s) => `${s.slice(0, 4)}년 ${Number(s.slice(5, 7))}월`;
+        note.appendChild(el('span', {
+          cls: 'hint',
+          text: `데이터가 있는 기간: ${fmtM(all[0])} ~ ${fmtM(all[all.length - 1])} · 총 ${CASES.length}건`,
+        }));
+      } else {
+        note.appendChild(el('span', { cls: 'hint', text: '아직 수집된 사건이 없습니다.' }));
+      }
+      cal.replaceChildren(note);
+      cal.style.gridTemplateColumns = '1fr';
     }
   }
 
@@ -1616,7 +1813,13 @@
     const v = params.get('view');
     if (v === 'list' || v === 'calendar') state.view = v;
     const id = params.get('case');
-    if (id) state.selectedId = id;
+    if (id) {
+      state.selectedId = id;
+      // 딥링크는 그 사건의 매각기일이 있는 달을 보여준다.
+      // (없으면 currentMonth 유지 — Init의 진입월 로직이 처리)
+      const mo = window.CalLib.monthOfCase(CASES, id);
+      if (mo) state.currentMonth = mo;
+    }
   }
 
   // 자동선택 대상 — 딥링크 없을 때 데스크톱 로드 시 가장 임박한 '관심' 물건을 연다.
@@ -1669,7 +1872,7 @@
     titleRow.appendChild(el('div', { cls: 'case-num', text: c.caseNumber }));
     {
       const sd = el('span', { cls: 'case-saledate' });
-      sd.appendChild(el('span', { cls: 'csd-ico', text: '📅' }));
+      sd.appendChild((function(){ const w=el('span',{cls:'csd-ico'}); w.appendChild(window.Icons.svg('calendar',12)); return w; })());
       sd.appendChild(el('span', { cls: 'csd-date', text: c.saleDate || '—' }));
       const days = daysUntil(c.saleDate);
       if (days != null && c.verdict !== 'expired') {
@@ -1684,20 +1887,23 @@
       const ctx = el('div', { cls: 'case-context' });
       const ctxChip = (ico, val, sub, extraCls) => {
         const chip = el('span', { cls: 'ctx-chip' + (extraCls ? ' ' + extraCls : '') });
-        chip.appendChild(el('span', { cls: 'ctx-ico', text: ico }));
+        // ico 는 Icons 스프라이트의 이름. 이모지 대신 SVG(currentColor 라 토큰 색이 적용된다).
+        const icoWrap = el('span', { cls: 'ctx-ico' });
+        icoWrap.appendChild(window.Icons.svg(ico, 12));
+        chip.appendChild(icoWrap);
         chip.appendChild(el('span', { cls: 'ctx-val', text: val }));
         if (sub) chip.appendChild(el('span', { cls: 'ctx-sub', text: sub }));
         return chip;
       };
-      if (c.areaSqm != null) ctx.appendChild(ctxChip('📐', fmtArea(c.areaSqm), null, 'ctx-area'));
-      ctx.appendChild(ctxChip('🏛', c.court || '—'));
-      ctx.appendChild(ctxChip('📍', c.region || '—', c.regionPriority ? 'P' + c.regionPriority : null));
-      ctx.appendChild(ctxChip('🔁', c.rounds == null ? '—' : (c.rounds === 0 ? '신건' : c.rounds + '회 유찰')));
+      if (c.areaSqm != null) ctx.appendChild(ctxChip('ruler', fmtArea(c.areaSqm), null, 'ctx-area'));
+      ctx.appendChild(ctxChip('court', c.court || '—'));
+      ctx.appendChild(ctxChip('pin', c.region || '—', c.regionPriority ? 'P' + c.regionPriority : null));
+      ctx.appendChild(ctxChip('repeat', c.rounds == null ? '—' : (c.rounds === 0 ? '신건' : c.rounds + '회 유찰')));
       left.appendChild(ctx);
     }
     header.appendChild(left);
     const actions = el('div', { cls: 'actions' });
-    const shareBtn = el('button', { cls: 'icon-btn', text: '🔗 링크' });
+    const shareBtn = el('button', { cls: 'icon-btn', text: '링크', title: '이 사건 링크 복사' });
     shareBtn.title = '이 사건 링크 복사';
     shareBtn.addEventListener('click', () => copyDeepLink(c.id, shareBtn));
     actions.appendChild(shareBtn);
@@ -1709,7 +1915,7 @@
 
     // 판정 배너 (v9.1) — 상세 최상단 의사결정 요약 (판정 + tier + 핵심 수익)
     {
-      const vIcon = { candidate: '🟡', pass: '✅', hold: '⚪', fail: '🔴', pending: '🔵', expired: '⬜' }[c.verdict] || '•';
+      const vIcon = { candidate: '●', pass: '○', hold: '◐', fail: '·', pending: '◌', expired: '·' }[c.verdict] || '•';
       const banner = el('div', { cls: 'verdict-banner v-' + c.verdict, attrs: { 'data-sec': 'banner' } });
       banner.appendChild(el('span', { cls: 'vb-icon', text: vIcon }));
       banner.appendChild(el('span', { cls: 'vb-verdict', text: verdictLabel(c.verdict) }));
@@ -1742,14 +1948,14 @@
     if (ar) {
       const QLAB = { TP: '정확 GO', FP: '헛 GO', FN: '놓친 기회', TN: '정확 NO-GO' };
       const SLAB = { sold: '매각(낙찰)', failed: '유찰', changed: '변경', withdrawn: '취하', postponed: '연기', unknown: '미확인(변경/취하 추정)' };
-      const rsec = section('🏁 경매 결과 (회고)', { boxed: true, accent: 'result', key: 'result' });
+      const rsec = section('경매 결과 (회고)', { boxed: true, accent: 'result', key: 'result' });
       const box = el('div', { cls: 'result-box ' + (ar.quadrant ? 'q-' + ar.quadrant : 'q-none') });
       const head = el('div', { cls: 'result-head' });
       head.appendChild(el('span', { cls: 'result-status ' + ar.status, text: SLAB[ar.status] || ar.status }));
       if (ar.quadrant) head.appendChild(el('span', { cls: 'result-quadrant ' + ar.quadrant, text: ar.quadrant + ' · ' + (QLAB[ar.quadrant] || '') }));
       box.appendChild(head);
       const rg = el('div', { cls: 'detail-grid' });
-      rg.appendChild(field('낙찰가', ar.soldPrice != null ? fmtMoney(ar.soldPrice) : (ar.priceMasked ? '🔒 마스킹' : '—'), { mono: true, price: true, muted: ar.soldPrice == null }));
+      rg.appendChild(field('낙찰가', ar.soldPrice != null ? fmtMoney(ar.soldPrice) : (ar.priceMasked ? '마스킹' : '—'), { mono: true, price: true, muted: ar.soldPrice == null }));
       rg.appendChild(field('낙찰가율', ar.soldRate != null ? fmtPct(ar.soldRate) : '—', { mono: true, muted: ar.soldRate == null }));
       rg.appendChild(field('응찰자수', ar.bidderCount != null ? ar.bidderCount + '명' : '—', { mono: true, muted: ar.bidderCount == null }));
       rg.appendChild(field('실제 매각일', ar.saleDateActual || '—', { mono: true, muted: !ar.saleDateActual }));
@@ -1761,11 +1967,11 @@
         cmp.appendChild(el('span', { cls: 'v', text: ar.predictedSaleRate != null ? fmtPct(ar.predictedSaleRate) : '—' }));
         cmp.appendChild(el('span', { cls: 'arrow', text: '→' }));
         cmp.appendChild(el('span', { cls: 'k', text: '실측' }));
-        cmp.appendChild(el('span', { cls: 'v', text: ar.soldRate != null ? fmtPct(ar.soldRate) : '🔒' }));
+        cmp.appendChild(el('span', { cls: 'v', text: ar.soldRate != null ? fmtPct(ar.soldRate) : '비공개' }));
         if (ar.saleRateError != null) cmp.appendChild(el('span', { cls: 'err' + (ar.saleRateError < 0 ? ' neg' : ' pos'), text: (ar.saleRateError > 0 ? '+' : '') + (ar.saleRateError * 100).toFixed(1) + 'pp' }));
         box.appendChild(cmp);
       }
-      if (ar.lesson) box.appendChild(el('div', { cls: 'result-lesson', text: '📌 ' + ar.lesson }));
+      if (ar.lesson) box.appendChild(el('div', { cls: 'result-lesson', text: ar.lesson }));
       const foot = el('div', { cls: 'result-foot' });
       foot.appendChild(el('span', { text: '출처 ' + (ar.source || '—') }));
       if (ar.retrospectedAt) foot.appendChild(el('span', { text: '회고 ' + ar.retrospectedAt }));
@@ -1810,11 +2016,21 @@
     numSec.appendChild(grid);
     inner.appendChild(numSec);
 
-    // 📄 상세 분석 보고서 (deep-dive 케이스) — 같은 디렉토리의 report HTML로 링크
+    // L2 — 낙찰 물건이면 타임라인으로 이어준다(여정·비용·손익).
+    {
+      const tl = timelineLinkFor(c);
+      if (tl) {
+        const tlSec = section('낙찰 후 여정', { boxed: true, accent: 'report', key: 'timeline' });
+        tlSec.appendChild(tl);
+        inner.appendChild(tlSec);
+      }
+    }
+
+    // 상세 분석 보고서 (deep-dive 케이스) — 같은 디렉토리의 report HTML로 링크
     if (c.reportUrl) {
-      const rpSec = section('📄 상세 분석 보고서', { boxed: true, accent: 'report', key: 'report' });
+      const rpSec = section('상세 분석 보고서', { boxed: true, accent: 'report', key: 'report' });
       const a = el('a', { cls: 'report-link', attrs: { href: c.reportUrl, target: '_blank', rel: 'noopener' } });
-      a.appendChild(el('span', { cls: 'rp-ico', text: '📄' }));
+      a.appendChild((function(){ const w=el('span',{cls:'rp-ico'}); w.appendChild(window.Icons.svg('doc',13)); return w; })());
       a.appendChild(document.createTextNode('심층 분석 보고서 열기'));
       a.appendChild(el('span', { cls: 'rp-arrow', text: '→' }));
       rpSec.appendChild(a);
@@ -1833,7 +2049,7 @@
         watch:     { t: '◇ Watch (1,500~2,500만)',   cls: 'tier-watch' },
         watchlist: { t: '▷ Watchlist (본전~1,500만)', cls: 'tier-watchlist' },
       };
-      const profSec = section('💰 수익 분석 (세전 · 낙찰확률 70% 기준)', { boxed: true, accent: 'profit', key: 'profit' });
+      const profSec = section('수익 분석 (세전 · 낙찰확률 70% 기준)', { boxed: true, accent: 'profit', key: 'profit' });
       if (c.interestTier && tierMap[c.interestTier]) {
         profSec.appendChild(el('span', { cls: 'tier-badge ' + tierMap[c.interestTier].cls, text: tierMap[c.interestTier].t }));
       } else if (ep != null && ep <= -10_000_000) {
@@ -1885,7 +2101,7 @@
       if (c.taxableProfit != null && c.incomeTax != null) {
         const tb = el('div', { cls: 'tax-box' });
         const ownerTxt = (c.taxOwner === 'self') ? '본인' : '배우자';
-        tb.appendChild(el('div', { cls: 'tb-title', text: `💵 세금 · 세후 (${ownerTxt} 연봉 합산 누진)` }));
+        tb.appendChild(el('div', { cls: 'tb-title', text: `세금 · 세후 (${ownerTxt} 연봉 합산 누진)` }));
         const trow = (k, v, cls) => { const d = el('div', { cls: 'tb-row' + (cls?' '+cls:'') }); d.appendChild(el('span', { cls:'k', text:k })); d.appendChild(el('span', { cls:'v', text:v })); return d; };
         tb.appendChild(trow('세전이익 (EP70 · 과세표준)', fmtMoneySigned(c.taxableProfit)));
         const mr = c.marginalRate != null ? ` (한계 ${(c.marginalRate*100).toFixed(1)}%)` : '';
@@ -1897,7 +2113,7 @@
           const refParts = [];
           if (c.flipRepair != null) refParts.push('실수리 ~' + fmtMoney(c.flipRepair));
           if (c.evictionEst != null) refParts.push('명도 ~' + fmtMoney(c.evictionEst));
-          profSec.appendChild(el('div', { cls: 'small-note', text: `📌 참고 변동비(과세·세후 제외): ${refParts.join(' · ')} — 유동적이라 EP70·세금엔 미반영, 실제 지출 시 직접 차감하세요.` }));
+          profSec.appendChild(el('div', { cls: 'small-note', text: `참고 변동비(과세·세후 제외): ${refParts.join(' · ')} — 유동적이라 EP70·세금엔 미반영, 실제 지출 시 직접 차감하세요.` }));
         }
         profSec.appendChild(el('div', { cls: 'small-note', text: `과세표준 = EP70(세전 기대수익). 배우자 근로 ₩36M 합산 한계세율(지방세 포함). 매도가>₩355M이면 본인 명의 비교. 정본: bid-price-engine §0.5 v9` }));
       } else {
@@ -1916,7 +2132,7 @@
       if (myBids.length) {
         const mark = i => (myBids.length > 1 ? ['①', '②'][i] : '');
         const isActual = isActualBidEntry(c);
-        const psec = section(isActual ? '🎯 내 입찰가 (실제)' : '🎯 내 예상 낙찰가', { boxed: true, accent: 'pred', key: 'pred' });
+        const psec = section(isActual ? '내 입찰가 (실제)' : '내 예상 낙찰가', { boxed: true, accent: 'pred', key: 'pred' });
 
         if (actual != null && isActual) {
           // 결과 후 (실제 입찰) — 내 입찰가 vs 낙찰가 (낙찰/패찰)
@@ -1931,7 +2147,7 @@
           line.appendChild(el('span', { cls: 'arrow', text: '→' }));
           line.appendChild(el('span', { cls: 'pa', text: '낙찰가 ' + fmtMoney(actual) }));
           box.appendChild(line);
-          box.appendChild(el('div', { cls: 'pred-winner ' + (won ? 'win' : 'neg'), text: won ? '🏆 낙찰 성공' : '패찰 ' + fmtMoney(gap) + (pct != null ? ' (' + pct.toFixed(1) + '%)' : '') }));
+          box.appendChild(el('div', { cls: 'pred-winner ' + (won ? 'win' : 'neg'), text: won ? '낙찰 성공' : '패찰 ' + fmtMoney(gap) + (pct != null ? ' (' + pct.toFixed(1) + '%)' : '') }));
           psec.appendChild(box);
           { const b = myBids[0]; const sub = [b.at ? b.at + ' 입찰' : null, b.memo].filter(Boolean).join(' · '); if (sub) psec.appendChild(el('div', { cls: 'small-note', text: sub })); }
         } else if (actual != null) {
@@ -1955,7 +2171,7 @@
             }
             box.appendChild(line);
           });
-          if (best) box.appendChild(el('div', { cls: 'pred-winner', text: '🏆 가장 정확: ' + best.label + ' (' + (best.errPct > 0 ? '+' : '') + (best.errPct * 100).toFixed(1) + '%)' }));
+          if (best) box.appendChild(el('div', { cls: 'pred-winner', text: '가장 정확: ' + best.label + ' (' + (best.errPct > 0 ? '+' : '') + (best.errPct * 100).toFixed(1) + '%)' }));
           psec.appendChild(box);
           myBids.forEach((b, i) => { if (b.memo) psec.appendChild(el('div', { cls: 'small-note', text: (mark(i) ? mark(i) + ' ' : '') + b.memo })); });
         } else if (isActual) {
@@ -1992,7 +2208,7 @@
       } else if (modelBid != null && actual == null) {
         // 내 예상 미등록 + 결과 전 — 모델 예상 낙찰가 단독 표시
         const rate = (c.saleRateMu != null) ? c.saleRateMu : (c.saleRate != null ? c.saleRate : null);
-        const psec = section('🎯 모델 예상 낙찰가', { boxed: true, accent: 'pred', key: 'pred' });
+        const psec = section('모델 예상 낙찰가', { boxed: true, accent: 'pred', key: 'pred' });
         const grid = el('div', { cls: 'detail-grid' });
         grid.appendChild(field('모델 예상 낙찰가', fmtMoney(modelBid), { mono: true, price: true, tone: 'positive' }));
         if (rate != null) grid.appendChild(field('예측 매각가율', (rate * 100).toFixed(1) + '%', { mono: true, muted: true }));
@@ -2028,7 +2244,7 @@
         }
         if (foot) {
           const footEl = el('div', { cls: 'reason-foot' });
-          footEl.appendChild(el('span', { text: '🗓' }));
+          footEl.appendChild(el('span', { text: '' }));
           footEl.appendChild(document.createTextNode(foot));
           box.appendChild(footEl);
         }
@@ -2048,7 +2264,7 @@
     inner.appendChild(addrSec);
 
     // Naver Real Estate
-    const naverSec = section('🟢 시장 시세 (네이버)', { boxed: true, accent: 'market', key: 'market' });
+    const naverSec = section('시장 시세 (네이버)', { boxed: true, accent: 'market', key: 'market' });
     naverSec.classList.add('naver-section');
     const naverLinks = el('div', { cls: 'naver-links' });
     const complexUrl = naverComplexUrl(c);
@@ -2077,7 +2293,7 @@
       // 6개월 컷오프 (오늘 − 6개월)
       const cut6 = (() => { const d = new Date(); d.setMonth(d.getMonth() - 6); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })();
       if (c.naverData.source) {
-        const srcLabels = { naver: '🟢 네이버 부동산', molit_public: '📊 국토부 공공 실거래', user: '✋ 사용자 입력' };
+        const srcLabels = { naver: '네이버 부동산', molit_public: '국토부 공공 실거래', user: '✋ 사용자 입력' };
         const srcLabel = srcLabels[c.naverData.source] || c.naverData.source;
         const srcRow = el('div', { cls: 'k', text: '출처: ' + srcLabel + (c.naverData.pyeong ? ` · 전용 ${(+c.naverData.pyeong.exc).toFixed(0)}㎡` : '') });
         srcRow.style.marginBottom = '6px';
@@ -2402,7 +2618,7 @@
     if (state.currentMonth.m > 11) { state.currentMonth.m = 0; state.currentMonth.y++; }
     renderCalendar();
   });
-  document.getElementById('today-btn').addEventListener('click', () => {
+  document.getElementById('today-btn')?.addEventListener('click', () => {
     const d = new Date();
     state.currentMonth = { y: d.getFullYear(), m: d.getMonth() };
     renderCalendar();
@@ -2497,7 +2713,7 @@
     tg.addEventListener('click', () => {
       const open = fl.classList.toggle('open');
       tg.setAttribute('aria-expanded', open ? 'true' : 'false');
-      tg.textContent = open ? '🔍 필터 ▴' : '🔍 필터 ▾';
+      tg.textContent = open ? '필터 ▴' : '필터 ▾';
     });
   })();
 
@@ -2545,9 +2761,9 @@
     handle.addEventListener('pointercancel', endDrag);
     // Double-click handle → reset to default width
     handle.addEventListener('dblclick', () => {
-      const d = defaultPanelWidth();
-      applyPanelWidth(d);
-      savePanelWidth(d);
+      // CSS clamp 기본값으로 리셋 — 저장값을 지워야 다음 로드에도 기본값이 적용된다.
+      applyPanelWidth(null);
+      try { localStorage.removeItem(LS_PANEL_W); } catch (e) {}
     });
     // Re-clamp on viewport resize so user can't get stuck wider than the window
     window.addEventListener('resize', () => {
@@ -2557,9 +2773,177 @@
     });
   })();
 
+
+
+  // L2 — 낙찰 물건은 타임라인으로 이어준다. 조인 키는 이미 완성돼 있다:
+  // results.js 의 복합키(사건번호@saleDate) = 원장의 sourceResultKey.
+  function timelineLinkFor(c) {
+    const ar = resultFor(c);
+    if (!ar || ar.myResult !== 'won') return null;
+    const a = el('a', { cls: 'tl-link', text: '이 물건의 타임라인 보기' });
+    // 원장 holdingId 는 h-<사건번호 뒷자리> 규약. 사건번호에서 숫자만 취한다.
+    const num = String(c.caseNumber || c.id || '').replace(/[^0-9]/g, '').slice(-6);
+    a.setAttribute('href', '../timeline/#h-' + num);
+    return a;
+  }
+
+  // ===== 모바일 아젠다 (§6.4) =====
+  // 375px 에서 4열 그리드는 칸 폭 ~80px 이라 단지명이 들어갈 수 없다(첫 화면 노출 0건).
+  // 날짜별 리스트로 전환하면 사건 없는 날이 아예 사라져 첫 화면에 실제 사건이 보인다.
+  const AGENDA_DOWS = ['일', '월', '화', '수', '목', '금', '토'];
+
+  function buildAgendaRow(c) {
+    const r = effectiveRating(c);
+    const cls = ['agenda-row'];
+    if (r === 5) cls.push('rank-r5'); else if (r === 4) cls.push('rank-r4');
+    const row = el('div', { cls: cls.join(' '), title: window.CalLib.chipTitle(c, r, fmtMoneyShort) });
+    row.appendChild(el('span', {
+      cls: 'chip-rating ' + (r != null ? 'r' + r : 'none'),
+      text: r != null ? String(r) : '·',
+    }));
+    const mid = el('span');
+    mid.appendChild(el('span', { cls: 'ar-name', text: window.CalLib.chipLabel(c) }));
+    const bits = [verdictLabel(c.verdict)];
+    if (c.rounds != null) bits.push(c.rounds === 0 ? '신건' : c.rounds + '회 유찰');
+    mid.appendChild(el('span', { cls: 'ar-sub', text: bits.filter(Boolean).join(' · ') }));
+    row.appendChild(mid);
+    if (c.minimumPrice != null) row.appendChild(el('span', { cls: 'ar-price', text: fmtMoneyShort(c.minimumPrice) }));
+    row.addEventListener('click', () => openDetail(c.id));
+    return row;
+  }
+
+  function renderAgenda() {
+    const wrap = document.getElementById('agenda');
+    if (!wrap) return;
+    wrap.replaceChildren();
+    const { y, m } = state.currentMonth;
+    const prefix = `${y}-${String(m + 1).padStart(2, '0')}`;
+    const groups = window.CalLib.groupByDate(
+      getFiltered().filter((c) => String(c.saleDate || '').startsWith(prefix)), effectiveRating);
+    if (!groups.length) {
+      wrap.appendChild(el('div', { cls: 'cal-empty', text: '이 달에는 표시할 매각기일이 없습니다.' }));
+      return;
+    }
+    for (const g of groups) {
+      const d = new Date(g.date + 'T00:00:00');
+      wrap.appendChild(el('div', {
+        cls: 'agenda-head',
+        text: `${d.getMonth() + 1}월 ${d.getDate()}일 (${AGENDA_DOWS[d.getDay()]}) · ${g.count}건`,
+      }));
+      for (const c of g.items) wrap.appendChild(buildAgendaRow(c));
+    }
+  }
+
+  // ===== 앱 셸 (§6) =====
+  // 세로에 쌓여 있던 크롬(header + stats + result-stats + filters = 237px)을
+  // 레일 64px(가로축)로 옮기고, 필터·범례는 그리드를 밀지 않는 플라이아웃으로 분리한다.
+  function activeFilterCount() {
+    const f = state.filters;
+    let n = 0;
+    for (const k of ['region', 'priority', 'risk', 'rating', 'result', 'search']) if (f[k]) n++;
+    if (f.verdictHidden && f.verdictHidden.size) n++;
+    return n;
+  }
+
+  function toggleFlyout(force) {
+    const fo = document.getElementById('flyout');
+    const open = force != null ? force : !fo.classList.contains('open');
+    fo.classList.toggle('open', open);
+    renderRail();
+  }
+
+  function renderRail() {
+    const rail = document.getElementById('rail');
+    if (!rail) return;
+    rail.replaceChildren();
+    rail.appendChild(el('div', { cls: 'rail-brand', text: '경매' }));
+    const mk = (icon, label, opts) => {
+      const o = opts || {};
+      const n = el(o.href ? 'a' : 'button', { cls: 'rail-item' + (o.active ? ' active' : ''), title: o.title || label });
+      if (o.href) n.setAttribute('href', o.href);
+      else n.setAttribute('type', 'button');
+      n.appendChild(window.Icons.svg(icon, 19));
+      n.appendChild(el('span', { text: label }));
+      if (o.onClick) n.addEventListener('click', o.onClick);
+      return n;
+    };
+    rail.appendChild(mk('home', '홈', { href: '../' }));
+    rail.appendChild(mk('chart', '타임라인', { href: '../timeline/' }));
+    rail.appendChild(el('div', { cls: 'rail-sep' }));
+    rail.appendChild(mk('calendar', '달력', { active: state.view === 'calendar', onClick: () => setView('calendar') }));
+    rail.appendChild(mk('list', '목록', { active: state.view === 'list', onClick: () => setView('list') }));
+    rail.appendChild(el('div', { cls: 'rail-sep' }));
+    const fo = document.getElementById('flyout');
+    const f = mk('filter', '필터', { active: fo && fo.classList.contains('open'), onClick: () => toggleFlyout() });
+    const n = activeFilterCount();
+    if (n) f.appendChild(el('span', { cls: 'rail-badge', text: String(n) }));
+    rail.appendChild(f);
+  }
+
+  // 상단바 — 월 이동 + 요약. 기존 #month-nav 노드를 재사용해 이벤트 바인딩을 보존한다.
+  function mountTopbar() {
+    const tb = document.getElementById('topbar');
+    if (!tb) return;
+    const sum = el('span', { cls: 'tb-sum' });
+    sum.id = 'tb-sum';   // el() 헬퍼는 id 옵션을 지원하지 않는다
+    tb.appendChild(sum);
+    const right = el('span', { cls: 'tb-right' });
+    const search = document.getElementById('f-search');
+    if (search) right.appendChild(search);
+    const meta = document.querySelector('.stats-meta');
+    if (meta) right.appendChild(meta);
+    tb.appendChild(right);
+  }
+
+  function updateTopbarSummary() {
+    const sum = document.getElementById('tb-sum');
+    if (!sum) return;
+    const list = getFiltered();
+    const hi = list.filter((c) => (effectiveRating(c) || 0) >= 4).length;
+    sum.replaceChildren();
+    sum.appendChild(el('b', { text: String(list.length) }));
+    sum.appendChild(document.createTextNode('건'));
+    if (hi) {
+      sum.appendChild(document.createTextNode(' · ★4↑ '));
+      sum.appendChild(el('b', { text: String(hi) }));
+    }
+  }
+
+  // 필터·범례를 플라이아웃으로 이동 (기존 노드를 옮겨 이벤트 바인딩 보존)
+  function mountFlyout() {
+    const fo = document.getElementById('flyout');
+    if (!fo) return;
+    fo.appendChild(el('h4', { text: '필터' }));
+    const filters = document.getElementById('filters');
+    if (filters) { filters.hidden = false; fo.appendChild(filters); }
+    const af = document.getElementById('active-filters');
+    if (af) fo.appendChild(af);
+    fo.appendChild(el('h4', { text: '요약' }));
+    const stats = document.querySelector('.stats');
+    if (stats) fo.appendChild(stats);
+    const rs = document.getElementById('result-stats');
+    if (rs) fo.appendChild(rs);
+    const ft = document.getElementById('filter-toggle');
+    if (ft) ft.remove();
+  }
+
   // ===== Init =====
+  mountTopbar();
+  mountFlyout();
+  renderRail();
+  // data-icon 이 있는 요소 앞에 SVG 주입 (정적 SVG 를 HTML 에 인라인하면 파일이 커진다)
+  for (const node of document.querySelectorAll('[data-icon]')) {
+    const ic = window.Icons.svg(node.dataset.icon, 14);
+    ic.style.marginRight = '5px';
+    node.insertBefore(ic, node.firstChild);
+  }
   initRegionFilter();
   updateStats();
+  // 진입 월 — 데이터가 있는 가장 가까운 달. 딥링크가 있으면 applyUrl이 덮어쓴다.
+  {
+    const entry = window.CalLib.pickEntryMonth(CASES.map((c) => c.saleDate), todayStr);
+    if (entry) state.currentMonth = entry;
+  }
   applyUrl();
   setView(state.view);
   if (state.selectedId) {
@@ -2580,6 +2964,5 @@
   }
 })();
 </script>
-<script src="../site-nav.js"></script>
 </body>
 </html>

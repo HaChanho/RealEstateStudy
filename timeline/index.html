@@ -4,12 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>낙찰물건 타임라인</title>
+<link rel="stylesheet" href="../shared/theme.css" />
 <style>
-  :root{
-    --bg:#eef1f7; --surface:#fff; --surface-2:#f3f5fb; --surface-3:#e4e8f3;
-    --border:#dde3f0; --border-strong:#c1cad9; --text:#1a1f2e; --text-dim:#4a5570; --text-mute:#8b95a7;
-    --accent:#3b6fde; --accent-strong:#1e40af; --price:#b45309; --positive:#059669; --negative:#dc2626; --pending:#0284c7;
-  }
+  :root{ --price:#b45309; --positive:#059669; --negative:var(--loss); --pending:#0284c7; }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Segoe UI",Roboto,sans-serif;font-size:14px}
@@ -40,14 +37,42 @@
   .pnl{display:flex;gap:20px;flex-wrap:wrap}
   .pnl .kv .l{color:var(--text-mute);font-size:12px} .pnl .kv .v{font-size:18px;font-weight:700}
   @media (max-width:900px){ main{flex-direction:column} .col-list{flex:1 1 auto;width:100%} }
+  /* 375px 에서 표가 카드 폭을 초과해 body 가 가로 스크롤되던 것을 컨테이너로 가둔다. */
+  .ledger-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table.ledger{min-width:340px}
+  table.ledger th:nth-child(1),table.ledger td:nth-child(1),
+  table.ledger th:nth-child(2),table.ledger td:nth-child(2){white-space:nowrap}
+  /* main 이 flex 라 .stub 이 콘텐츠 폭으로 줄어 text-align:center 가 무력화된다. */
+  main > .stub{flex:1 1 auto;width:100%;max-width:560px;margin-inline:auto}
+  /* 계획 vs 실제 (§7.5 R1) */
+  table.ledger.fc td.amt.over  { color: var(--negative); }
+  table.ledger.fc td.amt.under { color: var(--positive); }
+  table.ledger.fc .pct { font-size: 11px; opacity: .8 }
+  .fc-cap { font-size: 11px; color: var(--text-mute); margin-top: 4px }
+  /* S3 — .kv .v(18px/700)는 숫자 전용. 서술형은 별도 위계로 내린다. */
+  .pnl .kv.kv-text { max-width: 320px; }
+  .pnl .kv.kv-text .t { font-size: var(--fs-base); font-weight: 500; color: var(--text);
+                        line-height: var(--lh-base); }
+  .pnl .kv .v { font-variant-numeric: tabular-nums; }
+  /* S2 — pending 마일스톤: opacity:.5 합성으로 명암비 1.65:1(AA 미달)이었다.
+     거기 담긴 게 '명도 협의기한'이라는 지금 가장 액션이 필요한 정보다. */
+  .steps li.pending { opacity: 1; }
+  .steps li.pending .k { color: var(--text-dim); }
+  .steps li.pending .d { color: var(--text-mute); }
+  .steps li.pending { border-left-color: var(--border-strong); border-left-style: dashed; }
+  /* 잔여 하드코딩 토큰화 */
+  .card { box-shadow: var(--sh-1); }
+  .badge.holding { background: rgb(2 132 199 / var(--a-2)); color: var(--r3-bg); }
+  .badge.sold { background: rgb(5 150 105 / var(--a-2)); color: var(--positive); }
 </style>
+<script src="../shared/cal-lib.js"></script>
+<script src="../site-nav.js" defer></script>
 </head>
 <body>
 <header><h1>📈 낙찰물건 타임라인</h1></header>
 <main id="app"><div class="stub">로딩 중…</div></main>
 
 <!-- 파생 소스(공개): ../calendar/{results,cases}.js. 원장·lib(로컬 전용): ../../_holdings/* (공개선 404→stub). -->
-<script src="../site-nav.js"></script>
 <script>
 (function () {
   var v = Date.now();
@@ -73,15 +98,37 @@
       .then(function (blob) { if (blob && blob.ct) promptPassword(blob); else render(); }); // 3계층: stub
   }
 
+  // 잠금 화면용 상태 요약. 금액은 절대 포함하지 않는다 — 건수만.
+  // 반환값은 정수만 보간하므로 innerHTML 삽입 경로가 안전하다.
+  function wonSummary() {
+    var n = 0;
+    try {
+      var R = window.AUCTION_RESULTS || {};
+      for (var k in R) if (R[k] && R[k].myResult === 'won') n++;
+    } catch (e) { return ''; }
+    return n ? '<br>현재 낙찰 ' + n + '건을 보유 중입니다.' : '';
+  }
+
   function promptPassword(blob) {
     var app = document.getElementById('app');
-    app.innerHTML = '<div class="stub">🔒 낙찰물건 타임라인은 <b>비공개</b>입니다. 비밀번호를 입력하면 열람합니다.'
+    // 공개 배포에서 지인이 실제로 마주치는 화면은 여기다(enc.json 이 있으면 항상 이 분기).
+    // 상태만 노출한다 — 낙찰가·응찰자수 등 금액은 넣지 않는다.
+    // wonCount 는 정수 카운터라 innerHTML 삽입 경로가 안전하다.
+    app.innerHTML = '<div class="stub"><b>낙찰물건 타임라인은 비공개입니다.</b>'
+      + (wonSummary() || '')
+      + '<br>여정·비용·손익 상세는 비밀번호로 열람합니다.'
       + '<form id="pwf" style="margin-top:16px">'
-      + '<input id="pw" type="password" autocomplete="off" placeholder="비밀번호" '
+      + '<label for="pw" style="display:block;font-size:12px;color:var(--text-mute);margin-bottom:6px">비밀번호</label>'
+      + '<input id="pw" type="password" autocomplete="off" placeholder="비밀번호" autofocus '
       + 'style="padding:8px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;min-width:260px" />'
       + '<button type="submit" style="margin-left:8px;padding:8px 16px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:8px;cursor:pointer">열람</button>'
-      + '<div id="pwe" style="color:var(--negative);font-size:12px;margin-top:8px;min-height:16px"></div>'
-      + '</form></div>';
+      + '<div id="pwe" role="status" aria-live="polite" style="color:var(--negative);font-size:12px;margin-top:8px;min-height:16px"></div>'
+      + '</form>'
+      + '<span style="display:block;margin-top:10px;font-size:12px;color:var(--text-mute)">'
+      + '낙찰 결과 요약은 <a href="../calendar/">캘린더</a>에서 볼 수 있습니다.</span></div>';
+    // innerHTML 로 삽입된 요소에는 autofocus 속성이 동작하지 않는다 — 명시 호출.
+    var pwEl = document.getElementById('pw');
+    if (pwEl) pwEl.focus();
     document.getElementById('pwf').addEventListener('submit', function (e) {
       e.preventDefault();
       var el = document.getElementById('pw'), err = document.getElementById('pwe');
@@ -92,22 +139,86 @@
     });
   }
 
-  function today() { return new Date().toISOString().slice(0, 10); }
+  // KST 기준. toISOString()은 UTC라 KST 00:00~09:00(하루의 37.5%)에 전날을 반환한다.
+  function today() { return window.CalLib.todayKST(); }
   function won(n) { return n == null ? '—' : '₩' + Number(n).toLocaleString('ko-KR'); }
   var STEP_LABEL = { won:'낙찰', balance:'잔금납부', eviction:'명도완료', repair:'수리완료', listed:'매물등록', sold:'매도' };
+
+
+  // 계획 vs 실제 대조 (§7.5 R1) — 이 페이지가 존재하는 이유.
+  // 원장에 입찰 전 얼려둔 forecast 가 있는데 render() 가 한 번도 읽지 않았다.
+  // 이 두 열을 붙이면 페이지 성격이 "내가 뭘 샀나"에서 "내 모델이 얼마나 맞았나"로 바뀐다.
+  function forecastHtml(h, f, split) {
+    var fc = h && h.forecast;
+    if (!fc) return '';
+    var esc = function (t) { return String(t == null ? '' : t).replace(/[&<>]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); };
+    // 실제 집행분을 카테고리별로 합산 (오늘 이전만 — 예정분은 대조에서 제외)
+    var today0 = today();
+    var actual = {};
+    (h.costs || []).forEach(function (e) {
+      if (!e || e.direction === 'in') return;
+      if (e.occurredAt && String(e.occurredAt) > today0) return;
+      actual[e.category] = (actual[e.category] || 0) + (Number(e.amount) || 0);
+    });
+    var rows = [];
+    var pushRow = function (label, planned, real) {
+      if (planned == null && real == null) return;
+      var diff = (planned != null && real != null) ? real - planned : null;
+      var pct = (diff != null && planned) ? (diff / planned * 100) : null;
+      rows.push('<tr><td>' + esc(label) + '</td>' +
+        '<td class="amt">' + won(planned) + '</td>' +
+        '<td class="amt">' + won(real) + '</td>' +
+        '<td class="amt ' + (diff == null ? '' : (diff > 0 ? 'over' : 'under')) + '">' +
+        (diff == null ? '—' : (diff > 0 ? '+' : '−') + won(Math.abs(diff)).slice(1) +
+          (pct == null ? '' : ' <span class="pct">' + (pct > 0 ? '+' : '−') + Math.abs(pct).toFixed(1) + '%</span>')) +
+        '</td></tr>');
+    };
+    pushRow('낙찰가', fc.projectedBid, f && f.wonPrice);
+    var ac = fc.assumedCosts || {};
+    Object.keys(ac).forEach(function (k) { pushRow(k, ac[k], actual[k] != null ? actual[k] : null); });
+    if (!rows.length) return '';
+    var cap = [];
+    if (fc.assumedAt) cap.push(esc(fc.assumedAt) + ' 기준');
+    if (fc.bidBasis) cap.push(esc(fc.bidBasis));
+    if (fc.frozen) cap.push('입찰 전 확정(frozen)');
+    return '<div class="sec-title">계획 vs 실제</div>' +
+      '<div class="ledger-wrap"><table class="ledger fc"><thead><tr>' +
+      '<th>항목</th><th style="text-align:right">계획</th><th style="text-align:right">실제</th>' +
+      '<th style="text-align:right">차이</th></tr></thead><tbody>' + rows.join('') +
+      '</tbody></table></div>' +
+      (cap.length ? '<div class="fc-cap">' + cap.join(' · ') + '</div>' : '');
+  }
 
   function render() {
     var app = document.getElementById('app');
     var L = window.HoldingsLib, H = window.AUCTION_HOLDINGS;
     // 공개 배포(원장·lib 미도달) 또는 데이터 없음 → stub
     if (!L || !H || !Object.keys(H).length) {
-      app.innerHTML = '<div class="stub">🔒 낙찰물건 타임라인은 <b>비공개</b>입니다.<br>전체 여정·비용·손익은 로컬 환경에서만 열람합니다.<br><span style="font-size:12px;color:var(--text-mute)">(공개 페이지는 위계·네비게이션용입니다)</span></div>';
+      // 3계층 stub — enc.json 도 없는 배포에서만 도달한다(공개 사이트는 2계층으로 간다).
+      app.innerHTML = '<div class="stub"><b>낙찰물건 타임라인은 비공개입니다.</b>'
+        + (wonSummary() || '')
+        + '<br>여정·비용·손익 상세는 로컬 환경에서만 열람합니다.'
+        + '<span style="display:block;margin-top:10px;font-size:12px;color:var(--text-mute)">'
+        + '낙찰 결과 요약은 <a href="../calendar/">캘린더</a>에서 볼 수 있습니다.</span></div>';
       return;
     }
     var RESULTS = window.AUCTION_RESULTS || {}, CASES = window.AUCTION_CASES || [];
     var ids = Object.keys(H);
-    var sel = ids[0];
+    // L3 — URL 해시로 물건 선택. 캘린더에서 넘어오는 링크(#h-<id>)의 착지점이자,
+    // 새로고침 시 선택 유지에도 필요하다(구 코드는 ids[0] 하드코딩).
+    function idFromHash() {
+      var m = /^#h-(.+)$/.exec(location.hash || '');
+      if (!m) return null;
+      var want = 'h-' + m[1];
+      return ids.indexOf(want) >= 0 ? want : (ids.indexOf(m[1]) >= 0 ? m[1] : null);
+    }
+    var sel = idFromHash() || ids[0];
     app.innerHTML = '<div class="col-list" id="list"></div><div class="col-detail" id="detail"></div>';
+    window.addEventListener('hashchange', function () {
+      var id = idFromHash();
+      if (id && id !== sel) { sel = id; draw(); }
+    });
     function draw() {
       var list = document.getElementById('list'); list.innerHTML = '';
       ids.forEach(function (id) {
@@ -117,8 +228,12 @@
         var badge = h.disposition === 'sold' ? '<span class="badge sold">매도완료</span>' : '<span class="badge holding">보유중 D+' + (L.holdingDays(h, today()) || 0) + '</span>';
         el.innerHTML = '<div class="cx">' + (f.complex || h.holdingId) + '</div>' +
           '<div class="sub">낙찰 ' + (f.wonDate || '—') + ' · ' + won(f.wonPrice) + '</div>' +
-          '<div class="sub">' + badge + ' · 누적지출 ' + won(L.costTotal(h)) + '</div>';
-        el.onclick = function () { sel = id; draw(); };
+          '<div class="sub">' + badge + ' · 집행지출 ' + won(window.CalLib.splitCosts(h.costs, today()).executed) + '</div>';
+        el.onclick = function () {
+          sel = id; draw();
+          // 해시를 갱신해 특정 물건 링크를 공유할 수 있게 한다(히스토리는 쌓지 않는다).
+          try { history.replaceState(null, '', '#' + id); } catch (e) {}
+        };
         list.appendChild(el);
       });
       drawDetail();
@@ -148,12 +263,24 @@
       // 💳 자금·대출 — loan(주 담보대출) + funding(조달 구성). 값 없는 필드는 생략.
       var pct = function (r) { return r == null ? null : (r * 100).toFixed(2).replace(/\.?0+$/, '') + '%'; };
       var ln = h.loan || {};
+      // R2 — loan.repayment 승격. monthlyPayment 등이 구조화 필드로 있는데
+      // render() 가 안 읽어서 같은 사실이 2,257자 메모 산문에만 있었다.
+      var rp = ln.repayment || {};
+      // S3 — .kv .v 는 18px/700 이라 숫자 전용이다. 서술형은 .kv-text 로 분리한다
+      // (구 구조에서는 회사명·59자 문장이 금액과 같은 위계였다).
+      var kvNum = function (l, v) { return v ? '<div class="kv"><div class="l">' + l + '</div><div class="v">' + v + '</div></div>' : ''; };
+      var kvTxt = function (l, v) { return v ? '<div class="kv kv-text"><div class="l">' + l + '</div><div class="t">' + v + '</div></div>' : ''; };
       var loanKv = [
-        ['대출기관', ln.lender], ['원금', ln.principal != null ? won(ln.principal) : null],
-        ['금리', pct(ln.rate)], ['실행일', ln.executedAt],
-        ['중도상환수수료', pct(ln.prepayFeeRate)], ['만기', ln.term]
-      ].filter(function (r) { return r[1]; })
-       .map(function (r) { return '<div class="kv"><div class="l">' + r[0] + '</div><div class="v">' + r[1] + '</div></div>'; }).join('');
+        kvNum('원금', ln.principal != null ? won(ln.principal) : null),
+        kvNum('금리', pct(ln.rate)),
+        kvNum('월 납입금', rp.monthlyPayment != null ? won(rp.monthlyPayment) : null),
+        kvNum('중도상환수수료', pct(ln.prepayFeeRate)),
+        kvTxt('대출기관', ln.lender),
+        kvTxt('실행일', ln.executedAt),
+        kvTxt('상환방식', [rp.type, ln.term].filter(Boolean).join(' · ')),
+        kvTxt('납입일', rp.dayOfMonth ? '매월 ' + rp.dayOfMonth + '일' : null),
+        kvTxt('출구 계획', rp.exitPlan)
+      ].filter(Boolean).join('');
       var fundRows = (h.funding || []).map(function (x) {
         return '<tr><td>' + x.source + '</td><td class="amt">' + (x.amount != null ? won(x.amount) : '—') + '</td>' +
           '<td>' + (pct(x.rate) || '—') + '</td><td>' + (x.memo || '') + '</td></tr>';
@@ -161,27 +288,33 @@
       var fundTotal = (h.funding || []).reduce(function (s, x) { return s + (Number(x.amount) || 0); }, 0);
       var fundingHtml = (loanKv || fundRows)
         ? '<div class="sec-title">💳 자금·대출</div>' +
-          (loanKv ? '<div class="pnl">' + loanKv + (ln.memo ? '<div class="kv"><div class="l">비고</div><div class="v" style="text-align:right">' + ln.memo + '</div></div>' : '') + '</div>' : '') +
-          (fundRows ? '<table class="ledger"><thead><tr><th>조달처</th><th style="text-align:right">금액</th><th>금리</th><th>메모</th></tr></thead><tbody>' + fundRows +
-            '<tr><td><b>합계</b></td><td class="amt"><b>' + won(fundTotal) + '</b></td><td></td><td></td></tr></tbody></table>' : '')
+          (loanKv ? '<div class="pnl">' + loanKv + (ln.memo ? '<div class="kv kv-text"><div class="l">비고</div><div class="t">' + ln.memo + '</div></div>' : '') + '</div>' : '') +
+          (fundRows ? '<div class="ledger-wrap"><table class="ledger"><thead><tr><th>조달처</th><th style="text-align:right">금액</th><th>금리</th><th>메모</th></tr></thead><tbody>' + fundRows +
+            '<tr><td><b>합계</b></td><td class="amt"><b>' + won(fundTotal) + '</b></td><td></td><td></td></tr></tbody></table></div>' : '')
         : '';
       var notesHtml = h.notes
         ? '<div class="sec-title">📝 메모</div><div class="card" style="white-space:pre-wrap;font-size:12.5px;line-height:1.65;background:var(--surface-2)">' +
           String(h.notes).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }) + '</div>'
         : '';
       var dispLabel = h.disposition === 'sold' ? '매도완료' : '보유중 D+' + (L.holdingDays(h, today()) || 0);
-      var realized = h.disposition === 'sold' ? won((f.wonPrice != null && h.resalePrice != null) ? (h.resalePrice - f.wonPrice - L.costTotal(h)) : null) + ' <span style="font-size:11px;color:var(--text-mute)">(세전·잠정)</span>' : '매도 전 (미정)';
+      // 비용을 집행분/예정분으로 분리한다. costTotal 은 날짜를 보지 않아 미래 예정 비용까지
+      // "누적지출"에 섞였다 — 라벨과 값이 어긋난 것이 원인.
+      var split = window.CalLib.splitCosts(h.costs, today());
+      // 실현손익은 집행분만 반영한다 — "실현"의 정의상 미집행 비용을 빼면 안 된다.
+      var realized = h.disposition === 'sold' ? won((f.wonPrice != null && h.resalePrice != null) ? (h.resalePrice - f.wonPrice - split.executed) : null) + ' <span style="font-size:11px;color:var(--text-mute)">(세전·잠정)</span>' : '매도 전 (미정)';
       d.innerHTML =
         '<div class="card">' +
           '<div class="ctx">' + chips + '</div>' +
           (f.reportUrl ? '<a href="../calendar/' + f.reportUrl + '" style="font-size:12px">📄 상세 분석 보고서</a>' : '') +
           '<div class="sec-title">⏱ 여정</div><ul class="steps">' + steps + '</ul>' +
           '<div class="sec-title">🧾 비용 원장</div>' +
-          '<table class="ledger"><thead><tr><th>일자</th><th>항목</th><th style="text-align:right">금액</th><th>메모</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+          '<div class="ledger-wrap"><table class="ledger"><thead><tr><th>일자</th><th>항목</th><th style="text-align:right">금액</th><th>메모</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
           fundingHtml +
+          forecastHtml(h, f, split) +
           '<div class="sec-title">💰 손익</div>' +
           '<div class="pnl"><div class="kv"><div class="l">상태</div><div class="v">' + dispLabel + '</div></div>' +
-          '<div class="kv"><div class="l">누적지출</div><div class="v" style="color:var(--price)">' + won(L.costTotal(h)) + '</div></div>' +
+          '<div class="kv"><div class="l">집행 지출</div><div class="v" style="color:var(--price)">' + won(split.executed) + '</div></div>' +
+          (split.planned ? '<div class="kv"><div class="l">예정 지출</div><div class="v" style="color:var(--text-mute)">' + won(split.planned) + '</div></div>' : '') +
           '<div class="kv"><div class="l">실현손익</div><div class="v">' + realized + '</div></div></div>' +
           notesHtml +
         '</div>';
