@@ -223,7 +223,9 @@
   .detail-panel.full { width: calc(100vw - 64px) !important; }
   body.panel-full .view-wrap { display: none; }
   body.panel-full .detail-panel { margin-left: 0; }
-  .detail-panel.full .detail-inner { column-count: 3; column-gap: 20px; }
+  /* full 은 2열. 3열이면 열당 ~510px 라 오히려 좁아진다
+     (실측 줄바꿈: 3열 11/24 vs 2열 4/24, 스크롤은 888px 로 동일). */
+  .detail-panel.full .detail-inner { column-count: 2; column-gap: 24px; }
   .detail-panel.full .detail-section { break-inside: avoid; }
   .detail-panel.full .detail-header { column-span: all; }
   #panel-expand { background: none; border: 1px solid var(--border); color: var(--text-dim);
@@ -823,6 +825,36 @@
   .chip .chip-text { font-size: var(--fs-base); font-weight: 600; color: var(--text); }
   .chip .chip-price { font-size: var(--fs-base); font-weight: 700; }
   .chip .chip-rating { width: 18px; height: 18px; font-size: 10px; }
+  /* ── 상태(state) 설계 — 지금까지 "정상 상태" 하나만 디자인돼 있었다 ── */
+  /* 데이터 공백 배너: 입찰하러 왔는데 입찰 가능한 게 하나도 없는 상황을 말해준다 */
+  .stale-banner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+                  margin: 0 20px 12px; padding: 10px 14px; border-radius: var(--r-md);
+                  background: #fffbeb; border: 1px solid rgb(217 119 6 / var(--a-3));
+                  font-size: var(--fs-md); color: #92400e; }
+  .stale-banner b { font-weight: 700; }
+  .stale-banner .sb-hint { color: #a16207; }
+  /* 로딩 스켈레톤 */
+  .skel-row { height: 40px; border-bottom: 1px solid var(--border); display: flex;
+              align-items: center; gap: 12px; padding: 0 10px; }
+  .skel-bar { height: 10px; border-radius: 4px;
+              background: linear-gradient(90deg, var(--n-100) 25%, var(--n-200) 37%, var(--n-100) 63%);
+              background-size: 400% 100%; animation: skel 1.4s ease infinite; }
+  @keyframes skel { 0% { background-position: 100% 50% } 100% { background-position: 0 50% } }
+  /* 에러 — 뷰와 무관하게 공통 */
+  .load-error { padding: 48px 20px; text-align: center; color: var(--text-dim); line-height: 1.7; }
+  .load-error b { display: block; color: var(--loss); font-size: var(--fs-lg); margin-bottom: 8px; }
+  .btn-retry { margin-top: 14px; padding: 7px 16px; border-radius: var(--r-md); cursor: pointer;
+               border: 1px solid var(--accent); background: var(--accent); color: var(--n-0);
+               font-family: inherit; font-size: var(--fs-md); font-weight: 600; }
+  /* 빈 상태 — 어떤 필터가 걸려 있는지 + 초기화 */
+  .empty-filters { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin: 12px 0; }
+  .empty-filters .ef { font-size: var(--fs-sm); padding: 3px 9px; border-radius: var(--r-pill);
+                       background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); }
+  /* 미산출 행 접기 — 채움률 23~49% 컬럼이 절반 비어 "정보 없음"으로 보였다 */
+  .list-table tbody tr.unrated-head td { height: 30px; background: var(--surface-2);
+              color: var(--text-dim); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;
+              border-top: 1px solid var(--border-strong); }
+  .list-table tbody tr.unrated-hidden { display: none; }
 </style>
 <script src="../shared/cal-lib.js"></script>
 <script src="../shared/icons.js"></script>
@@ -919,6 +951,7 @@
   <aside class="flyout" id="flyout"></aside>
   <div class="view-area">
   <div class="sr-only" id="sr-status" role="status" aria-live="polite"></div>
+  <div id="stale-banner" hidden></div>
   <div class="topbar" id="topbar">
     <div class="month-nav" id="month-nav">
       <button class="nav-btn" id="prev-month" title="이전 달" type="button">←</button>
@@ -956,14 +989,46 @@
 <script>
   (function () {
     const v = Date.now();
+
+    // 로딩 스켈레톤 — 스크립트 3개를 순차 로드하는 동안 빈 화면이었다.
+    function showSkeleton() {
+      const host = document.getElementById('list-body') ? 'list' : null;
+      const cal = document.getElementById('calendar');
+      const lb = document.getElementById('list-body');
+      const row = (w1, w2, w3) =>
+        '<div class="skel-row" aria-hidden="true">' +
+        '<div class="skel-bar" style="width:' + w1 + 'px"></div>' +
+        '<div class="skel-bar" style="width:' + w2 + 'px;flex:1"></div>' +
+        '<div class="skel-bar" style="width:' + w3 + 'px"></div></div>';
+      const html = [1, 2, 3, 4, 5, 6, 7, 8]
+        .map((i) => row(28, 120 + (i % 3) * 40, 70)).join('');
+      if (cal) { cal.setAttribute('aria-busy', 'true'); cal.innerHTML = html; }
+      if (lb) lb.closest('.list-wrap') && lb.closest('.list-wrap').setAttribute('aria-busy', 'true');
+    }
+
+    // 에러 — 뷰와 무관하게 같은 블록을 띄운다(구 코드는 캘린더 뷰에만 뿌렸다).
+    function showLoadError(what) {
+      ['calendar', 'list-body'].forEach(function (id) {
+        const n = document.getElementById(id);
+        if (!n) return;
+        n.removeAttribute('aria-busy');
+        const box = '<div class="load-error"><b>데이터를 불러오지 못했습니다</b>' +
+          what + ' 로드에 실패했습니다. 네트워크를 확인하고 다시 시도해 주세요.' +
+          '<div><button type="button" class="btn-retry" onclick="location.reload()">다시 시도</button></div></div>';
+        if (id === 'list-body') n.innerHTML = '<tr><td colspan="11">' + box + '</td></tr>';
+        else n.innerHTML = box;
+      });
+    }
+
     function loadCases() {
       const s = document.createElement('script');
       s.src = 'cases.js?v=' + v;
-      s.onload = function () { window.dispatchEvent(new Event('cases-loaded')); };
-      s.onerror = function () {
+      s.onload = function () {
         const cal = document.getElementById('calendar');
-        if (cal) cal.innerHTML = '<div style="padding:40px;text-align:center;color:#b91c1c;font-size:15px;line-height:1.6">물건 데이터(cases.js)를 불러오지 못했습니다.<br>새로고침하거나 잠시 후 다시 시도해 주세요.</div>';
+        if (cal) cal.removeAttribute('aria-busy');
+        window.dispatchEvent(new Event('cases-loaded'));
       };
+      s.onerror = function () { showLoadError('물건 데이터(cases.js)'); };
       document.head.appendChild(s);
     }
     function loadPredictions() {
@@ -973,6 +1038,9 @@
       p.onerror = loadCases; // predictions.js 없어도 진행
       document.head.appendChild(p);
     }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', showSkeleton);
+    else showSkeleton();
+
     const r = document.createElement('script');
     r.src = 'results.js?v=' + v;
     r.onload = loadPredictions;
@@ -1139,7 +1207,9 @@
   }
   // 패널 프리셋 3단. 실측상 2열 레이아웃은 880px 에서 포화한다(scrollH 1116 → 1300px 에서도 1103).
   // 즉 "넓히기 제한"의 해결은 상한 숫자가 아니라 열 수다 — full 은 3열로 간다.
-  const PANEL_PRESETS = [560, 880, 'full'];
+  // 실측 줄바꿈 셀: 560px 12/24 · 640px 8/24 · 720px 5/24 · 880px 3/24 · 960px 3/24
+  // → 880 이 2열 포화점이자 최적. 최소 프리셋은 560 이 아니라 720 이어야 한다.
+  const PANEL_PRESETS = [720, 880, 'full'];
   const LS_PANEL_FULL = 'calendar.panelFull.v1';
 
   function isPanelFull() {
@@ -1405,6 +1475,31 @@
   function getFiltered() { return CASES.filter(passesFilter); }
 
   // ===== Stats =====
+
+  // 데이터 공백 배너 — 미래 매각기일이 하나도 없으면 사용자는 입찰하러 왔는데 입찰할 게 없다.
+  // 갱신일 배지는 "데이터가 언제 만들어졌나"이지 "볼 게 없다"는 뜻이 아니다. 그걸 말해준다.
+  function renderStaleBanner() {
+    const box = document.getElementById('stale-banner');
+    if (!box) return;
+    const upcoming = CASES.filter((c) => c.saleDate && c.saleDate >= todayStr).length;
+    if (upcoming > 0) { box.hidden = true; box.replaceChildren(); return; }
+    const all = CASES.map((c) => c.saleDate).filter(Boolean).sort();
+    const n = window.CalLib.staleDays(window.AUCTION_LAST_UPDATED || '', todayStr);
+    box.hidden = false;
+    box.replaceChildren();
+    const wrap = el('div', { cls: 'stale-banner' });
+    wrap.appendChild(el('b', { text: '진행 예정 사건이 없습니다' }));
+    if (all.length) {
+      const fmtM = (x) => `${x.slice(0, 4)}.${x.slice(5, 7)}`;
+      wrap.appendChild(el('span', {
+        text: `수집된 ${CASES.length}건은 모두 지난 기일입니다 (${fmtM(all[0])} ~ ${fmtM(all[all.length - 1])})`,
+      }));
+    }
+    if (n != null) wrap.appendChild(el('span', { cls: 'sb-hint', text: `· 마지막 수집 ${n}일 전` }));
+    wrap.appendChild(el('span', { cls: 'sb-hint', text: '· 새 물건을 보려면 sourcing 을 실행하세요' }));
+    box.appendChild(wrap);
+  }
+
   function updateStats() {
     if (typeof updateTopbarSummary === 'function') updateTopbarSummary();
     const filtered = getFiltered();
@@ -1441,6 +1536,7 @@
   // 결과(낙찰/유찰/무산) 분포 + 캘리브레이션 4분면 + 평균 낙찰가율.
   function renderResultStats() {
     updateTopbarSummary();
+    renderStaleBanner();
     const cont = document.getElementById('result-stats');
     if (!cont) return;
     const rs = { sold: 0, failed: 0, nosale: 0, TP: 0, FP: 0, FN: 0, TN: 0, rateSum: 0, rateN: 0, total: 0 };
@@ -1816,11 +1912,42 @@
       return state.sort.dir === 'asc' ? cmp : -cmp;
     });
 
-    document.getElementById('list-empty').hidden = sorted.length > 0;
+    // 빈 상태 — "없습니다" 만으로는 사용자가 무엇을 되돌려야 하는지 모른다.
+    const emptyBox = document.getElementById('list-empty');
+    emptyBox.hidden = sorted.length > 0;
+    if (!sorted.length) {
+      emptyBox.replaceChildren();
+      emptyBox.appendChild(el('div', { text: '조건에 맞는 사건이 없습니다.' }));
+      const active = [];
+      const fl = state.filters;
+      if (fl.verdictHidden && fl.verdictHidden.size) active.push('숨김: ' + [...fl.verdictHidden].map(verdictShort).join('·'));
+      if (fl.region) active.push('지역 ' + fl.region);
+      if (fl.priority) active.push('우선순위 ' + fl.priority);
+      if (fl.risk) active.push('권리 ' + riskLabel(fl.risk));
+      if (fl.rating) active.push('별점 ' + fl.rating);
+      if (fl.result) active.push('결과 ' + fl.result);
+      if (fl.search) active.push('검색 "' + fl.search + '"');
+      if (active.length) {
+        const chips = el('div', { cls: 'empty-filters' });
+        active.forEach((t) => chips.appendChild(el('span', { cls: 'ef', text: t })));
+        emptyBox.appendChild(chips);
+        const btn = el('button', { cls: 'btn-retry', text: '필터 초기화' });
+        btn.addEventListener('click', () => document.getElementById('f-reset').click());
+        emptyBox.appendChild(btn);
+      }
+    }
 
     // 정렬이 매각일 기준일 때만 월 그룹 헤더를 넣는다(다른 정렬에선 월이 뒤섞여 의미가 없다).
     const groupByMonth = state.sort.key === 'saleDate';
     let lastMonth = null;
+    // 미산출 행 접기 — 예상수익/권장가는 채움률 38%라 절반이 빈칸이면
+    // 표 전체가 "정보 없음"으로 보인다. 값 있는 행을 먼저 보여준다.
+    // sortValue 는 미산출에 센티넬(99 / -Infinity)을 돌려주므로 null 검사가 안 통한다.
+    // 원본 필드로 판정한다.
+    const isUnrated = (c) => c[state.sort.key] == null;
+    const unratedCount = sorted.filter(isUnrated).length;
+    const foldUnrated = !groupByMonth && unratedCount > 0 && unratedCount < sorted.length;
+    let unratedStarted = false;
 
     for (const c of sorted) {
       if (groupByMonth) {
@@ -1835,7 +1962,26 @@
           body.appendChild(gtr);
         }
       }
+      if (foldUnrated && !unratedStarted && isUnrated(c)) {
+        unratedStarted = true;
+        const n = unratedCount;
+        const htr = el('tr', { cls: 'unrated-head' });
+        const htd = el('td', { text: `▸ 미산출 ${n}건 (${LIST_COLUMNS.find((k) => k.key === state.sort.key)?.label || ''} 없음)` });
+        htd.colSpan = LIST_COLUMNS.length;
+        htr.addEventListener('click', () => {
+          const open = htr.dataset.open === '1';
+          htr.dataset.open = open ? '' : '1';
+          htd.textContent = (open ? '▸' : '▾') + htd.textContent.slice(1);
+          [...document.querySelectorAll('tr.unrated-hidden, tr.unrated-body')].forEach((r2) => {
+            r2.classList.toggle('unrated-hidden', open);
+            r2.classList.toggle('unrated-body', true);
+          });
+        });
+        htr.appendChild(htd);
+        body.appendChild(htr);
+      }
       const tr = el('tr');
+      if (unratedStarted) tr.classList.add('unrated-hidden', 'unrated-body');
       if (c.id === state.selectedId) { tr.classList.add('selected'); tr.setAttribute('aria-selected', 'true'); }
       tr.tabIndex = -1;
       tr.dataset.caseId = c.id;
@@ -2039,7 +2185,7 @@
     shareBtn.addEventListener('click', () => copyDeepLink(c.id, shareBtn));
     actions.appendChild(shareBtn);
     // 확대 토글 — 560 / 880 / 전체 3단 순환. 키보드 \\ 와 리사이즈 핸들 더블클릭도 같은 동작.
-    const expandBtn = el('button', { cls: 'icon-btn', text: '⤢', title: '패널 크기 순환 (560 / 880 / 전체 · 단축키 \\)' });
+    const expandBtn = el('button', { cls: 'icon-btn', text: '⤢', title: '패널 크기 순환 (720 / 880 / 전체 · 단축키 \\)' });
     expandBtn.id = 'panel-expand';
     expandBtn.setAttribute('aria-label', '패널 크기 전환');
     expandBtn.setAttribute('aria-pressed', isPanelFull() ? 'true' : 'false');
