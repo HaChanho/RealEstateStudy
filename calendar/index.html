@@ -681,7 +681,14 @@
     .resize-handle { display: none; }  /* 전체화면 패널에선 리사이즈 비활성 (오작동 방지) */
     .chip .mini-bar { display: none; }  /* 모바일 칩 정리: 추상 마진바 숨김, 최저가 텍스트는 유지 */
     /* P0 모바일: 필터 수납 토글 */
-    .filter-toggle { display: inline-flex; align-items: center; gap: 6px; margin: 8px 12px 0; padding: 8px 14px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; }
+    /* 좁은 폭에서는 토글이 '필터' 섹션 제목을 겸한다. 플라이아웃 안에 들어가 있으므로
+       페이지 여백(margin: 8px 12px)이 아니라 폭을 꽉 채운다. */
+    .flyout .fo-h-filter { display: none; }
+    .filter-toggle { display: flex; align-items: center; justify-content: space-between;
+                     width: 100%; margin: 0 0 8px; padding: 9px 12px; background: var(--surface-2);
+                     border: 1px solid var(--border); border-radius: 8px; font-size: 13px;
+                     font-weight: 700; color: var(--text); cursor: pointer; }
+    .filter-toggle:hover { border-color: var(--accent); }
     .filters { display: none; }
     .filters.open { display: flex; }
     /* P0 모바일: stats 가로 스크롤 1줄 (16개 pill 다단 점유 방지) */
@@ -3339,7 +3346,11 @@
   function mountFlyout() {
     const fo = document.getElementById('flyout');
     if (!fo) return;
-    fo.appendChild(el('h4', { text: '필터' }));
+    fo.appendChild(el('h4', { cls: 'fo-h-filter', text: '필터' }));
+    // 토글은 삭제하지 않고 자기가 여닫는 대상 바로 위로 옮긴다.
+    // (구 코드는 여기서 remove() 해버려서, 900px 이하에서 .filters 를 펼칠 방법이 사라졌다.)
+    const ft = document.getElementById('filter-toggle');
+    if (ft) { ft.textContent = '필터 ▾'; fo.appendChild(ft); }
     const filters = document.getElementById('filters');
     if (filters) { filters.hidden = false; fo.appendChild(filters); }
     const af = document.getElementById('active-filters');
@@ -3349,8 +3360,6 @@
     if (stats) fo.appendChild(stats);
     const rs = document.getElementById('result-stats');
     if (rs) fo.appendChild(rs);
-    const ft = document.getElementById('filter-toggle');
-    if (ft) ft.remove();
   }
 
   // ===== Init =====
