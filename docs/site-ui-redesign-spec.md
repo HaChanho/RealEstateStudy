@@ -2,17 +2,23 @@
 
 - **작성일**: 2026-08-26 (타임라인 범위 추가: 같은 날)
 - **대상**: `` (공개 repo `HaChanho/RealEstateStudy`, **PUBLIC**, GitHub Pages 배포)
-- **본체**: `calendar/index.html` (2,585줄) + `timeline/index.html` (194줄)
-- **상태**: **Phase 0~3 구현 완료** (브랜치 `claude/ui-phase0`, 미배포)
+- **본체**: `calendar/index.html` · `timeline/index.html`
+- **상태**: **전 단계 구현 완료 · main 배포됨**
 
 ## 구현 현황
 
-| Phase | 계획 | 상태 |
-|---|---|---|
-| 0 — 도달 가능성 | `docs/plans/2026-08-26-phase0-reachability.md` | ✅ 완료 (기준 13/13) |
-| 1 — 토큰 + 칩 | `docs/plans/2026-08-26-phase1-tokens-and-chip.md` | ✅ 완료 |
-| 2 — 앱 셸 | `docs/plans/2026-08-26-phase2-app-shell.md` | ✅ 완료 (기준 8/8) |
-| 3 — 지표·연결 | `docs/plans/2026-08-26-phase3-metrics-and-links.md` | ✅ 완료 |
+| 단계 | 상태 |
+|---|---|
+| Phase 0 — 도달 가능성 | ✅ 배포 (기준 13/13) |
+| Phase 1 — 토큰 + 칩 | ✅ 배포 |
+| Phase 2 — 앱 셸 | ✅ 배포 (기준 8/8) |
+| Phase 3 — 지표·연결 | ✅ 배포 |
+| **데스크톱 UX 재설계** | ✅ 배포 — 리스트 11열·패널 프리셋·키보드·상태 설계 |
+| **타임라인 재무 대시보드** | ✅ 배포 — HERO·손익분기 곡선·비용원장 재설계 |
+
+> §3~§7 의 "Before" 수치는 **개편 전 실측**이다. 이후 라운드의 재설계로 일부는
+> 더 나은 값으로 갱신됐다(예: 리스트 14열 → 11열, 패널 기본 480 → 640).
+> 각 라운드의 최종 실측은 §11.1 검증 스니펫으로 언제든 재현한다.
 
 ## 대상 페이지 3종
 
@@ -546,7 +552,22 @@ try { localStorage.clear(); } catch (e) {}
 location.replace(location.pathname + '?cb=' + Date.now());
 ```
 
-**③ 보조 규칙**
+**③ 스크린샷은 프로그램 스크롤을 반영하지 않는다**
+
+`window.scrollTo()` 후 찍으면 **스크롤 전 프레임**이 나온다(①과 같은 계열의 팬 한계).
+
+> 실제 사고: 타임라인 하단을 찍으려다 "상단이 텅 빈 화면"을 보고 **레이아웃 버그로 오인**했다.
+> DOM 은 `scrollY 900`, 모든 섹션 `visible`·`opacity 1`, 위치가 118→1,920px 로 연속인 정상 상태였다.
+
+```js
+// 대상보다 위에 있는 형제를 일시적으로 숨겨 뷰포트 최상단으로 끌어올린다
+peekBelowFold('#detail', '.fold');   // #detail 의 자식 중 .fold 만 남김
+// ... 스크린샷 ...
+peekBelowFold.restore();
+```
+`docs/verify-snippet.js` 에 헬퍼로 들어 있다.
+
+**④ 보조 규칙**
 
 - 캐시: 정적 자산은 `fetch(url, {cache:'reload'})` 로 먼저 갱신한 뒤 `location.replace('?cb='+Date.now())`.
   HTML 만 캐시버스트하면 `shared/*.js`·`theme.css` 는 구버전이 남는다.

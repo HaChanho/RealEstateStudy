@@ -1,8 +1,6 @@
 // 브라우저 콘솔 검증 스니펫 — 캘린더/타임라인 렌더 측정용.
 //
-// 사용법: 이 파일 내용을 통째로 브라우저 콘솔에 붙여넣고 **두 번 실행**한다.
-//        1회차: localStorage 를 비우고 자산 갱신 후 재로드
-//        2회차: 전이를 끄고 측정 + 9개 항목 판정
+// 사용법: 이 파일 내용을 통째로 브라우저 콘솔(또는 javascript_tool)에 붙여넣는다.
 // 로컬:   http://localhost:8793/calendar/
 // 라이브: https://hachanho.github.io/RealEstateStudy/calendar/
 //
@@ -17,6 +15,12 @@
 // ② 저장 상태를 비운다: localStorage 에 남은 값이 CSS 경로를 우회한다.
 //    → 드래그 테스트로 남은 calendar.panelWidth.v3 가 인라인 width 를 설정해
 //      CSS 기본값 경로를 건너뛰었다. 로컬은 통과했지만 새 방문자는 패널이 안 열렸다.
+//
+// ③ 스크린샷은 프로그램 스크롤을 반영하지 않는다: window.scrollTo() 후 찍으면
+//    스크롤 전 프레임이 나온다(①과 같은 계열의 팬 한계).
+//    → 타임라인 하단을 찍으려다 "상단이 텅 빈 화면"을 보고 레이아웃 버그로 오인했다.
+//      DOM 은 scrollY 900, 모든 섹션 visible·opacity 1, 위치 연속으로 정상이었다.
+//    → 아래 peekBelowFold() 로 상단을 일시 접어 대상을 스크롤 0 으로 올려서 찍는다.
 
 (function () {
   'use strict';
@@ -135,3 +139,32 @@
     entry: entry, split: split, shell: shell, quality: quality,
   }, null, 2);
 })();
+
+
+// ── 하단 섹션 스크린샷 헬퍼 ──
+// 브라우저 팬 스크린샷이 window.scrollTo() 를 반영하지 않으므로,
+// 보고 싶은 요소보다 위에 있는 형제들을 일시적으로 숨겨 대상을 뷰포트 최상단으로 올린다.
+//
+//   peekBelowFold('#detail', '.fold')   → #detail 의 자식 중 .fold 만 남기고 나머지 숨김
+//   peekBelowFold.restore()             → 원복
+//
+// 콘솔에 이 파일을 붙여넣으면 window.peekBelowFold 로 쓸 수 있다.
+window.peekBelowFold = function (containerSel, keepSel) {
+  var box = document.querySelector(containerSel);
+  if (!box) return 'container not found: ' + containerSel;
+  var hidden = [];
+  [].slice.call(box.children).forEach(function (c) {
+    if (keepSel && c.matches(keepSel)) return;
+    hidden.push([c, c.style.display]);
+    c.style.display = 'none';
+  });
+  window.peekBelowFold._hidden = hidden;
+  window.scrollTo(0, 0);
+  void document.body.offsetHeight;
+  return '숨김 ' + hidden.length + '개 — 스크린샷 후 peekBelowFold.restore()';
+};
+window.peekBelowFold.restore = function () {
+  (window.peekBelowFold._hidden || []).forEach(function (pair) { pair[0].style.display = pair[1]; });
+  window.peekBelowFold._hidden = null;
+  return 'restored';
+};
