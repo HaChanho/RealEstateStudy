@@ -123,16 +123,31 @@
     });
   }
 
+  // 원리금균등 상각표. 이 루프가 여러 벌 존재하면 반드시 어긋나므로 여기 한 곳에만 둔다.
+  // loanBalance 와 financeCost 가 이걸 소비한다.
+  function amortSchedule(h, n) {
+    const ln = h && h.loan;
+    const out = [];
+    if (!ln || !ln.principal) return out;
+    const i = (ln.rate || 0) / 12;
+    const M = (ln.repayment && ln.repayment.monthlyPayment) || 0;
+    let bal = ln.principal;
+    for (let k = 1; k <= n; k++) {
+      const interest = bal * i;
+      const principal = M ? Math.min(M - interest, bal) : 0;
+      bal = Math.max(0, bal - principal);
+      out.push({ k: k, interest: interest, principal: principal, balance: bal });
+    }
+    return out;
+  }
+
   // 원리금균등 상환 잔액. k 회차 납입 후 잔액.
   function loanBalance(h, k) {
     const ln = h && h.loan;
     if (!ln || !ln.principal) return 0;
-    const i = (ln.rate || 0) / 12;
-    const M = ln.repayment && ln.repayment.monthlyPayment;
-    if (!M) return ln.principal;
-    let bal = ln.principal;
-    for (let n = 1; n <= k; n++) bal -= (M - bal * i);
-    return Math.max(0, bal);
+    if (!(ln.repayment && ln.repayment.monthlyPayment)) return ln.principal;
+    const sch = amortSchedule(h, k);
+    return sch.length ? sch[sch.length - 1].balance : ln.principal;
   }
 
   // 금융비용(m) = 경락이자 누계 + 중도상환수수료 + 기타조달 이자
@@ -146,9 +161,10 @@
     const firstAt = ln.repayment && ln.repayment.firstPaidAt;
     const stubEntry = (h.costs || []).find((c) => c.category === '대출이자' && c.occurredAt === firstAt);
     let interest = stubEntry ? Number(stubEntry.amount) || 0 : 0;
-    let bal = ln.principal || 0;
-    for (let k = 1; k <= m; k++) { const ii = bal * i; interest += ii; if (M) bal -= (M - ii); }
-    const prepay = bal * (ln.prepayFeeRate || 0);
+    const sch = amortSchedule(h, m);
+    interest += sch.reduce((s2, r) => s2 + r.interest, 0);
+    if (!sch.length) interest += (ln.principal || 0) * i * m;   // 대출은 있으나 상각표가 없는 경우
+    const prepay = loanBalance(h, m) * (ln.prepayFeeRate || 0);
     const others = otherFunding(h)
       .reduce((s, x) => s + (Number(x.amount) || 0) * (Number(x.rate) || 0) * m / 12, 0);
     return interest + prepay + others;
@@ -279,12 +295,53 @@
     };
   }
 
+  function addMonths(ym, n) {
+    const y = Number(ym.slice(0, 4)), m = Number(ym.slice(5, 7)) - 1 + n;
+    const yy = y + Math.floor(m / 12), mm = ((m % 12) + 12) % 12 + 1;
+    return yy + '-' + String(mm).padStart(2, '0');
+  }
+
+  // 월별 부담 — 잔금월부터 n 개월. HERO 의 '월 부담' 한 숫자로는
+  // "12월까지 현금을 얼마나 마련해둬야 하나"에 답할 수 없다. 누적이 답이다.
+  // 과거 월은 원장 실적으로 시드하고 미래만 모델로 채운다.
+  function monthlyPlan(h, facts, caseData, n, today0) {
+    const bal = ((h && h.milestones) || []).find((m) => m.key === 'balance');
+    if (!bal || !bal.at) return [];
+    const start = String(bal.at).slice(0, 7);
+    const sch = amortSchedule(h, n);
+    const otherMonthly = otherFunding(h)
+      .reduce((s, x) => s + (Number(x.amount) || 0) * (Number(x.rate) || 0) / 12, 0);
+    const nowYM = String(today0 || '').slice(0, 7);
+    const rows = [];
+    let cum = 0;
+    for (let k = 0; k < n; k++) {
+      const ym = addMonths(start, k);
+      const past = nowYM ? ym <= nowYM : false;
+      // 잔금월(k=0)은 첫 정기납입 전이다 — 원장에 있는 실적 이자만 잡는다.
+      const booked = ((h && h.costs) || []).reduce(
+        (s, c) => (FIN_CATS.indexOf(c && c.category) >= 0 && String(c.occurredAt || '').slice(0, 7) === ym
+          ? s + signed(c) : s), 0);
+      const r = sch[k - 1];
+      const loanInterest = k === 0 ? booked : (r ? r.interest : 0);
+      const loanPrincipal = k === 0 ? 0 : (r ? r.principal : 0);
+      const cash = loanInterest + loanPrincipal + (k === 0 ? 0 : otherMonthly);
+      cum += cash;
+      rows.push({
+        month: ym, isPast: past, loanInterest: loanInterest, loanPrincipal: loanPrincipal,
+        otherInterest: k === 0 ? 0 : otherMonthly, cash: cash, cumCash: cum,
+        balance: r ? r.balance : (h.loan ? h.loan.principal : 0),
+        breakEven: breakEvenPrice(h, facts, k, caseData),
+      });
+    }
+    return rows;
+  }
+
   return {
     TAXONOMY: TAXONOMY, caseIdOf: caseIdOf, deriveAuctionFacts: deriveAuctionFacts,
     costTotal: costTotal, holdingDays: holdingDays, daysBetween: daysBetween,
     BROKERAGE_RATE: BROKERAGE_RATE, ACQ_CATS: ACQ_CATS,
     FIN_CATS: FIN_CATS, VAR_CATS: VAR_CATS, variableExecuted: variableExecuted,
-    otherFunding: otherFunding,
+    otherFunding: otherFunding, amortSchedule: amortSchedule, monthlyPlan: monthlyPlan,
     acquisitionCosts: acquisitionCosts, totalCost: totalCost, equity: equity,
     plannedTotal: plannedTotal, unbookedTotal: unbookedTotal, variableCosts: variableCosts,
     loanBalance: loanBalance, financeCost: financeCost,

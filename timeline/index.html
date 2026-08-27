@@ -105,6 +105,124 @@
   .hero-card .s { font-size: 12px; color: var(--text-dim); margin-top: 8px; line-height: 1.55; }
   .hero-card .s .warn { color: var(--negative); }
 
+  /* ── 매도가 현실성 (시세 대조) ── */
+  .mk-svg { width: 100%; height: auto; display: block; margin-top: 6px; }
+  .mk-svg .zone-lo { fill: rgb(220 38 38 / .07); }
+  .mk-svg .zone-hi { fill: rgb(5 150 105 / .07); }
+  .mk-svg .trade      { fill: var(--n-400); fill-opacity: .75; }
+  .mk-svg .trade.self { fill: none; stroke: var(--n-400); stroke-width: 1.5; }
+  .mk-svg .auc        { fill: var(--accent); fill-opacity: .75; }
+  .mk-svg .auc.out    { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 2 2; }
+  .mk-svg .band { fill: var(--n-100); stroke: var(--border-strong); stroke-width: 1; }
+  .mk-svg .ref  { stroke: var(--border-strong); stroke-width: 1; stroke-dasharray: 3 3; }
+  .mk-svg .ref.be { stroke: var(--accent-strong); stroke-width: 2.5; stroke-dasharray: none; }
+  .mk-svg .rl  { fill: var(--text-mute); font-size: 10.5px; text-anchor: middle; }
+  .mk-svg .rl.be { fill: var(--accent-strong); font-weight: 700; }
+  .mk-svg .rowlab { fill: var(--text-mute); font-size: 10.5px; text-anchor: end; }
+  .mk-fresh { font-size: 11px; font-weight: 600; color: var(--text-mute); margin-left: 8px; }
+  .mk-fresh.stale { color: var(--negative); }
+  .mx.mkt td.gap.pos { color: var(--positive); font-weight: 700; }
+  .mx.mkt td.gap.neg { color: var(--negative); font-weight: 700; }
+  .mx.mkt tbody tr.be-row { background: rgb(59 111 222 / .07); }
+  .mx.mkt tbody tr.be-row th[scope="row"] { color: var(--accent-strong); font-weight: 700; }
+  .mx.mkt td.note { text-align: left; font-size: 11px; color: var(--text-mute); white-space: normal; }
+  .mx.mkt td.when { text-align: left; font-size: 11.5px; color: var(--text-dim); white-space: nowrap; }
+
+  /* ── 진행 레일 (milestones) ── */
+  /* 이 페이지에 milestones 를 그리는 곳이 없었다. 사용자의 "언제"가 과거 지출에만 답해졌다. */
+  .rail6 { display: grid; gap: 0; margin: 12px 0 4px; }
+  .rail6 .nd { position: relative; text-align: center; padding-top: 22px; }
+  .rail6 .nd::before { content: ''; position: absolute; top: 7px; left: 0; right: 50%; height: 2px;
+                       background: var(--border-strong); }
+  .rail6 .nd:first-child::before { display: none; }
+  .rail6 .nd i { position: absolute; top: 1px; left: 50%; transform: translateX(-50%);
+                 width: 13px; height: 13px; border-radius: 50%; background: var(--n-0);
+                 box-shadow: inset 0 0 0 2px var(--n-300); }
+  .rail6 .nd.done i { background: var(--positive); box-shadow: inset 0 0 0 2px var(--positive); }
+  .rail6 .nd.done::before { background: var(--positive); }
+  .rail6 .nd.next i { box-shadow: inset 0 0 0 3px var(--accent); }
+  .rail6 .nd.next .l { color: var(--accent-strong); font-weight: 700; }
+  .rail6 .nd .l { font-size: 12px; color: var(--text-dim); font-weight: 600; }
+  .rail6 .nd .d { font-size: 11px; color: var(--text-mute); font-variant-numeric: tabular-nums;
+                  margin-top: 2px; }
+  .rail6 .nd .d.late { color: var(--negative); font-weight: 700; }
+  .rail6 .nd.pending .l { color: var(--text-mute); font-weight: 500; }
+  .rail-memo { font-size: 12px; color: var(--text-dim); line-height: 1.6; margin-top: 10px;
+               padding-top: 10px; border-top: 1px solid var(--border); }
+  .rail-memo b { color: var(--accent-strong); }
+
+  /* 월별 표 — 실적 행은 진하게, 예정 행은 흐리게 (원장 .grp.planned 규약과 동일) */
+  .mx.mon td.amt { color: var(--text-dim); }
+  .mx.mon tbody tr.future th[scope="row"], .mx.mon tbody tr.future td { color: var(--text-mute); }
+  .mx.mon tbody tr.m0 { background: rgb(59 111 222 / .06); }
+  .mx.mon tbody tr.m0 th[scope="row"] { color: var(--accent-strong); font-weight: 700; }
+  .mx.mon td.ev { text-align: left; font-size: 11px; color: var(--text-dim); white-space: normal; }
+  .mx.mon td.cum { font-weight: 700; color: var(--text); }
+  .mx.mon .badge-real { display: inline-block; margin-left: 5px; padding: 0 5px; border-radius: var(--r-pill);
+                        font-size: 9.5px; font-weight: 700; background: var(--surface-3); color: var(--text-dim); }
+
+  /* ── 원가 브릿지 (폭포) ── */
+  /* 채움은 카테고리가 아니라 '집행 상태'를 인코딩한다 — 원장이 이미 쓰는 어휘를 재사용하고
+     새 색을 도입하지 않는다. 집행완료=solid, 예정=옅은 채움+테두리, 미계상=적색 틴트. */
+  .wf-svg { width: 100%; height: auto; display: block; }
+  .wf-svg .b-done    { fill: var(--n-300); }
+  .wf-svg .b-plan    { fill: var(--n-100); stroke: var(--border-strong); stroke-width: 1; }
+  .wf-svg .b-unbook  { fill: rgb(220 38 38 / .14); stroke: var(--negative); stroke-width: 1; }
+  .wf-svg .b-anchor  { fill: var(--surface-3); stroke: var(--border-strong); stroke-width: 1; }
+  .wf-svg .b-total   { fill: rgb(59 111 222 / .16); stroke: var(--accent); stroke-width: 1.5; }
+  .wf-svg .conn      { stroke: var(--border-strong); stroke-width: 1; stroke-dasharray: 2 3; }
+  .wf-svg .cut       { stroke: var(--text-mute); stroke-width: 1.5; fill: none; }
+  .wf-svg .lab       { fill: var(--text-mute); font-size: 11px; text-anchor: middle; }
+  .wf-svg .lab.two   { font-size: 10px; }
+  .wf-svg .val       { fill: var(--text-dim); font-size: 11px; text-anchor: middle;
+                       font-variant-numeric: tabular-nums; }
+  .wf-svg .val.big   { fill: var(--text); font-size: 13px; font-weight: 700; }
+  .wf-note { margin-top: 10px; font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+  .wf-note b { color: var(--text); font-variant-numeric: tabular-nums; }
+  .wf-axis { margin-top: 4px; font-size: 11px; color: var(--text-mute); }
+  .wf-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; font-size: 11px;
+               color: var(--text-mute); }
+  .wf-legend i { display: inline-block; width: 11px; height: 11px; border-radius: 2px;
+                 margin-right: 5px; vertical-align: -1px; }
+  .wf-legend .k-done   { background: var(--n-300); }
+  .wf-legend .k-plan   { background: var(--n-100); box-shadow: inset 0 0 0 1px var(--border-strong); }
+  .wf-legend .k-unbook { background: rgb(220 38 38 / .14); box-shadow: inset 0 0 0 1px var(--negative); }
+
+  .mx-sep { height: 1px; background: var(--border); margin: 22px 0 4px; }
+  /* ── 매트릭스 표 (항목별 비용 · 민감도) ── */
+  .mx { width: 100%; border-collapse: collapse; font-size: 12.5px;
+        font-variant-numeric: tabular-nums; margin-top: 10px; }
+  .mx caption { caption-side: top; text-align: left; font-size: 11.5px; color: var(--text-mute);
+                line-height: 1.6; padding: 0 0 8px; }
+  .mx th, .mx td { padding: 7px 10px; border-bottom: 1px solid var(--border); text-align: right; }
+  .mx thead th { font-size: 11px; font-weight: 700; color: var(--text-mute);
+                 border-bottom: 1px solid var(--border-strong); white-space: nowrap; }
+  .mx th[scope="row"] { text-align: left; font-weight: 600; color: var(--text); white-space: nowrap; }
+  .mx td.amt { color: var(--text-dim); }
+  .mx td.tot { color: var(--text); font-weight: 700; }
+  .mx .z { color: var(--n-300); }
+  .mx tfoot th, .mx tfoot td { border-bottom: none; border-top: 1px solid var(--border-strong);
+                               font-weight: 700; color: var(--text); }
+  /* 비중 칸 — 막대와 숫자를 한 칸에. 막대는 배경이라 숫자를 가리지 않는다. */
+  .mx td.share { position: relative; width: 132px; }
+  .mx td.share i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+                   height: 14px; background: var(--surface-3); border-radius: 3px; }
+  .mx td.share span { position: relative; }
+
+  /* 민감도 격자 — 부호와 크기를 배경 농도로. 숫자는 항상 읽히도록 전경색은 고정. */
+  .mx.heat td.c { font-weight: 600; }
+  .mx.heat td.c.g1 { background: rgb(5 150 105 / .07); color: var(--positive); }
+  .mx.heat td.c.g2 { background: rgb(5 150 105 / .15); color: var(--positive); }
+  .mx.heat td.c.g3 { background: rgb(5 150 105 / .26); color: #04543a; }
+  .mx.heat td.c.l1 { background: rgb(220 38 38 / .06); color: var(--negative); }
+  .mx.heat td.c.l2 { background: rgb(220 38 38 / .13); color: var(--negative); }
+  .mx.heat td.c.l3 { background: rgb(220 38 38 / .22); color: #7f1d1d; }
+  .mx.heat tbody tr.be th[scope="row"] { color: var(--accent-strong); }
+  .mx.heat th[scope="row"] .tagp { display: inline-block; margin-left: 6px; padding: 0 5px;
+                 border-radius: var(--r-pill); font-size: 9.5px; font-weight: 700;
+                 background: var(--surface-3); color: var(--text-dim); vertical-align: middle; }
+  .mx.heat tfoot td { color: var(--text-dim); font-weight: 600; font-size: 11.5px; }
+
   /* #2 리스크 스트립 */
   .risk-strip { margin-top: 14px; background: var(--surface); border: 1px solid var(--border);
                 border-left: 3px solid var(--negative); border-radius: 10px; padding: 12px 16px; }
@@ -680,6 +798,368 @@
         body + ubHtml;
     }
 
+    // ── 매도가 현실성 — 시세·유사낙찰 대조 ──
+    // 이 페이지의 가격 참조선은 전부 경매 세계 숫자(감정·중립·낙찰)다. 실제로 거래된 가격은
+    // 하나도 그려지지 않는다. cd.naverData / cd.salesHistory 가 이미 로드돼 있는데 안 쓰였다.
+    var MK = { W: 1040, H: 132, X0: 92, X1: 1010 };
+
+    function buildMarket(h, f, cd, M0, today0) {
+      if (!cd || f.wonPrice == null) return '';
+      var nd = cd.naverData || {};
+      var BE = L.breakEvenPrice(h, f, M0, cd);
+      var trades = (nd.recentTrades || []).slice();
+      var hist = (cd.salesHistory || []).slice();
+      var ap = nd.askingPrice || {};
+
+      // 표 — 사용자가 명시적으로 요구한 축. 점은 날짜·층·비고를 못 싣는다.
+      var rows = [];
+      var add = function (k, v, when, note, cls) { if (v != null) rows.push({ k: k, v: v, when: when || '', note: note || '', cls: cls || '' }); };
+      add('호가 상단', ap.high, ap.count ? ap.count + '건' : '', '');
+      add('호가 중앙', ap.median, ap.count ? ap.count + '건' : '', '');
+      if (trades.length) {
+        var hi = trades.reduce(function (a, b) { return b.price > a.price ? b : a; });
+        add('실거래 최고', hi.price, hi.date, (hi.floor ? hi.floor + '층 ' : '') + (hi.type || ''));
+      }
+      add('손익분기 (' + M0 + '개월)', Math.round(BE), '', '이 위로 팔아야 본전', 'be-row');
+      add('감정가', f.appraisalPrice, '', '');
+      add('실거래 중앙 (6개월)', nd.real6moMedian, nd.real6moDate || '', '');
+      if (nd.lastTrade) add('최근 실거래', nd.lastTrade.price, nd.lastTrade.date,
+        (nd.lastTrade.floor ? nd.lastTrade.floor + '층' : ''));
+      add('중립가 (모델)', cd.neutralSalePrice, '', '');
+      add('호가 하단', ap.low, ap.count ? ap.count + '건' : '', '');
+      add('내 낙찰가', f.wonPrice, f.wonDate || '', (f.bidderCount ? f.bidderCount + '명 응찰' : ''));
+      hist.filter(function (x) { return !x.outlier; }).forEach(function (x) {
+        add('유사 낙찰 ' + (x.dongHo || ''), x.soldPrice, x.saleDate,
+          (x.bidders ? x.bidders + '명 · ' : '') + (x.soldRate ? '감정 ' + (x.soldRate * 100).toFixed(1) + '%' : ''));
+      });
+      rows.sort(function (a, b) { return b.v - a.v; });
+      var tbody = rows.map(function (r) {
+        var d = r.v - BE, isBE = r.cls === 'be-row';
+        return '<tr class="' + r.cls + '"><th scope="row">' + esc(r.k) + '</th>' +
+          '<td class="tot">' + won(r.v) + '</td>' +
+          '<td class="when">' + esc(r.when) + '</td>' +
+          '<td class="gap ' + (isBE ? '' : (d >= 0 ? 'pos' : 'neg')) + '">' +
+            (isBE ? '<span class="z">—</span>' : signed(d)) + '</td>' +
+          '<td class="note">' + esc(r.note) + '</td></tr>';
+      }).join('');
+
+      // 스트립 — x 도메인을 고정 클램프한다. 호가 상단에 스케일을 맡기면 결정이 벌어지는 구간이 눌린다.
+      var vals = [f.wonPrice, BE, cd.neutralSalePrice, f.appraisalPrice]
+        .concat(trades.map(function (t) { return t.price; }))
+        .filter(function (v) { return v != null; });
+      var lo = Math.min.apply(null, vals) * 0.985, hi2 = Math.max.apply(null, vals) * 1.015;
+      var X = function (v) { return MK.X0 + (Math.max(lo, Math.min(hi2, v)) - lo) / (hi2 - lo) * (MK.X1 - MK.X0); };
+      var xbe = X(BE);
+      var svg =
+        '<rect class="zone-lo" x="' + MK.X0 + '" y="14" width="' + (xbe - MK.X0).toFixed(1) + '" height="86"/>' +
+        '<rect class="zone-hi" x="' + xbe.toFixed(1) + '" y="14" width="' + (MK.X1 - xbe).toFixed(1) + '" height="86"/>';
+      if (ap.low != null && ap.high != null) {
+        svg += '<rect class="band" x="' + X(ap.low).toFixed(1) + '" y="80" width="' +
+          Math.max(2, X(ap.high) - X(ap.low)).toFixed(1) + '" height="16" rx="3"><title>호가 ' +
+          eok(ap.low) + '~' + eok(ap.high) + '</title></rect>';
+      }
+      svg += '<text class="rowlab" x="' + (MK.X0 - 10) + '" y="38">실거래</text>';
+      trades.forEach(function (t, i) {
+        svg += '<circle class="trade' + (t.type === '직거래' ? ' self' : '') + '" cx="' + X(t.price).toFixed(1) +
+          '" cy="' + (34 + (i % 2 ? 5 : -5)) + '" r="4.5"><title>' + esc(t.date) + ' ' + won(t.price) +
+          ' ' + esc(t.type || '') + '</title></circle>';
+      });
+      svg += '<text class="rowlab" x="' + (MK.X0 - 10) + '" y="68">유사낙찰</text>';
+      hist.forEach(function (x, i) {
+        var cx = X(x.soldPrice), cy = 64 + (i % 2 ? 5 : -5);
+        svg += '<rect class="auc' + (x.outlier ? ' out' : '') + '" x="' + (cx - 4).toFixed(1) + '" y="' + (cy - 4) +
+          '" width="8" height="8" transform="rotate(45 ' + cx.toFixed(1) + ' ' + cy + ')"><title>' +
+          esc(x.saleDate) + ' ' + won(x.soldPrice) + (x.outlier ? ' (이상치)' : '') + '</title></rect>';
+      });
+      svg += '<text class="rowlab" x="' + (MK.X0 - 10) + '" y="93">호가</text>';
+      [{ v: f.wonPrice, t: '낙찰' }, { v: cd.neutralSalePrice, t: '중립' }, { v: BE, t: '본전', be: 1 }]
+        .filter(function (r) { return r.v != null; })
+        .forEach(function (r) {
+          svg += '<line class="ref' + (r.be ? ' be' : '') + '" x1="' + X(r.v).toFixed(1) + '" y1="14" x2="' +
+            X(r.v).toFixed(1) + '" y2="100"/>' +
+            '<text class="rl' + (r.be ? ' be' : '') + '" x="' + X(r.v).toFixed(1) + '" y="112">' +
+            esc(r.t) + ' ' + eok(r.v) + '</text>';
+        });
+
+      var age = nd.updatedAt ? L.daysBetween(nd.updatedAt, today0) : null;
+      var fresh = age == null ? '' :
+        '<span class="mk-fresh' + (age > 90 ? ' stale' : '') + '">시세 ' + age + '일 전 기준 (' + esc(nd.updatedAt) + ')</span>';
+      return '<div class="sec-title">매도가 현실성 — 시세·유사낙찰 대조' + fresh + '</div>' +
+        '<svg class="mk-svg" viewBox="0 0 ' + MK.W + ' ' + MK.H + '" role="img" ' +
+          'aria-label="실거래·유사낙찰·호가 대비 손익분기 위치">' + svg + '</svg>' +
+        '<table class="mx mkt"><caption>' +
+          '「본전 대비」가 이 표의 요점이다 — 음수면 그 가격에 팔았을 때 손실이라는 뜻이다. ' +
+          '왼쪽 그림에서 빨간 영역이 본전 아래, 초록이 위다. 속 빈 동그라미는 직거래(시세 노이즈), ' +
+          '점선 마름모는 이상치로 분류된 유사낙찰이다.' +
+        '</caption>' +
+        '<thead><tr><th scope="col">근거</th><th scope="col">가격</th><th scope="col">시점</th>' +
+          '<th scope="col">본전 대비</th><th scope="col">비고</th></tr></thead>' +
+        '<tbody>' + tbody + '</tbody></table>';
+    }
+
+    // ── 보유 진행 + 월별 부담 ──
+    // milestones 는 지금까지 어디에도 렌더되지 않았다(.steps CSS 는 죽은 코드였다).
+    // 그리고 '월 부담'은 HERO 숫자 하나뿐이라 "12월까지 얼마를 마련해둬야 하나"에 답하지 못했다.
+    var STEP_ORDER = ['won', 'balance', 'eviction', 'repair', 'listed', 'sold'];
+
+    function buildProgress(h, f, cd, M0, today0) {
+      var ms = h.milestones || [];
+      var byKey = {}; ms.forEach(function (m) { byKey[m.key] = m; });
+      var known = STEP_ORDER.filter(function (k) { return byKey[k] && byKey[k].at; });
+      if (!known.length) return '';   // 날짜 없는 회색 점 6개는 그리지 않는다
+
+      var nextKey = null;
+      for (var i = 0; i < STEP_ORDER.length; i++) {
+        var mk = byKey[STEP_ORDER[i]];
+        if (mk && !mk.at) { nextKey = STEP_ORDER[i]; break; }
+      }
+      var dday = function (iso) {
+        var d = window.CalLib.daysUntil ? window.CalLib.daysUntil(iso)
+              : Math.round((Date.parse(iso) - Date.parse(today0)) / 86400000);
+        return d;
+      };
+      var nodes = STEP_ORDER.filter(function (k) { return byKey[k]; }).map(function (k) {
+        var m = byKey[k], cls = m.at ? 'done' : (k === nextKey ? 'next' : 'pending'), dtxt = '';
+        if (m.at) dtxt = m.at;
+        else {
+          // 목표일이 memo 산문 안에 있다(스키마에 targetAt 이 없다). 정규식은 폴백이고, 빗나가면 '미정'.
+          var mm = /(\d{4}-\d{2}-\d{2})/.exec(m.memo || '');
+          if (mm && k === nextKey) {
+            var d = dday(mm[1]);
+            dtxt = '목표 ' + mm[1].slice(5) + ' · ' + (d >= 0 ? 'D-' + d : 'D+' + (-d) + ' 지연');
+            if (d < 0) dtxt = '<span class="late">' + dtxt + '</span>';
+          } else if (k === nextKey) dtxt = '목표 미정';
+        }
+        return '<div class="nd ' + cls + '" title="' + esc(m.memo || STEP_LABEL[k] || k) + '"><i></i>' +
+          '<div class="l">' + esc(STEP_LABEL[k] || k) + '</div>' +
+          (dtxt ? '<div class="d">' + dtxt + '</div>' : '') + '</div>';
+      }).join('');
+      var nCols = STEP_ORDER.filter(function (k) { return byKey[k]; }).length;
+      var nextMemo = nextKey && byKey[nextKey] && byKey[nextKey].memo
+        ? '<div class="rail-memo"><b>다음 — ' + esc(STEP_LABEL[nextKey]) + '</b> · ' + esc(byKey[nextKey].memo) + '</div>' : '';
+
+      // 월별 표
+      var plan = L.monthlyPlan(h, f, cd, 12, today0);
+      var monHtml = '';
+      if (plan.length) {
+        // 일정 열 — 마일스톤 날짜(확정·목표)와 미래 원장 항목을 월로 버킷한다.
+        var ev = {};
+        var push = function (ym, t) { if (!ym) return; (ev[ym] = ev[ym] || []).push(t); };
+        ms.forEach(function (m) {
+          if (m.at) push(m.at.slice(0, 7), STEP_LABEL[m.key] + ' ' + m.at.slice(5));
+          else { var g = /(\d{4}-\d{2}-\d{2})/.exec(m.memo || ''); if (g) push(g[1].slice(0, 7), STEP_LABEL[m.key] + ' 목표 ' + g[1].slice(5)); }
+        });
+        (h.costs || []).forEach(function (c) {
+          if (c.occurredAt > today0) push(String(c.occurredAt).slice(0, 7), c.category + ' ' + won(c.amount));
+        });
+        var body = plan.map(function (r, i) {
+          var curYM = String(today0).slice(0, 7);
+          // 현재 월은 '실적'이 아니다 — 아직 안 지난 날짜의 항목이 섞여 있다.
+          var tag = r.month < curYM ? '실적' : (r.month === curYM ? '진행중' : '');
+          var cls = (r.isPast ? '' : 'future') + (i === M0 ? ' m0' : '');
+          return '<tr class="' + cls.trim() + '">' +
+            '<th scope="row">' + r.month + (tag ? '<span class="badge-real">' + tag + '</span>' : '') + '</th>' +
+            '<td class="amt">' + (r.loanInterest ? won(r.loanInterest) : '<span class="z">—</span>') + '</td>' +
+            '<td class="amt">' + (r.loanPrincipal ? won(r.loanPrincipal) : '<span class="z">—</span>') + '</td>' +
+            '<td class="amt">' + (r.otherInterest ? won(r.otherInterest) : '<span class="z">—</span>') + '</td>' +
+            '<td class="tot">' + won(r.cash) + '</td>' +
+            '<td class="cum">' + won(r.cumCash) + '</td>' +
+            '<td class="amt">' + eok(r.breakEven) + '</td>' +
+            '<td class="ev">' + (ev[r.month] || []).map(esc).join(' · ') + '</td></tr>';
+        }).join('');
+        monHtml = '<table class="mx mon"><caption>' +
+            '잔금월부터 12개월. <b>원금상환분은 비용이 아니라 부채 감소</b>라서 이자와 나눠 놓았다 — ' +
+            '「월 현금」은 통장에서 나가는 돈이고, 손익에 잡히는 건 이자뿐이다. ' +
+            '「본전 매도가」는 그 달까지 보유했을 때의 본전선이다. 파란 줄이 기본 가정(' + M0 + '개월).' +
+          '</caption>' +
+          '<thead><tr><th scope="col">월</th><th scope="col">경락 이자</th><th scope="col">경락 원금</th>' +
+            '<th scope="col">기타 조달 이자</th><th scope="col">월 현금</th><th scope="col">누적 현금</th>' +
+            '<th scope="col">본전 매도가</th><th scope="col">일정</th></tr></thead>' +
+          '<tbody>' + body + '</tbody></table>' +
+          '<div class="wf-note">' + M0 + '개월 누적 현금 <b>' + won(plan[Math.min(M0, plan.length - 1)].cumCash) + '</b>' +
+            ' · 같은 기간 금융비용 <b>' + won(L.financeCost(h, M0)) + '</b> — 두 값은 기준이 다르다. ' +
+            '누적 현금은 통장에서 나간 돈(원금상환 포함)이고, 금융비용은 손익에 잡히는 이자에 ' +
+            '중도상환수수료를 더한 값이다. 달라야 정상이다.' +
+          '</div>';
+      }
+
+      return '<div class="sec-title">보유 진행 · 월별 부담</div>' +
+        '<div class="rail6" style="grid-template-columns:repeat(' + nCols + ',1fr)">' + nodes + '</div>' +
+        nextMemo + (monHtml ? '<div class="mx-sep"></div>' + monHtml : '');
+    }
+
+    // ── 원가 브릿지 — 낙찰가에서 손익분기까지 ──
+    // HERO 의 '투입 원가'와 '손익분기 매도가'는 지금 관계가 안 보이는 두 숫자다.
+    // 그 사이 웨지를 구성하는 항목들이 서로 다른 네 곳에 흩어져 있고, 특히
+    // 중개수수료는 breakEvenPrice 의 /(1−b) 안에만 숨어 있어 어디에도 안 보인다.
+    var WF = { W: 1040, H: 300, X0: 76, X1: 1004, Y0: 24, Y1: 236 };
+
+    function buildBridge(h, f, cd, M0, today0) {
+      if (f.wonPrice == null) return '';
+      var C = L.totalCost(h, f), acq = L.acquisitionCosts(h);
+      var fin = L.financeCost(h, M0);
+      var budget = Math.max(L.plannedTotal(h, cd), L.variableExecuted(h));
+      var unbook = L.unbookedTotal(h);
+      var BE = L.breakEvenPrice(h, f, M0, cd);
+      // 중개수수료는 곱셈으로 다시 구하지 않고 잔차로 낸다 — 요율이 바뀌어도 브릿지가 구조적으로 닫힌다.
+      var brokerage = BE - (C + fin + budget + unbook);
+      // 금융비용 중 이미 낸 몫 — 이자와 앞으로 낼 이자가 한 덩어리로 보이면 안 된다.
+      var finDone = (h.costs || []).reduce(function (s2, c) {
+        return (L.FIN_CATS.indexOf(c.category) >= 0 && c.occurredAt <= today0) ? s2 + c.amount : s2;
+      }, 0);
+
+      var bars = [{ k: 'base', label: '낙찰가', v: f.wonPrice, cls: 'b-anchor' }];
+      if (acq)       bars.push({ k: 'acq',  label: '취득부대비', v: acq, cls: 'b-done' });
+      if (fin)       bars.push({ k: 'fin',  label: '금융비용', sub: M0 + '개월', v: fin, cls: 'b-plan', done: Math.min(finDone, fin) });
+      if (budget)    bars.push({ k: 'var',  label: '예정 변동비', v: budget, cls: 'b-plan' });
+      if (unbook)    bars.push({ k: 'ub',   label: '미계상 부채', v: unbook, cls: 'b-unbook' });
+      if (brokerage > 0) bars.push({ k: 'brk', label: '매도 중개수수료', sub: '매도가 비례', v: brokerage, cls: 'b-plan' });
+      bars.push({ k: 'total', label: '손익분기 매도가', v: BE, cls: 'b-total' });
+      // 2바 폭포는 그냥 막대 두 개다 — 중간 항목이 하나도 없으면 섹션째 숨긴다.
+      if (bars.length < 4) return '';
+
+      var wedge = BE - f.wonPrice;
+      if (!(wedge > 0)) return '';
+      var yMin = f.wonPrice - wedge * 0.35, yMax = BE + wedge * 0.15;
+      var Y = function (v) { return WF.Y1 - (v - yMin) / (yMax - yMin) * (WF.Y1 - WF.Y0); };
+      var slot = (WF.X1 - WF.X0) / bars.length, bw = Math.min(76, slot * 0.56);
+
+      var svg = '', cum = f.wonPrice;
+      bars.forEach(function (b, i) {
+        var cx = WF.X0 + slot * (i + 0.5), x = cx - bw / 2;
+        var top, bot;
+        if (b.k === 'base' || b.k === 'total') { top = Y(b.v); bot = WF.Y1; }
+        else { top = Y(cum + b.v); bot = Y(cum); }
+        svg += '<rect class="' + b.cls + '" x="' + x.toFixed(1) + '" y="' + top.toFixed(1) +
+               '" width="' + bw.toFixed(1) + '" height="' + Math.max(2, bot - top).toFixed(1) +
+               '" rx="2"><title>' + esc(b.label) + ' ' + won(b.v) + '</title></rect>';
+        // 금융비용 바 안에서 집행분을 아래쪽에 진하게
+        if (b.done > 0) {
+          var dTop = Y(cum + b.done);
+          svg += '<rect class="b-done" x="' + x.toFixed(1) + '" y="' + dTop.toFixed(1) +
+                 '" width="' + bw.toFixed(1) + '" height="' + Math.max(1.5, bot - dTop).toFixed(1) +
+                 '" rx="2"><title>이미 낸 이자 ' + won(b.done) + '</title></rect>';
+        }
+        // 절단 표시 — 축이 0 에서 시작하지 않는다는 사실을 바닥에 명시한다.
+        if (b.k === 'base' || b.k === 'total') {
+          svg += '<path class="cut" d="M' + (x + 6) + ',' + (WF.Y1 - 3) + ' l6,-5 l6,10 l6,-5"/>';
+        }
+        var vl = (b.k === 'base' || b.k === 'total') ? won(b.v) : '+' + won(b.v).slice(1);
+        svg += '<text class="val' + (b.k === 'total' ? ' big' : '') + '" x="' + cx.toFixed(1) +
+               '" y="' + (top - 7).toFixed(1) + '">' + vl + '</text>';
+        svg += '<text class="lab" x="' + cx.toFixed(1) + '" y="' + (WF.Y1 + 20) + '">' + esc(b.label) + '</text>';
+        if (b.sub) svg += '<text class="lab two" x="' + cx.toFixed(1) + '" y="' + (WF.Y1 + 34) + '">' + esc(b.sub) + '</text>';
+        if (i && b.k !== 'total') {
+          var px = WF.X0 + slot * (i - 0.5) + bw / 2, py = Y(cum);
+          svg += '<line class="conn" x1="' + px.toFixed(1) + '" y1="' + py.toFixed(1) +
+                 '" x2="' + x.toFixed(1) + '" y2="' + py.toFixed(1) + '"/>';
+        }
+        if (b.k !== 'base' && b.k !== 'total') cum += b.v;
+      });
+
+      var split = window.CalLib.splitCosts(h.costs, today0);
+      return '<div class="sec-title">원가 브릿지 — 낙찰가에서 손익분기까지</div>' +
+        '<svg class="wf-svg" viewBox="0 0 ' + WF.W + ' ' + WF.H + '" role="img" ' +
+          'aria-label="낙찰가 ' + won(f.wonPrice) + ' 에서 손익분기 매도가 ' + won(BE) +
+          ' 까지 ' + won(wedge) + ' 의 구성">' + svg + '</svg>' +
+        '<div class="wf-axis">세로축 절단 — ' + eok(yMin) + ' ~ ' + eok(yMax) + ' 구간만 그렸다 ' +
+          '(0 기준이면 가장 작은 항목이 1px 아래로 사라진다). 바닥의 지그재그가 절단 지점이다.</div>' +
+        '<div class="wf-legend">' +
+          '<span><i class="k-done"></i>집행 완료</span>' +
+          '<span><i class="k-plan"></i>예정·미집행</span>' +
+          (unbook ? '<span><i class="k-unbook"></i>미계상 확정 부채</span>' : '') +
+        '</div>' +
+        '<div class="wf-note">낙찰가 대비 <b>+' + won(wedge).slice(1) + '</b> ' +
+          '(+' + (wedge / f.wonPrice * 100).toFixed(2) + '%) · ' +
+          '집행 완료 <b>' + won(split.executed) + '</b> / 미집행 <b>' + won(wedge - split.executed) + '</b>' +
+        '</div>';
+    }
+
+    // ── 항목별 비용 매트릭스 ──
+    // 원장(집행/예정)·예산·미계상은 성격이 다르고 서로 배타적이라 한 표에서 열로 갈라야
+    // 이중계상 없이 "어디에 얼마 나갔고 얼마 더 나갈지"가 한눈에 잡힌다.
+    function buildCostMatrix(h, today0, cd) {
+      var m = L.costByCategory(h, today0, cd);
+      if (!m.rows.length) return '';
+      var T = m.totals.total || 1;
+      var cell = function (v) { return v ? '<td class="amt">' + won(v) + '</td>' : '<td class="amt"><span class="z">—</span></td>'; };
+      var body = m.rows.map(function (r) {
+        var pct = r.total / T * 100;
+        return '<tr><th scope="row">' + esc(r.category) + '</th>' +
+          cell(r.ledgerExecuted) + cell(r.ledgerPlanned) + cell(r.budget) + cell(r.unbooked) +
+          '<td class="tot">' + won(r.total) + '</td>' +
+          '<td class="share"><i style="width:' + Math.max(1, pct * 0.9).toFixed(1) + '%"></i>' +
+            '<span>' + pct.toFixed(1) + '%</span></td></tr>';
+      }).join('');
+      return '<div class="sec-title">항목별 비용</div>' +
+        '<table class="mx"><caption>' +
+          '<b>집행</b> 원장에 있고 오늘까지 나간 돈 · <b>예정</b> 원장에 있으나 날짜가 미래 · ' +
+          '<b>예산</b> 원장 밖 계획분 · <b>미계상</b> 확정 채무인데 원장에 아직 없음. ' +
+          '네 갈래는 서로 배타적이라 합계에 이중계상이 없다.' +
+        '</caption>' +
+        '<thead><tr><th scope="col">항목</th><th scope="col">집행</th><th scope="col">예정</th>' +
+          '<th scope="col">예산</th><th scope="col">미계상</th><th scope="col">합계</th>' +
+          '<th scope="col">비중</th></tr></thead>' +
+        '<tbody>' + body + '</tbody>' +
+        '<tfoot><tr><th scope="row">합계</th>' +
+          '<td>' + won(m.totals.ledgerExecuted) + '</td><td>' + won(m.totals.ledgerPlanned) + '</td>' +
+          '<td>' + won(m.totals.budget) + '</td><td>' + won(m.totals.unbooked) + '</td>' +
+          '<td>' + won(m.totals.total) + '</td><td>100%</td></tr></tfoot></table>';
+    }
+
+    // ── 매도가 × 보유기간 민감도 ──
+    // 매도 시나리오 차트는 '본전선 한 줄'만 보여준다. 실제 판단은 "3.46억에 5개월이면?"
+    // 처럼 두 축을 동시에 물어보는 형태라 격자가 필요하다. 부호 경계가 대각선으로 걸린다.
+    function buildSensitivity(h, f, cd, anchors, M0) {
+      if (f.wonPrice == null) return '';
+      // 가격 축은 앵커(낙찰·중립·본전·감정)를 그대로 행으로 쓴다. 균등 분할하면 정작
+      // 기준이 되는 가격이 행에 없어 표를 읽어도 판단으로 이어지지 않는다.
+      // 백만원 단위로 접어 중복을 없앤다 — 본전과 감정이 34만원 차이라 따로 두면 같은 줄이 두 번 나온다.
+      var pool = {};
+      var add = function (v, label) {
+        var k = Math.round(v / 1e6);
+        if (!pool[k]) pool[k] = { v: k * 1e6, labels: [] };
+        if (label && pool[k].labels.indexOf(label) < 0) pool[k].labels.push(label);
+      };
+      (anchors || []).forEach(function (a) { add(a.v, a.label); });
+      var ks = Object.keys(pool).map(Number);
+      var lo = Math.min.apply(null, ks), hi = Math.max.apply(null, ks), span = Math.max(1, hi - lo);
+      [lo - span * 0.3, hi + span * 0.3, hi + span * 0.6].forEach(function (k) { add(k * 1e6, null); });
+      for (var t = 1; t <= 3; t++) add((lo + span * t / 4) * 1e6, null);
+      var rows = Object.keys(pool).map(function (k) { return pool[k]; })
+        .sort(function (a, b) { return a.v - b.v; });
+
+      var months = [2, 3, 4, 6, 9, 12];
+      var g = L.sensitivityGrid(h, f, rows.map(function (r) { return r.v; }), months, cd);
+      // 색은 부호, 농도는 크기. 최대 절대값 대비 3단.
+      var maxAbs = 1;
+      g.rows.forEach(function (r) { r.cells.forEach(function (c) { maxAbs = Math.max(maxAbs, Math.abs(c.profit)); }); });
+      var tone = function (c) {
+        var t2 = Math.abs(c.profit) / maxAbs;
+        return (c.sign === 'gain' ? 'g' : 'l') + (t2 > 0.55 ? 3 : (t2 > 0.22 ? 2 : 1));
+      };
+      var body = g.rows.map(function (r, i) {
+        var labels = rows[i].labels;
+        return '<tr><th scope="row">' + eok(r.price) +
+            labels.map(function (x) { return '<span class="tagp">' + esc(x) + '</span>'; }).join('') + '</th>' +
+          r.cells.map(function (c) {
+            return '<td class="c ' + tone(c) + '">' + signed(c.profit) + '</td>';
+          }).join('') + '</tr>';
+      }).join('');
+      return '<div class="sec-title">매도가 × 보유기간 — 세전이익</div>' +
+        '<table class="mx heat"><caption>' +
+          '행은 매도가, 열은 잔금일로부터 보유 개월. 칸은 그 조합의 세전이익이다. ' +
+          '초록이 이익 · 빨강이 손실이고 농도는 금액 크기다. 맨 아래 줄은 각 기간의 본전 매도가 — ' +
+          '보유가 길수록 올라간다.' +
+        '</caption>' +
+        '<thead><tr><th scope="col">매도가</th>' +
+          g.months.map(function (m) { return '<th scope="col">' + m + '개월</th>'; }).join('') +
+        '</tr></thead><tbody>' + body + '</tbody>' +
+        '<tfoot><tr><th scope="row">본전 매도가</th>' +
+          g.breakEven.map(function (b) { return '<td>' + eok(b) + '</td>'; }).join('') +
+        '</tr></tfoot></table>';
+    }
+
     function drawDetail() {
       var h = H[sel];
       var f = L.deriveAuctionFacts(h, RESULTS, CASES);
@@ -804,6 +1284,11 @@
 
       // ── #5 비용 원장 — 날짜 그룹 + 소계. 6건 중 4건이 같은 날이라 날짜 컬럼이 낭비였다 ──
       var ledgerHtml = buildLedger(h, today0, split);
+      var bridgeHtml = (realized != null) ? '' : buildBridge(h, f, cd, M0, today0);
+      var marketHtml = (realized != null) ? '' : buildMarket(h, f, cd, M0, today0);
+      var progHtml = buildProgress(h, f, cd, M0, today0);
+      var matrixHtml = buildCostMatrix(h, today0, cd);
+      var heatHtml = (realized != null) ? '' : buildSensitivity(h, f, cd, anchors, M0);
 
       // ── #6 계획 vs 실제 (접힘) ──
       var fcHtml = forecastHtml(h, f, split);
@@ -828,9 +1313,15 @@
         '<div class="idbar">' + chips +
           (f.reportUrl ? '<a class="rep" href="../calendar/' + esc(f.reportUrl) + '">상세 분석 보고서 ↗</a>' : '') +
         '</div>' +
-        hero + riskHtml + simHtml +
+        hero + riskHtml +
+        (bridgeHtml ? '<div class="card">' + bridgeHtml + '</div>' : '') +
+        simHtml +
+        (heatHtml ? '<div class="card">' + heatHtml + '</div>' : '') +
+        (marketHtml ? '<div class="card">' + marketHtml + '</div>' : '') +
         '<div class="card">' + fundHtml + '</div>' +
-        '<div class="card">' + ledgerHtml + '</div>' +
+        (progHtml ? '<div class="card">' + progHtml + '</div>' : '') +
+        '<div class="card">' + ledgerHtml +
+          (matrixHtml ? '<div class="mx-sep"></div>' + matrixHtml : '') + '</div>' +
         fcSec + notesHtml;
 
       if (!realized) bindScenario(h, f, cd, M0);
