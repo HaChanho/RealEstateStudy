@@ -875,6 +875,15 @@
     .chip .chip-text  { grid-column: 2; align-self: center; }
     .chip .chip-trail { grid-column: 2; justify-content: flex-start; flex-wrap: wrap; row-gap: 2px; }
   }
+  /* 패널 880 프리셋이면 칸이 168px 까지 좁아진다. 이때 텍스트 아닌 곳으로 33px 이 나간다
+     (셀패딩12 + vbar3 + gap8 + 우패딩8 + 테두리2) — 가장 긴 이름이 2px 모자라 잘렸다.
+     ① 좁은 레일에서는 과한 간격을 회수하고(+6px),
+     ② 그래도 넘치면 잘라내는 대신 줄을 바꾼다. 이름 길이와 무관하게 잘림이 안 생긴다.
+     한글 단지명은 공백 없는 한 토큰이라 keep-all 로는 안 나뉜다 → anywhere 가 필요하다. */
+  @container (max-width: 200px) {
+    .chip { column-gap: 5px; padding-right: 5px; }
+    .chip .chip-text { white-space: normal; overflow-wrap: anywhere; overflow: visible; }
+  }
 </style>
 <script src="../shared/cal-lib.js"></script>
 <script src="../shared/icons.js"></script>
