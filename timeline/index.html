@@ -199,6 +199,29 @@
   table.ledger.fc .dimc { color: var(--text-mute); }
   table.ledger.fc em.ip { font-style: normal; font-size: 10px; color: var(--text-mute);
                           border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; }
+  /* 물건 전환 바 — 2건 이상일 때만. 순차 취득이라 상시 컬럼은 과하다. */
+  #hswitch[hidden] { display: none; }
+  .hsw { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+         padding: 10px 0 2px; margin-bottom: 4px; }
+  .hsw-l { font-size: 12px; color: var(--text-mute); margin-right: 4px; white-space: nowrap; }
+  .hsw-l em { font-style: normal; color: var(--text-dim); }
+  .hsw-b { display: flex; flex-direction: column; gap: 2px; align-items: flex-start;
+           padding: 7px 14px; border-radius: 8px; cursor: pointer; font-family: inherit;
+           border: 1px solid var(--border); background: var(--surface); color: var(--text-dim);
+           min-width: 150px; text-align: left; }
+  .hsw-b b { font-size: 13px; font-weight: 600; color: var(--text); }
+  .hsw-b span { font-size: 11px; color: var(--text-mute); font-variant-numeric: tabular-nums; }
+  .hsw-b:hover { border-color: var(--accent); }
+  .hsw-b.on { border-color: var(--accent); background: rgb(59 111 222 / .08);
+              box-shadow: inset 3px 0 0 var(--accent); }
+  .hsw-b.on b { color: var(--accent-strong); }
+  /* 매도완료 물건은 물러난다 — 지난 기록이지 지금 관심사가 아니다 */
+  .hsw-b.sold { opacity: .72; }
+  .hsw-b.sold.on { opacity: 1; }
+  .card.nolink b { display: block; color: var(--negative); font-size: var(--fs-lg); margin-bottom: 8px; }
+  .card.nolink p { font-size: 13px; line-height: 1.65; color: var(--text-dim); margin: 6px 0; max-width: 760px; }
+  .card.nolink code { background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px;
+                      padding: 1px 5px; font-size: 12px; }
 </style>
 <script src="../shared/cal-lib.js"></script>
 <script src="../site-nav.js" defer></script>
@@ -367,29 +390,72 @@
       var want = 'h-' + m[1];
       return ids.indexOf(want) >= 0 ? want : (ids.indexOf(m[1]) >= 0 ? m[1] : null);
     }
+    // 물건 정렬 — 보유중이 먼저, 그다음 낙찰일 최신순.
+    // 동시 진행이 아니라 순차 취득이므로 "지금 관심 있는 것"이 위로 온다.
+    ids.sort(function (a, b) {
+      var ha = H[a], hb = H[b];
+      var la = ha.disposition === 'sold' ? 1 : 0, lb = hb.disposition === 'sold' ? 1 : 0;
+      if (la !== lb) return la - lb;
+      var fa = L.deriveAuctionFacts(ha, RESULTS, CASES), fb = L.deriveAuctionFacts(hb, RESULTS, CASES);
+      return String(fb.wonDate || '').localeCompare(String(fa.wonDate || ''));
+    });
+
     var sel = idFromHash() || ids[0];
-    app.innerHTML = '<div class="col-list" id="list"></div><div class="col-detail" id="detail"></div>';
+    app.innerHTML = '<div id="hswitch"></div><div class="col-detail" id="detail"></div>';
     window.addEventListener('hashchange', function () {
       var id = idFromHash();
       if (id && id !== sel) { sel = id; draw(); }
     });
-    function draw() {
-      var list = document.getElementById('list'); list.innerHTML = '';
-      ids.forEach(function (id) {
-        var h = H[id], f = L.deriveAuctionFacts(h, RESULTS, CASES);
-        var el = document.createElement('div');
-        el.className = 'card hcard' + (id === sel ? ' sel' : '');
-        var badge = h.disposition === 'sold' ? '<span class="badge sold">매도완료</span>' : '<span class="badge holding">보유중 D+' + (L.holdingDays(h, today()) || 0) + '</span>';
-        el.innerHTML = '<div class="cx">' + (f.complex || h.holdingId) + '</div>' +
-          '<div class="sub">낙찰 ' + (f.wonDate || '—') + ' · ' + won(f.wonPrice) + '</div>' +
-          '<div class="sub">' + badge + ' · 집행지출 ' + won(window.CalLib.splitCosts(h.costs, today()).executed) + '</div>';
-        el.onclick = function () {
-          sel = id; draw();
+
+    // 물건 전환 바 — 2건 이상일 때만 뜬다.
+    // 좌측 300px 컬럼을 상시 내주면 재무 대시보드의 가로가 그만큼 좁아지고,
+    // 순차 취득이라 대부분의 시간에 관심 물건은 1개다. 과거 물건은 가끔 들추는 대상이므로
+    // 상시 노출이 아니라 얇은 전환 바가 맞다.
+    function drawSwitch() {
+      var box = document.getElementById('hswitch');
+      if (!box) return;
+      if (ids.length < 2) { box.innerHTML = ''; box.hidden = true; return; }
+      box.hidden = false;
+      var sold = ids.filter(function (id) { return H[id].disposition === 'sold'; }).length;
+      box.innerHTML =
+        '<div class="hsw" role="tablist" aria-label="낙찰 물건 선택">' +
+          '<span class="hsw-l">낙찰 물건 ' + ids.length + '건' +
+            (sold ? ' <em>보유 ' + (ids.length - sold) + ' · 매도완료 ' + sold + '</em>' : '') +
+          '</span>' +
+          ids.map(function (id) {
+            var h = H[id], f = L.deriveAuctionFacts(h, RESULTS, CASES);
+            var on = id === sel;
+            var isSold = h.disposition === 'sold';
+            return '<button type="button" role="tab" class="hsw-b' + (on ? ' on' : '') +
+              (isSold ? ' sold' : '') + '" data-id="' + esc(id) + '" aria-selected="' + on + '">' +
+              '<b>' + esc(f.complex || h.holdingId) + '</b>' +
+              '<span>' + esc(String(f.wonDate || '').slice(2)) + ' · ' +
+                (isSold ? '매도완료' : 'D+' + (L.holdingDays(h, today()) || 0)) + '</span>' +
+            '</button>';
+          }).join('') +
+        '</div>';
+      [].slice.call(box.querySelectorAll('.hsw-b')).forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          sel = btn.dataset.id; draw();
           // 해시를 갱신해 특정 물건 링크를 공유할 수 있게 한다(히스토리는 쌓지 않는다).
-          try { history.replaceState(null, '', '#' + id); } catch (e) {}
-        };
-        list.appendChild(el);
+          try { history.replaceState(null, '', '#' + sel); } catch (e) {}
+        });
       });
+      // ← → 로 물건 이동
+      box.onkeydown = function (e) {
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+        e.preventDefault();
+        var i = ids.indexOf(sel) + (e.key === 'ArrowRight' ? 1 : -1);
+        if (i < 0 || i >= ids.length) return;
+        sel = ids[i]; draw();
+        try { history.replaceState(null, '', '#' + sel); } catch (e2) {}
+        var nb = box.querySelector('.hsw-b.on'); if (nb) nb.focus();
+      };
+    }
+
+    function draw() {
+      document.body.classList.toggle('multi', ids.length > 1);
+      drawSwitch();
       drawDetail();
     }
     // ── 공용 헬퍼 ──
@@ -636,6 +702,21 @@
         '<span class="chip">' + (h.disposition === 'sold' ? '매도완료' : '보유 D+' + (L.holdingDays(h, today0) || 0)) + '</span>'
       ].filter(Boolean).join('');
 
+      // 낙찰가가 없으면(= sourceResultKey 가 results.js 와 매칭 안 됨) 모든 지표가 무의미해진다.
+      // 구 코드는 그래도 계산해서 '낙찰가 +Infinity%', 음수 자기자본 같은 숫자를 자신 있게 표시했다.
+      // 새 물건을 낙찰받고 results.js 갱신 전에 원장을 먼저 쓰면 실제로 이 상황이 된다.
+      if (f.wonPrice == null) {
+        d.innerHTML =
+          '<div class="idbar">' + chips + '</div>' +
+          '<div class="card nolink"><b>낙찰 정보를 찾을 수 없습니다</b>' +
+          '<p>원장의 <code>sourceResultKey</code> = <code>' + esc(h.sourceResultKey || '(없음)') + '</code> 가 ' +
+          'results.js 의 어떤 항목과도 매칭되지 않습니다. 낙찰가를 모르면 투입원가·손익분기·손익을 ' +
+          '계산할 수 없어 지표를 표시하지 않습니다.</p>' +
+          '<p class="dim">해결: sourcing 회고로 results.js 를 갱신하거나, 원장의 sourceResultKey 를 ' +
+          '복합키(<code>사건번호@매각일</code>) 형식으로 맞추세요.</p></div>';
+        return;
+      }
+
       // ── #1 HERO — 결론을 맨 위로. 구 구조는 손익이 6번째였고 그마저 "미정"이었다 ──
       function heroCard(label, value, sub, cls) {
         return '<div class="hero-card"><div class="l">' + esc(label) + '</div>' +
@@ -654,7 +735,7 @@
             '낙찰 ' + eok(f.wonPrice) + ' + 부대비 ' + won(L.acquisitionCosts(h)).slice(1) + '<br>' +
             (E === 0 ? '<b class="warn">자기자본 0 · 전액 차입</b>' : '자기자본 ' + won(E))) +
           heroCard('손익분기 매도가', won(Math.round(BE)),
-            '낙찰가 +' + ((BE / f.wonPrice - 1) * 100).toFixed(2) + '%<br>' +
+            (f.wonPrice ? '낙찰가 +' + ((BE / f.wonPrice - 1) * 100).toFixed(2) + '%<br>' : '') +
             '<b class="warn">매월 +' + won(Math.round(slope)).slice(1) + '</b> · ' + M0 + '개월 기준') +
           heroCard('월 부담', won(Math.round(rr.cash)),
             '현금 기준 · 손익 기준 ' + won(Math.round(rr.interest)).slice(1) + '<br>원금상환분은 비용이 아니라 부채 감소') +
