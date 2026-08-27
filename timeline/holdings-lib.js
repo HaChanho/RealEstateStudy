@@ -5,6 +5,10 @@
   if (typeof window !== 'undefined') window.HoldingsLib = lib;
 })(function () {
   const TAXONOMY = ['취득세','법무등기','채권매입','대출부대','명도비','미납관리비','대출이자','재산세','공실관리비','보험','수리비','중개수수료','양도세','중도상환수수료','기타'];
+  // 원가 3버킷. 어느 버킷에도 없는 '중개수수료'(매도가 비례)와 '양도세'(세전 이후)는
+  // 원가 누적에서 의도적으로 제외한다 — 다른 데서 따로 모델링한다.
+  const FIN_CATS = ['대출이자', '중도상환수수료'];
+  const VAR_CATS = ['명도비', '미납관리비', '재산세', '공실관리비', '보험', '수리비', '기타'];
 
   function caseIdOf(sourceResultKey) { return String(sourceResultKey || '').split('@')[0]; }
 
@@ -90,14 +94,33 @@
 
   // 변동비 총액 = 미집행 예정비 + 미계상 확정부채.
   // 미계상 부채(예: 공용 체납관리비)는 근거가 확정된 채무라 손익분기에 반드시 들어가야 한다.
+  // 원장에 기록된 변동비 실적. 이걸 안 읽으면 실제로 쓴 돈이 손익에서 사라진다.
+  function variableExecuted(h) {
+    return ((h && h.costs) || []).reduce(
+      (s, c) => (VAR_CATS.indexOf(c && c.category) >= 0 ? s + signed(c) : s), 0);
+  }
+
+  // 변동비 = max(예산, 집행실적) + 미계상 확정부채.
+  // 예산은 '앞으로 더 나갈 돈'의 상한이다. 예산 안에서 쓴 지출은 이미 차감돼 있으니
+  // 기록해도 손익분기가 움직이면 안 되고, 예산을 넘긴 초과분만 손익을 깎아야 한다.
+  // (구 버전은 예산만 읽어서, 돈을 쓰고 기록해도 본전선이 1원도 안 움직였다.)
   function variableCosts(h, caseData) {
-    return plannedTotal(h, caseData) + unbookedTotal(h);
+    return Math.max(plannedTotal(h, caseData), variableExecuted(h)) + unbookedTotal(h);
   }
 
   // 주담보(경락잔금대출) 외 조달 — 신용대출 등. 원리금 상환이 아니라 이자만 계산한다.
+  // 주담보를 금액 일치로 골라내면, 다른 조달이 우연히 같은 금액일 때 그 이자가 통째로 사라진다.
+  // 명시 플래그(isPrimaryLoan)를 우선하고, 없으면 금액이 맞는 '첫 한 건'만 제외한다.
   function otherFunding(h) {
-    const principal = h && h.loan ? h.loan.principal : null;
-    return (h && h.funding || []).filter((x) => x && x.amount !== principal);
+    const ln = h && h.loan;
+    const list = (h && h.funding) || [];
+    if (!ln || ln.principal == null) return list.slice();
+    if (list.some((x) => x && x.isPrimaryLoan)) return list.filter((x) => !(x && x.isPrimaryLoan));
+    let dropped = false;
+    return list.filter((x) => {
+      if (!dropped && x && x.amount === ln.principal) { dropped = true; return false; }
+      return true;
+    });
   }
 
   // 원리금균등 상환 잔액. k 회차 납입 후 잔액.
@@ -153,31 +176,121 @@
     return { interest: (ln.principal || 0) * i + others, cash: M + others };
   }
 
-  // 실현 세전이익 — 시뮬레이션과 같은 식을 쓴다(Q7-2: 구 코드는 중개·중도상환을 빠뜨렸다).
+  // 실현 세전이익 — pretaxProfit 과 '같은 분해'에 실적을 대입한다.
+  // 구 버전은 variableCosts 를 통째로 빼먹고 모델이자 대신 원장이자만 써서,
+  // 같은 가격·같은 날인데 disposition 만 'sold' 로 바꾸면 손익이 1,596만 점프했다.
   function realizedPretax(h, facts) {
     if (!h || h.disposition !== 'sold' || h.resalePrice == null) return null;
     const balAt = (h.milestones || []).find((m) => m.key === 'balance');
     const months = (balAt && balAt.at && h.resaleClosedAt)
       ? Math.max(0, Math.round(daysBetween(balAt.at, h.resaleClosedAt) / 30.44)) : 0;
-    const allCosts = (h.costs || []).reduce((s, c) => s + signed(c), 0);
     const won = facts && facts.wonPrice != null ? facts.wonPrice : 0;
-    return h.resalePrice * (1 - BROKERAGE_RATE) - won - allCosts
-      - loanBalance(h, months) * ((h.loan && h.loan.prepayFeeRate) || 0);
+    const finBooked = (h.costs || []).reduce(
+      (s2, c) => (FIN_CATS.indexOf(c && c.category) >= 0 ? s2 + signed(c) : s2), 0);
+    // 중도상환수수료가 원장에 있으면 그 값을 쓰고, 없을 때만 모델로 채운다(이중계상 방지).
+    const feeBooked = (h.costs || []).some((c) => c && c.category === '중도상환수수료');
+    const prepay = feeBooked ? 0 : loanBalance(h, months) * ((h.loan && h.loan.prepayFeeRate) || 0);
+    return h.resalePrice * (1 - BROKERAGE_RATE)
+      - won - acquisitionCosts(h)
+      - (finBooked + prepay)
+      - (variableExecuted(h) + unbookedTotal(h));
   }
 
-  // 미계상 부채 — 표시 전용. 손익분기 V 에 넣지 않는다(plannedCosts 와 이중 계상 방지).
+  // 미계상 부채 — variableCosts 에 더해져 손익분기에 반영된다.
+  // (구 주석은 '넣지 않는다'고 적혀 있었으나 코드는 정반대였다.)
   function unbookedTotal(h) {
     return (h && h.unbookedLiabilities || []).reduce((s, x) => s + (Number(x && x.amount) || 0), 0);
+  }
+
+  // ── 손익 브릿지 — 매도가에서 세전이익까지의 분해 ──
+  // pretaxProfit = P(1−b) − totalCost − financeCost − variableCosts 이고
+  // totalCost = 낙찰가 + 취득부대비 이므로, 아래 단계 합은 pretaxProfit 과 정확히 일치한다.
+  // 산식을 여기서 새로 만들지 않고 기존 함수를 분해만 한다(두 곳이 어긋나는 것을 막는다).
+  function profitBridge(h, facts, salePrice, m, caseData) {
+    const P = Number(salePrice) || 0;
+    const wonP = (facts && facts.wonPrice != null) ? Number(facts.wonPrice) || 0 : 0;
+    const steps = [
+      { key: 'sale',      label: '매도가',     amount: P,                    kind: 'start' },
+      { key: 'brokerage', label: '중개수수료', amount: -P * BROKERAGE_RATE,  kind: 'out' },
+      { key: 'won',       label: '낙찰가',     amount: -wonP,                kind: 'out' },
+      { key: 'acq',       label: '취득부대비', amount: -acquisitionCosts(h),  kind: 'out' },
+      { key: 'finance',   label: '금융비용',   amount: -financeCost(h, m),    kind: 'out' },
+      { key: 'variable',  label: '변동비',     amount: -variableCosts(h, caseData), kind: 'out' },
+    ];
+    const total = steps.reduce((s, x) => s + x.amount, 0);
+    steps.push({ key: 'pretax', label: '세전이익', amount: total, kind: 'total' });
+    return steps;
+  }
+
+  // ── 항목별 비용 — 성격이 다른 네 갈래를 한 축에 모은다 ──
+  //   ledgerExecuted : 원장에 있고 오늘까지 집행됨
+  //   ledgerPlanned  : 원장에 있으나 날짜가 미래 (확정 예정)
+  //   budget         : 원장 밖 예산. plannedCosts 가 있으면 그 카테고리, 없으면 caseData 파생 한 행
+  //   unbooked       : 확정 채무인데 원장에 아직 없음
+  // 네 갈래는 배타적이어야 하지만 그 불변식을 코드가 강제하지는 못한다(원장 입력에 달려 있다).
+  // 같은 이름이 원장과 미계상에 동시에 있으면 conflict 로 표시해 사람이 고치게 한다.
+  function costByCategory(h, today0, caseData) {
+    const rows = {};
+    const get = (cat) => (rows[cat] || (rows[cat] = {
+      category: cat, ledgerExecuted: 0, ledgerPlanned: 0, budget: 0, unbooked: 0, total: 0,
+    }));
+    ((h && h.costs) || []).forEach((e) => {
+      const future = e.occurredAt && today0 && String(e.occurredAt) > String(today0);
+      const r = get(e.category || '기타');
+      if (future) r.ledgerPlanned += signed(e); else r.ledgerExecuted += signed(e);
+    });
+    const pc = (h && h.plannedCosts) || null;
+    if (pc && pc.length) {
+      pc.forEach((p) => { get(p.category || '기타').budget += Number(p.amount) || 0; });
+    } else {
+      const pt = plannedTotal(h, caseData);
+      if (pt) get('예정 변동비 (수리·기타)').budget += pt;
+    }
+    ((h && h.unbookedLiabilities) || []).forEach((u) => {
+      get(u.label || '미계상').unbooked += Number(u.amount) || 0;
+    });
+    const list = Object.keys(rows).map((k) => {
+      const r = rows[k];
+      r.total = r.ledgerExecuted + r.ledgerPlanned + r.budget + r.unbooked;
+      // 원장에 이미 기록된 항목이 미계상에도 남아 있으면 같은 채무를 두 번 세고 있다.
+      r.conflict = (r.ledgerExecuted + r.ledgerPlanned !== 0) && r.unbooked !== 0;
+      return r;
+    }).sort((a, b) => b.total - a.total);
+    const totals = { ledgerExecuted: 0, ledgerPlanned: 0, budget: 0, unbooked: 0, total: 0 };
+    list.forEach((r) => { Object.keys(totals).forEach((k) => { totals[k] += r[k]; }); });
+    return { rows: list, totals: totals };
+  }
+
+  // ── 민감도 격자 — 매도가 × 보유개월 → 세전이익 ──
+  // "언제 얼마에 팔면 얼마 남는가"를 한 판에 놓는다. 셀 값은 pretaxProfit 을 그대로 부른다.
+  // 입력 순서를 보존한다(정렬하면 축 라벨과 어긋난다).
+  function sensitivityGrid(h, facts, prices, monthsList, caseData) {
+    const ms = (monthsList || []).slice();
+    return {
+      months: ms,
+      breakEven: ms.map((m) => breakEvenPrice(h, facts, m, caseData)),
+      rows: (prices || []).map((p) => ({
+        price: p,
+        cells: ms.map((m) => {
+          const profit = pretaxProfit(h, facts, p, m, caseData);
+          return { months: m, profit: profit, sign: profit >= 0 ? 'gain' : 'loss' };
+        }),
+      })),
+    };
   }
 
   return {
     TAXONOMY: TAXONOMY, caseIdOf: caseIdOf, deriveAuctionFacts: deriveAuctionFacts,
     costTotal: costTotal, holdingDays: holdingDays, daysBetween: daysBetween,
     BROKERAGE_RATE: BROKERAGE_RATE, ACQ_CATS: ACQ_CATS,
+    FIN_CATS: FIN_CATS, VAR_CATS: VAR_CATS, variableExecuted: variableExecuted,
+    otherFunding: otherFunding,
     acquisitionCosts: acquisitionCosts, totalCost: totalCost, equity: equity,
     plannedTotal: plannedTotal, unbookedTotal: unbookedTotal, variableCosts: variableCosts,
     loanBalance: loanBalance, financeCost: financeCost,
     breakEvenPrice: breakEvenPrice, pretaxProfit: pretaxProfit,
     monthlyRunRate: monthlyRunRate, realizedPretax: realizedPretax,
+    profitBridge: profitBridge, costByCategory: costByCategory,
+    sensitivityGrid: sensitivityGrid,
   };
 });
