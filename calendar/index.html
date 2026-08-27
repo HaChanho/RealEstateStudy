@@ -158,9 +158,14 @@
   .list-table { max-width: 1200px; table-layout: fixed; border-collapse: separate; border-spacing: 0;
                 font-size: var(--fs-base); font-variant-numeric: tabular-nums; min-width: 992px; }
   .list-table thead th { position: sticky; top: 0; z-index: 3; height: 34px; padding: 0 10px;
-                background: var(--surface-2); color: var(--text-mute); font-size: var(--fs-sm);
+                background: var(--surface-2); color: var(--text-dim); font-size: var(--fs-sm);
                 font-weight: 600; letter-spacing: .03em; white-space: nowrap; text-align: left;
                 border-bottom: 1px solid var(--border-strong); cursor: pointer; user-select: none; }
+  /* 정렬 헤더를 <button> 으로 바꿨다(키보드 접근). 시각적으로는 기존 th 내용과 같아야 한다. */
+  .list-table thead th .sort-btn { all: unset; display: block; width: 100%; box-sizing: border-box;
+                cursor: pointer; font: inherit; color: inherit; letter-spacing: inherit;
+                text-align: inherit; white-space: nowrap; }
+  .list-table thead th .sort-btn:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: -2px; }
   .list-table thead th[aria-sort="ascending"], .list-table thead th[aria-sort="descending"] {
                 color: var(--text); background: var(--surface-3); }
   .list-table tbody td { height: 40px; padding: 0 10px; white-space: nowrap; overflow: hidden;
@@ -313,7 +318,7 @@
   .detail-section.boxed.acc-num    { border-left-color: #64748b; }         /* 경매 수치 */
   .detail-section.boxed.acc-rights { border-left-color: var(--accent); }   /* 권리·판정 (권리+판정사유 공유) */
   .detail-section.boxed.acc-result { border-left-color: #6366f1; }         /* 예측·결과 (경매결과 — pred와 동일 색) */
-  .detail-section.boxed.acc-report { border-left-color: #94a3b8; }         /* 보고서 */
+  .detail-section.boxed.acc-report { border-left-color: #475569; }         /* 보고서 */
   /* 대시보드 레이아웃 (넓은 상세뷰, ≥901px) — 머니 로우(수익|시세 2-up) + 근거 머손리(2컬럼).
      v9.1 위계(의사결정→근거→참고)는 DOM 순서로 유지하고, 가로 공간만 2컬럼으로 활용. */
   .detail-money { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; align-items: start; }
@@ -358,13 +363,13 @@
   .priority-tag { color: var(--text-mute); font-size: 10px; margin-left: 4px; }
   /* v6.1 관심 tier 배지 */
   .tier-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin: 0 0 8px; letter-spacing: -.2px; }
-  .tier-badge.tier-star      { background: rgb(250 204 21 / var(--a-2));  color: #facc15; border: 1px solid rgb(250 204 21 / var(--a-3)); }
-  .tier-badge.tier-watch     { background: rgb(96 165 250 / var(--a-2));  color: #60a5fa; border: 1px solid rgb(96 165 250 / var(--a-3)); }
-  .tier-badge.tier-watchlist { background: rgb(148 163 184 / var(--a-2)); color: #94a3b8; border: 1px solid rgb(148 163 184 / var(--a-3)); }
+  .tier-badge.tier-star      { background: rgb(250 204 21 / var(--a-2));  color: #854d0e; border: 1px solid rgb(250 204 21 / var(--a-3)); }
+  .tier-badge.tier-watch     { background: rgb(96 165 250 / var(--a-2));  color: #1e40af; border: 1px solid rgb(96 165 250 / var(--a-3)); }
+  .tier-badge.tier-watchlist { background: rgb(148 163 184 / var(--a-2)); color: #475569; border: 1px solid rgb(148 163 184 / var(--a-3)); }
   .tier-badge.tier-excl      { background: rgb(252 165 165 / var(--a-2)); color: var(--negative); border: 1px solid rgb(252 165 165 / var(--a-3)); }
   /* 칩 tier 미니배지 */
   .chip-tier { font-size: 9px; font-weight: 800; margin-left: 3px; }
-  .chip-tier.tier-star { color: #facc15; } .chip-tier.tier-watch { color: #60a5fa; } .chip-tier.tier-watchlist { color: #94a3b8; }
+  .chip-tier.tier-star { color: #854d0e; } .chip-tier.tier-watch { color: #1e40af; } .chip-tier.tier-watchlist { color: #475569; }
   /* EP70 리스트 셀 */
   td.col-num.ep-pos { color: var(--positive); } td.col-num.ep-neg { color: var(--negative); }
   /* 사건번호 + 매각일 인라인 — 캘린더가 이미 날짜를 보여주므로 상세에선 경량 표시(사건번호 옆) */
@@ -559,9 +564,9 @@
   .verdict-banner.v-hold { border-left-color: var(--price); background: rgb(252 211 77 / var(--a-1)); }
   .verdict-banner.v-fail { border-left-color: var(--negative); background: rgb(252 165 165 / var(--a-1)); }
   .verdict-banner.v-pending, .verdict-banner.v-expired { border-left-color: var(--text-mute); }
-  .vb-tier.t-primary { background: rgb(250 204 21 / var(--a-2)); color: #facc15; border: 1px solid rgb(250 204 21 / var(--a-3)); }
-  .vb-tier.t-watch { background: rgb(96 165 250 / var(--a-2)); color: #60a5fa; border: 1px solid rgb(96 165 250 / var(--a-3)); }
-  .vb-tier.t-watchlist { background: rgb(148 163 184 / var(--a-2)); color: #94a3b8; border: 1px solid rgb(148 163 184 / var(--a-3)); }
+  .vb-tier.t-primary { background: rgb(250 204 21 / var(--a-2)); color: #854d0e; border: 1px solid rgb(250 204 21 / var(--a-3)); }
+  .vb-tier.t-watch { background: rgb(96 165 250 / var(--a-2)); color: #1e40af; border: 1px solid rgb(96 165 250 / var(--a-3)); }
+  .vb-tier.t-watchlist { background: rgb(148 163 184 / var(--a-2)); color: #475569; border: 1px solid rgb(148 163 184 / var(--a-3)); }
   .vb-tier.t-excl { background: rgb(252 165 165 / var(--a-2)); color: var(--negative); border: 1px solid rgb(252 165 165 / var(--a-3)); }
 
   /* 접이식 참고 정보 (v9.1) */
@@ -627,7 +632,7 @@
 
   .ext-link { color: var(--accent); text-decoration: none; font-size: 12px; word-break: break-all; }
   .ext-link:hover { text-decoration: underline; }
-  .report-link { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 8px; background: rgb(245 158 11 / var(--a-2)); border: 1px solid rgb(245 158 11 / var(--a-4)); color: #f59e0b; text-decoration: none; font-size: 13px; font-weight: 700; transition: background .12s; }
+  .report-link { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 8px; background: rgb(245 158 11 / var(--a-2)); border: 1px solid rgb(245 158 11 / var(--a-4)); color: var(--price); text-decoration: none; font-size: 13px; font-weight: 700; transition: background .12s; }
   .report-link:hover { background: rgb(245 158 11 / var(--a-3)); }
   .report-link .rp-ico { font-size: 14px; }
   .report-link .rp-arrow { font-weight: 800; }
@@ -999,9 +1004,9 @@
   <div id="stale-banner" hidden></div>
   <div class="topbar" id="topbar">
     <div class="month-nav" id="month-nav">
-      <button class="nav-btn" id="prev-month" title="이전 달" type="button">←</button>
+      <button class="nav-btn" id="prev-month" title="이전 달" aria-label="이전 달" type="button">←</button>
       <div class="month-label" id="month-label">—</div>
-      <button class="nav-btn" id="next-month" title="다음 달" type="button">→</button>
+      <button class="nav-btn" id="next-month" title="다음 달" aria-label="다음 달" type="button">→</button>
       <button class="nav-btn today-btn" id="today-btn" type="button">오늘</button>
     </div>
   </div>
@@ -1926,12 +1931,20 @@
     const head = document.getElementById('list-head');
     head.replaceChildren();
     for (const col of LIST_COLUMNS) {
-      const th = el('th', { text: col.label });
+      const th = el('th');
       th.style.width = col.width;
       if (col.align) th.style.textAlign = col.align;
       if (state.sort.key === col.key) th.classList.add('sort-active');
-      th.appendChild(el('span', { cls: 'sort-ind', text: state.sort.key === col.key ? (state.sort.dir === 'asc' ? ' ▲' : ' ▼') : ' ↕' }));
-      th.addEventListener('click', () => {
+      // 정렬은 목록 뷰의 핵심 동작인데 <th> 는 포커스를 못 받아 키보드로 전혀 쓸 수 없었다.
+      // aria-sort 만 올바르게 붙어 있어서, 스크린리더는 조작할 수 없는 컨트롤의 상태를 읽어주고 있었다.
+      const sb = el('button', { cls: 'sort-btn', text: col.label });
+      sb.type = 'button';
+      sb.appendChild(el('span', { cls: 'sort-ind', text: state.sort.key === col.key ? ' ▲' : ' ↕' }));
+      sb.querySelector('.sort-ind').textContent =
+        state.sort.key === col.key ? (state.sort.dir === 'asc' ? ' ▲' : ' ▼') : ' ↕';
+      sb.querySelector('.sort-ind').setAttribute('aria-hidden', 'true');   // aria-sort 와 중복 낭독 방지
+      th.appendChild(sb);
+      sb.addEventListener('click', () => {
         if (state.sort.key === col.key) state.sort.dir = state.sort.dir === 'asc' ? 'desc' : 'asc';
         else { state.sort.key = col.key; state.sort.dir = (col.key === 'rating' || col.key === 'margin' || col.key === 'rounds') ? 'desc' : 'asc'; }
         renderList();
@@ -2237,6 +2250,7 @@
     expandBtn.addEventListener('click', cyclePanelPreset);
     actions.appendChild(expandBtn);
     const closeBtn = el('button', { cls: 'close', text: '×', title: '닫기' });
+    closeBtn.setAttribute('aria-label', '닫기');
     closeBtn.addEventListener('click', closeDetail);
     actions.appendChild(closeBtn);
     header.appendChild(actions);
@@ -2925,6 +2939,10 @@
     setPanelFull(false);
     state.selectedId = null;
     document.getElementById('detail-panel').classList.remove('open');
+    // width:0 + overflow:hidden 은 시각적으로만 가린다. 접근성 트리와 탭 순서에는 그대로 남아
+    // 보이지 않는 링크·버튼에 포커스가 떨어지고 스크린리더는 지난 사건을 계속 읽는다.
+    const _di = document.getElementById('detail-inner');
+    if (_di) _di.replaceChildren();
     document.getElementById('panel-backdrop').classList.remove('show'); // 모바일 backdrop 해제
     syncUrl();
     if (state.view === 'list') renderList();
@@ -3066,7 +3084,18 @@
     const node = state.view === 'list'
       ? document.querySelector(`.list-table tbody tr[data-case-id="${CSS.escape(id)}"]`)
       : document.querySelector(`#calendar .chip[data-case-id="${CSS.escape(id)}"]`);
-    if (node) node.scrollIntoView({ block: 'nearest' });   // center 는 화면이 튄다
+    if (node) {
+      node.scrollIntoView({ block: 'nearest' });
+      // tabIndex 가 -1 이라 프로그램 포커스는 가능하다. 이게 없으면 화살표 이동이
+      // 스크린리더에 아무것도 알리지 않는다(선택 표시는 시각 전용이었다).
+      node.focus({ preventScroll: true });
+    }
+    const _c = CASES.find((x) => x.id === id);
+    const _sr = document.getElementById('sr-status');
+    if (_sr && _c) {
+      _sr.textContent = `${idx + 1} / ${ids.length} · ${_c.complex || ''} ${_c.caseNumber || ''}` +
+        (panelOpen ? ' 상세 열림' : '');
+    }   // center 는 화면이 튄다
   }
 
   document.addEventListener('keydown', (e) => {

@@ -488,7 +488,7 @@
     if (fc.assumedAt) cap.push(esc(fc.assumedAt) + ' 기준');
     if (fc.bidBasis) cap.push(esc(fc.bidBasis));
     if (fc.frozen) cap.push('입찰 전 확정(frozen)');
-    return '<div class="sec-title">계획 vs 실제</div>' +
+    return '<h2 class="sec-title">계획 vs 실제</h2>' +
       '<div class="ledger-wrap"><table class="ledger fc"><thead><tr>' +
       '<th>항목</th><th style="text-align:right">계획</th><th style="text-align:right">실제</th>' +
       '<th style="text-align:right">차이</th></tr></thead><tbody>' + rows.join('') +
@@ -659,7 +659,7 @@
       var nowX = sc.x(nowM);
 
       return '<div class="card sim-card">' +
-        '<div class="sec-title">매도 시나리오</div>' +
+        '<h2 class="sec-title">매도 시나리오</h2>' +
         '<svg class="sim-svg" viewBox="0 0 ' + SIM.W + ' ' + SIM.H + '" role="img" ' +
              'aria-label="보유 기간에 따른 손익분기 매도가 추이">' +
           '<g class="grid">' + grid + '</g><g class="ylab">' + labels + '</g>' +
@@ -743,7 +743,7 @@
       var costs = (h.costs || []).slice().sort(function (a, b) {
         return String(a.occurredAt || '').localeCompare(String(b.occurredAt || ''));
       });
-      if (!costs.length) return '<div class="sec-title">비용 원장</div><div class="dim">기록된 비용 없음</div>';
+      if (!costs.length) return '<h2 class="sec-title">비용 원장</h2><div class="dim">기록된 비용 없음</div>';
 
       // 카테고리 집계 — 도넛/파이 대신 CSS flex 스택바(세그먼트 5개, 라벨 필요)
       var byCat = {};
@@ -791,9 +791,9 @@
             (x.basis ? '<span class="m">' + esc(x.basis) + '</span>' : '') + '</div>';
         }).join('') + '</div>' : '';
 
-      return '<div class="sec-title">비용 원장 ' +
+      return '<h2 class="sec-title">비용 원장 ' +
           '<span class="sec-sum">집행 ' + won(split.executed) +
-          (split.planned ? ' · 예정 ' + won(split.planned) : '') + '</span></div>' +
+          (split.planned ? ' · 예정 ' + won(split.planned) : '') + '</span></h2>' +
         (bar ? '<div class="cost-bar">' + bar + '</div>' : '') +
         body + ubHtml;
     }
@@ -884,7 +884,7 @@
       var age = nd.updatedAt ? L.daysBetween(nd.updatedAt, today0) : null;
       var fresh = age == null ? '' :
         '<span class="mk-fresh' + (age > 90 ? ' stale' : '') + '">시세 ' + age + '일 전 기준 (' + esc(nd.updatedAt) + ')</span>';
-      return '<div class="sec-title">매도가 현실성 — 시세·유사낙찰 대조' + fresh + '</div>' +
+      return '<h2 class="sec-title">매도가 현실성 — 시세·유사낙찰 대조' + fresh + '</h2>' +
         '<svg class="mk-svg" viewBox="0 0 ' + MK.W + ' ' + MK.H + '" role="img" ' +
           'aria-label="실거래·유사낙찰·호가 대비 손익분기 위치">' + svg + '</svg>' +
         '<table class="mx mkt"><caption>' +
@@ -983,7 +983,7 @@
           '</div>';
       }
 
-      return '<div class="sec-title">보유 진행 · 월별 부담</div>' +
+      return '<h2 class="sec-title">보유 진행 · 월별 부담</h2>' +
         '<div class="rail6" style="grid-template-columns:repeat(' + nCols + ',1fr)">' + nodes + '</div>' +
         nextMemo + (monHtml ? '<div class="mx-sep"></div>' + monHtml : '');
     }
@@ -1058,7 +1058,7 @@
       });
 
       var split = window.CalLib.splitCosts(h.costs, today0);
-      return '<div class="sec-title">원가 브릿지 — 낙찰가에서 손익분기까지</div>' +
+      return '<h2 class="sec-title">원가 브릿지 — 낙찰가에서 손익분기까지</h2>' +
         '<svg class="wf-svg" viewBox="0 0 ' + WF.W + ' ' + WF.H + '" role="img" ' +
           'aria-label="낙찰가 ' + won(f.wonPrice) + ' 에서 손익분기 매도가 ' + won(BE) +
           ' 까지 ' + won(wedge) + ' 의 구성">' + svg + '</svg>' +
@@ -1091,7 +1091,7 @@
           '<td class="share"><i style="width:' + Math.max(1, pct * 0.9).toFixed(1) + '%"></i>' +
             '<span>' + pct.toFixed(1) + '%</span></td></tr>';
       }).join('');
-      return '<div class="sec-title">항목별 비용</div>' +
+      return '<h2 class="sec-title">항목별 비용</h2>' +
         '<table class="mx"><caption>' +
           '<b>집행</b> 원장에 있고 오늘까지 나간 돈 · <b>예정</b> 원장에 있으나 날짜가 미래 · ' +
           '<b>예산</b> 원장 밖 계획분 · <b>미계상</b> 확정 채무인데 원장에 아직 없음. ' +
@@ -1146,7 +1146,7 @@
             return '<td class="c ' + tone(c) + '">' + signed(c.profit) + '</td>';
           }).join('') + '</tr>';
       }).join('');
-      return '<div class="sec-title">매도가 × 보유기간 — 세전이익</div>' +
+      return '<h2 class="sec-title">매도가 × 보유기간 — 세전이익</h2>' +
         '<table class="mx heat"><caption>' +
           '행은 매도가, 열은 잔금일로부터 보유 개월. 칸은 그 조합의 세전이익이다. ' +
           '초록이 이익 · 빨강이 손실이고 농도는 금액 크기다. 맨 아래 줄은 각 기간의 본전 매도가 — ' +
@@ -1270,7 +1270,7 @@
           (x.rate ? ' · ' + pctf(x.rate) : '') + '</i>';
       }).join('');
       var fundHtml =
-        '<div class="sec-title">자금 구조</div>' +
+        '<h2 class="sec-title">자금 구조</h2>' +
         (fundBar ? '<div class="fund-bar">' + fundBar + '</div>' : '') +
         '<div class="fund-eq' + (E === 0 ? ' warn' : '') + '">자기자본 ' + won(E) +
           (E === 0 ? ' (100% 차입)' : '') + '</div>' +
