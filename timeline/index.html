@@ -91,6 +91,16 @@
   .mk-svg .rl  { fill: var(--text-mute); font-size: 10.5px; text-anchor: middle; }
   .mk-svg .rl.be { fill: var(--accent-strong); font-weight: 700; }
   .mk-svg .rowlab { fill: var(--text-mute); font-size: 10.5px; text-anchor: end; }
+  /* 슬라이더와 연동되는 '내 매도가' 마커 — 본전선(accent)과 구분되게 굵은 실선 */
+  .mk-svg .mk-mine { stroke: var(--text); stroke-width: 2; }
+  .mk-svg .rl.mine { fill: var(--text); font-weight: 700; }
+  /* 마감 판독 — 걷어낸 선차트의 유일한 payload 였다. 크게 올린다. */
+  .deadline { margin-top: 12px; padding: 10px 14px; background: var(--surface-2);
+              border: 1px solid var(--border); border-radius: var(--r-md);
+              font-size: 13px; color: var(--text-dim); }
+  .deadline b { font-size: 15px; color: var(--text); }
+  .deadline b.pos { color: var(--positive); }
+  .deadline b.neg { color: var(--negative); }
   .mk-fresh { font-size: 11px; font-weight: 600; color: var(--text-mute); margin-left: 8px; }
   .mk-fresh.stale { color: var(--negative); }
   .mx.mkt td.gap.pos { color: var(--positive); font-weight: 700; }
@@ -610,50 +620,13 @@
       };
     }
 
+    // 매도 판단의 컨트롤 부분. 선차트는 걷어냈다 —
+    // 그 차트의 유일한 payload 였던 '교차점 = 마감 기한'은 이미 문자열로 계산되고 있었고
+    // (crossLab), 기울기는 HERO 의 '한 달 더 보유할 때마다 +N' 이 같은 말을 한다.
+    // 318px 을 쓰던 거의 직선인 선 대신, 마감을 큰 판독값으로 올린다.
     function buildScenario(h, f, cd, anchors, defaultSale, M0) {
       var sc = simScale(h, f, cd);
-      var pts = [];
-      for (var m = 0; m <= SIM.MMAX; m++) pts.push(sc.x(m).toFixed(1) + ',' + sc.y(L.breakEvenPrice(h, f, m, cd)).toFixed(1));
-      var nowM = Math.max(0, Math.min(SIM.MMAX, monthsSinceBalance(h)));
-      var cut = Math.round(nowM) + 1;
-      var solid = pts.slice(0, cut).join(' ');
-      var dashed = pts.slice(Math.max(0, cut - 1)).join(' ');
-
-      var grid = '', labels = '';
-      for (var g = 0; g <= 4; g++) {
-        var vy = sc.lo + (sc.hi - sc.lo) * g / 4, py = sc.y(vy);
-        grid += '<line x1="' + SIM.X0 + '" y1="' + py.toFixed(1) + '" x2="' + SIM.X1 + '" y2="' + py.toFixed(1) + '"/>';
-        labels += '<text x="' + (SIM.X0 - 10) + '" y="' + (py + 4).toFixed(1) + '">' + eok(vy) + '</text>';
-      }
-      var refs = '';
-      [{ v: f.appraisalPrice, t: '감정' }, { v: cd && cd.neutralSalePrice, t: '중립' }, { v: f.wonPrice, t: '낙찰' }]
-        .filter(function (r) { return r.v; }).forEach(function (r) {
-          var ry = sc.y(r.v);
-          refs += '<line class="ref" x1="' + SIM.X0 + '" y1="' + ry.toFixed(1) + '" x2="' + SIM.X1 + '" y2="' + ry.toFixed(1) + '"/>' +
-                  '<text class="ref-t" x="' + (SIM.X1 - 4) + '" y="' + (ry - 5).toFixed(1) + '">' + r.t + ' ' + eok(r.v) + '</text>';
-        });
-      var ticks = '';
-      for (var t2 = 0; t2 <= SIM.MMAX; t2 += 3) {
-        ticks += '<text class="xt" x="' + sc.x(t2).toFixed(1) + '" y="' + (SIM.Y1 + 20) + '">' + (t2 === 0 ? '잔금' : t2 + '개월') + '</text>';
-      }
-      var nowX = sc.x(nowM);
-
-      return '<div class="card sim-card">' +
-        '<h2 class="sec-title">매도 시나리오</h2>' +
-        '<svg class="sim-svg" viewBox="0 0 ' + SIM.W + ' ' + SIM.H + '" role="img" ' +
-             'aria-label="보유 기간에 따른 손익분기 매도가 추이">' +
-          '<g class="grid">' + grid + '</g><g class="ylab">' + labels + '</g>' +
-          '<polygon id="zone" points=""/>' +
-          refs +
-          '<polyline class="be solid" points="' + solid + '"/>' +
-          '<polyline class="be dashed" points="' + dashed + '"/>' +
-          '<line id="saleline" x1="' + SIM.X0 + '" x2="' + SIM.X1 + '" y1="0" y2="0"/>' +
-          '<line class="now" x1="' + nowX.toFixed(1) + '" y1="' + SIM.Y0 + '" x2="' + nowX.toFixed(1) + '" y2="' + SIM.Y1 + '"/>' +
-          '<text class="now-t" x="' + (nowX + 5).toFixed(1) + '" y="' + (SIM.Y0 + 12) + '">오늘</text>' +
-          '<g class="xlab">' + ticks + '</g>' +
-          '<text id="crosslab" class="cross" x="0" y="0"></text>' +
-        '</svg>' +
-        '<div class="sim-ctl">' +
+      return '<div class="sim-ctl">' +
           '<label for="saleRange">매도가 가정</label>' +
           '<output id="saleOut">' + won(defaultSale) + '</output>' +
           // step 이 100만이고 min 이 격자에 안 맞아 앵커에 도달할 수 없었다.
@@ -664,13 +637,13 @@
             return '<button type="button" class="anchor" data-v="' + a.v + '">' + a.label + ' ' + eok(a.v) + '</button>';
           }).join('') + '</div>' +
         '</div>' +
+        '<div class="deadline" id="deadline" role="status"></div>' +
         '<div class="sim-out-cap">이 매도가로 팔았을 때 <b>세전이익</b> (세금 미반영)</div>' +
-          '<div class="sim-out">' +
+        '<div class="sim-out">' +
           [3, 4, 6].map(function (m) {
             return '<div><span>잔금+' + m + '개월</span><b data-m="' + m + '"></b></div>';
           }).join('') +
-        '</div>' +
-      '</div>';
+        '</div>';
     }
 
     // 잔금일 + n개월 을 실제 날짜와 오늘 기준 D-day 로 옮긴다.
@@ -698,38 +671,38 @@
     function bindScenario(h, f, cd, M0) {
       var range = document.getElementById('saleRange');
       if (!range) return;
-      var sc = simScale(h, f, cd);
       var out = document.getElementById('saleOut');
-      var line = document.getElementById('saleline');
-      var zone = document.getElementById('zone');
-      var crossLab = document.getElementById('crosslab');
+      var dl = document.getElementById('deadline');
       var outs = [].slice.call(document.querySelectorAll('.sim-out b'));
+      // 시세 스트립의 '내 매도가' 마커 — 슬라이더가 실제 증거 위에서 움직이게 한다.
+      var mk = document.getElementById('mk-sale');
+      var mkT = document.getElementById('mk-sale-t');
+      var mkX = window.__mkX || null;
 
       function paint() {
         var P = Number(range.value);
         out.textContent = won(P);
-        var y = sc.y(P);
-        line.setAttribute('y1', y); line.setAttribute('y2', y);
         // 교차점 = 이 가격으로 본전이 되는 마지막 시점 = 마감 기한
         var cross = null;
         for (var m = 0; m <= SIM.MMAX; m++) { if (L.breakEvenPrice(h, f, m, cd) > P) { cross = m; break; } }
-        var cx = cross == null ? SIM.X1 : sc.x(cross);
-        zone.setAttribute('points',
-          SIM.X0 + ',' + y + ' ' + cx.toFixed(1) + ',' + y + ' ' + cx.toFixed(1) + ',' + SIM.Y1 + ' ' + SIM.X0 + ',' + SIM.Y1);
-        zone.setAttribute('class', cross === 0 ? 'loss' : 'gain');
-        if (cross != null && cross > 0) {
-          crossLab.setAttribute('x', Math.min(cx + 6, SIM.X1 - 90));
-          crossLab.setAttribute('y', y - 8);
-          // cross 는 '잔금일로부터'의 개월이다. 오늘 기준이 아니다.
-          // '마감 1개월'을 한 달 여유로 읽으면 실제(D-12)와 크게 어긋난다 → 날짜와 D-day 로 적는다.
-          crossLab.textContent = '이 가격 마감 ' + crossLabel(h, cross);
-        } else if (cross === 0) { crossLab.textContent = '이미 본전 아래'; crossLab.setAttribute('x', SIM.X0 + 6); crossLab.setAttribute('y', y - 8); }
-        else { crossLab.textContent = ''; }
-        outs.forEach(function (b) {
-          var m = Number(b.dataset.m);
-          var v = L.pretaxProfit(h, f, P, m, cd);
-          b.textContent = signed(v);
-          b.className = v >= 0 ? 'pos' : 'neg';
+        if (cross === 0) {
+          dl.innerHTML = '<b class="neg">이미 본전 아래</b> — 이 가격으로는 지금 팔아도 손실이다.';
+        } else if (cross == null) {
+          dl.innerHTML = '<b class="pos">' + SIM.MMAX + '개월 내 마감 없음</b> — 이 가격이면 1년 넘게 버텨도 본전 위다.';
+        } else {
+          dl.innerHTML = '이 가격으로 본전을 지키는 마지막 시점 <b>' + crossLabel(h, cross) + '</b>';
+        }
+        if (mk && mkX) {
+          var x = mkX(P);
+          mk.setAttribute('x1', x.toFixed(1)); mk.setAttribute('x2', x.toFixed(1));
+          mkT.setAttribute('x', x.toFixed(1));
+          mkT.textContent = '내 매도가 ' + eok(P);
+        }
+        outs.forEach(function (b2) {
+          var m2 = Number(b2.dataset.m);
+          var v = L.pretaxProfit(h, f, P, m2, cd);
+          b2.textContent = signed(v);
+          b2.className = v >= 0 ? 'pos' : 'neg';
         });
       }
       range.addEventListener('input', paint);
@@ -739,7 +712,6 @@
       paint();
     }
 
-    // ── 비용 원장: 날짜 그룹 + 소계 + 카테고리 스택바 ──
     function buildLedger(h, today0, split) {
       var costs = (h.costs || []).slice().sort(function (a, b) {
         return String(a.occurredAt || '').localeCompare(String(b.occurredAt || ''));
@@ -842,6 +814,8 @@
         .filter(function (v) { return v != null; });
       var lo = Math.min.apply(null, vals) * 0.985, hi2 = Math.max.apply(null, vals) * 1.015;
       var X = function (v) { return MK.X0 + (Math.max(lo, Math.min(hi2, v)) - lo) / (hi2 - lo) * (MK.X1 - MK.X0); };
+      // 슬라이더가 이 스케일을 써서 '내 매도가' 마커를 움직인다 — 상호작용이 실제 증거 위에서 일어나게.
+      window.__mkX = X;
       var xbe = X(BE);
       var svg =
         '<rect class="zone-lo" x="' + MK.X0 + '" y="14" width="' + (xbe - MK.X0).toFixed(1) + '" height="86"/>' +
@@ -873,6 +847,10 @@
             '<text class="rl' + (r.be ? ' be' : '') + '" x="' + X(r.v).toFixed(1) + '" y="112">' +
             esc(r.t) + ' ' + eok(r.v) + '</text>';
         });
+
+      // 슬라이더와 연동되는 마커. 초기 좌표는 bindScenario 의 첫 paint 가 채운다.
+      svg += '<line id="mk-sale" class="mk-mine" x1="0" y1="10" x2="0" y2="104"/>' +
+             '<text id="mk-sale-t" class="rl mine" x="0" y="8"></text>';
 
       var age = nd.updatedAt ? L.daysBetween(nd.updatedAt, today0) : null;
       var fresh = age == null ? '' :
@@ -1306,7 +1284,7 @@
 
       // ── #6 계획 vs 실제 (접힘) ──
       var fcHtml = forecastHtml(h, f, split);
-      var fcSec = fcHtml ? '<details class="fold"><summary>계획 vs 실제 (모델 검증)</summary>' + fcHtml + '</details>' : '';
+      var fcSec = fcHtml;   // fold() 로 감싼다 — 본문 h2 가 summary 와 겹치던 것을 그쪽에서 처리한다
 
       // ── #7 메모 (접힘, ★/⚠️ 배지) ──
       var notesHtml = '';
@@ -1323,20 +1301,38 @@
           }).join('') + '</div></details>';
       }
 
+      // ── 조립 ──
+      // 결정에서 역산한 순서다: 얼마를 받아야 하나 → 실제로 받을 수 있나 →
+      // 못 받으면 얼마나 버틸 수 있나 → 앞으로 얼마가 더 나가나 → (참조) 어디에 썼나.
+      // 매도 시나리오·히트맵·시세 대조가 같은 질문에 흩어져 답하고 있어 한 섹션으로 합쳤다.
+      // 참조 성격(브릿지·원장·자금구조)은 접는다 — 자주 보는 것이 아니라 캐물을 때 보는 것이다.
+      // 접을 때 본문의 h2 는 걷어낸다 — summary 가 이미 제목 역할이라 두 번 나온다.
+      var fold = function (title, body) {
+        if (!body) return '';
+        var inner = body.replace(/^\s*<h2 class="sec-title">[\s\S]*?<\/h2>/, '');
+        return '<details class="fold"><summary>' + title + '</summary>' + inner + '</details>';
+      };
+      var decideHtml = (simHtml || marketHtml || heatHtml)
+        ? '<div class="card">' +
+            '<h2 class="sec-title">매도 판단</h2>' +
+            simHtml +
+            (marketHtml ? '<div class="mx-sep"></div>' + marketHtml : '') +
+            (heatHtml ? fold('매도가 × 보유기간 전체 격자', heatHtml) : '') +
+          '</div>'
+        : '';
+
       d.innerHTML =
         '<div class="idbar">' + chips +
           (f.reportUrl ? '<a class="rep" href="../calendar/' + esc(f.reportUrl) + '">상세 분석 보고서 ↗</a>' : '') +
         '</div>' +
         hero + riskHtml +
-        (bridgeHtml ? '<div class="card">' + bridgeHtml + '</div>' : '') +
-        simHtml +
-        (heatHtml ? '<div class="card">' + heatHtml + '</div>' : '') +
-        (marketHtml ? '<div class="card">' + marketHtml + '</div>' : '') +
-        '<div class="card">' + fundHtml + '</div>' +
+        decideHtml +
         (progHtml ? '<div class="card">' + progHtml + '</div>' : '') +
-        '<div class="card">' + ledgerHtml +
-          (matrixHtml ? '<div class="mx-sep"></div>' + matrixHtml : '') + '</div>' +
-        fcSec + notesHtml;
+        (matrixHtml ? '<div class="card">' + matrixHtml + '</div>' : '') +
+        fold('원가 브릿지 — 낙찰가에서 본전 매도가까지', bridgeHtml) +
+        fold('비용 원장 (영수증)', ledgerHtml) +
+        fold('자금 구조', fundHtml) +
+        fold('계획 vs 실제 (모델 검증)', fcSec) + notesHtml;
 
       if (!realized) bindScenario(h, f, cd, M0);
     }
