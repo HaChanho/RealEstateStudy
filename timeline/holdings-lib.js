@@ -318,17 +318,26 @@
       const ym = addMonths(start, k);
       const past = nowYM ? ym <= nowYM : false;
       // 잔금월(k=0)은 첫 정기납입 전이다 — 원장에 있는 실적 이자만 잡는다.
-      const booked = ((h && h.costs) || []).reduce(
-        (s, c) => (FIN_CATS.indexOf(c && c.category) >= 0 && String(c.occurredAt || '').slice(0, 7) === ym
-          ? s + signed(c) : s), 0);
+      // 다만 그 달 대출이자가 경락분만은 아니다. 신용대출 이자도 같은 category 로 들어온다.
+      // 구 코드는 둘을 한 열에 몰아넣어 '기타 조달 이자'가 '—' 로 보였고,
+      // 그 달엔 신용이자를 안 낸 것처럼 읽혔다 — 열 이름이 틀린 숫자를 담고 있었다.
+      const firstAt = (h && h.loan && h.loan.repayment && h.loan.repayment.firstPaidAt) || null;
+      const bookedIn = (pred) => ((h && h.costs) || []).reduce(
+        (s, c) => (FIN_CATS.indexOf(c && c.category) >= 0
+          && String(c.occurredAt || '').slice(0, 7) === ym && pred(c) ? s + signed(c) : s), 0);
       const r = sch[k - 1];
-      const loanInterest = k === 0 ? booked : (r ? r.interest : 0);
+      const loanInterest = k === 0
+        ? bookedIn((c) => firstAt && c.occurredAt === firstAt)
+        : (r ? r.interest : 0);
+      const otherInterest = k === 0
+        ? bookedIn((c) => !(firstAt && c.occurredAt === firstAt))
+        : otherMonthly;
       const loanPrincipal = k === 0 ? 0 : (r ? r.principal : 0);
-      const cash = loanInterest + loanPrincipal + (k === 0 ? 0 : otherMonthly);
+      const cash = loanInterest + loanPrincipal + otherInterest;
       cum += cash;
       rows.push({
         month: ym, isPast: past, loanInterest: loanInterest, loanPrincipal: loanPrincipal,
-        otherInterest: k === 0 ? 0 : otherMonthly, cash: cash, cumCash: cum,
+        otherInterest: otherInterest, cash: cash, cumCash: cum,
         balance: r ? r.balance : (h.loan ? h.loan.principal : 0),
         breakEven: breakEvenPrice(h, facts, k, caseData),
       });

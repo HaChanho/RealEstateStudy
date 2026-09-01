@@ -161,6 +161,13 @@
   .wf-legend .k-unbook { background: rgb(220 38 38 / .14); box-shadow: inset 0 0 0 1px var(--negative); }
 
   .mx-sep { height: 1px; background: var(--border); margin: 22px 0 4px; }
+  .sim-out-cap { font-size: 11.5px; color: var(--text-mute); margin-top: 14px; }
+  .sim-out-cap b { color: var(--text-dim); }
+  /* 좁은 폭에서 표가 카드를 뚫고 나가 페이지 전체가 가로 스크롤됐다.
+     table.ledger 는 .ledger-wrap 으로 이미 막아뒀는데 나중에 붙인 .mx 표들이 그 수정을 못 받았다. */
+  .mx-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .mx-wrap > .mx { min-width: 560px; }
+
   /* ── 매트릭스 표 (항목별 비용 · 민감도) ── */
   .mx { width: 100%; border-collapse: collapse; font-size: 12.5px;
         font-variant-numeric: tabular-nums; margin-top: 10px; }
@@ -248,12 +255,6 @@
   .fund-terms { font-size: 12.5px; color: var(--text-dim); margin-top: 10px; line-height: 1.6; }
 
   /* #5 비용 원장 */
-  .cost-bar { display: flex; height: 26px; border-radius: 6px; overflow: hidden; margin-bottom: 16px; }
-  .cost-bar i { display: flex; align-items: center; padding: 0 8px; font-style: normal;
-                font-size: 11px; color: var(--text-dim); white-space: nowrap; overflow: hidden; min-width: 0; }
-  .cost-bar i b { font-weight: 700; color: var(--text); margin-right: 4px; }
-  .cost-bar .cs0 { background: var(--n-200); } .cost-bar .cs1 { background: var(--n-100); }
-  .cost-bar .cs2 { background: var(--surface-3); }
   .grp { margin-bottom: 14px; }
   .grp-head { display: flex; justify-content: space-between; align-items: baseline;
               padding: 7px 0 6px; border-bottom: 1px solid var(--border-strong);
@@ -565,7 +566,14 @@
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c];
       });
     }
+    // 표 안에서는 ₩ 없이 부호만, HERO 처럼 단독으로 서는 값에는 ₩ 를 붙인다(타일 4개 표기 통일).
     function signed(n) { var v = Math.round(n); return (v >= 0 ? '+' : '−') + won(Math.abs(v)).slice(1); }
+    // 스캔용 압축 표기 — 만원 단위. 표에서 크기를 비교할 때만 쓴다(정산용 아님).
+    function fmtMan(n) {
+      var v = Math.round(n / 10000);
+      return (v >= 0 ? '+' : '−') + Math.abs(v).toLocaleString('ko-KR') + '만';
+    }
+    function signedWon(n) { var v = Math.round(n); return (v >= 0 ? '+' : '−') + won(Math.abs(v)); }
     function eok(n) { return (n / 100000000).toFixed(2) + '억'; }
 
     // 매도가 앵커 — 전부 실제 데이터에서 온다. 임의 시나리오를 만들지 않는다.
@@ -648,18 +656,37 @@
         '<div class="sim-ctl">' +
           '<label for="saleRange">매도가 가정</label>' +
           '<output id="saleOut">' + won(defaultSale) + '</output>' +
-          '<input type="range" id="saleRange" min="' + Math.round(sc.lo) + '" max="' + Math.round(sc.hi) + '" ' +
-                 'step="1000000" value="' + defaultSale + '" aria-describedby="saleOut">' +
+          // step 이 100만이고 min 이 격자에 안 맞아 앵커에 도달할 수 없었다.
+          // 「본전」 버튼이 340,909,569(본전 미만)로 떨어져 −41만을 표시했다. step=1 로 정확히 맞춘다.
+          '<input type="range" id="saleRange" min="' + Math.floor(sc.lo) + '" max="' + Math.ceil(sc.hi) + '" ' +
+                 'step="1" value="' + Math.round(defaultSale) + '" aria-describedby="saleOut">' +
           '<div class="sim-anchors">' + anchors.map(function (a) {
             return '<button type="button" class="anchor" data-v="' + a.v + '">' + a.label + ' ' + eok(a.v) + '</button>';
           }).join('') + '</div>' +
         '</div>' +
-        '<div class="sim-out">' +
+        '<div class="sim-out-cap">이 매도가로 팔았을 때 <b>세전이익</b> (세금 미반영)</div>' +
+          '<div class="sim-out">' +
           [3, 4, 6].map(function (m) {
-            return '<div><span>' + m + '개월</span><b data-m="' + m + '"></b></div>';
+            return '<div><span>잔금+' + m + '개월</span><b data-m="' + m + '"></b></div>';
           }).join('') +
         '</div>' +
       '</div>';
+    }
+
+    // 잔금일 + n개월 을 실제 날짜와 오늘 기준 D-day 로 옮긴다.
+    // '마감 N개월'은 잔금 기준이라 오늘로부터의 여유와 다르다 — 그 차이가 판단을 그르친다.
+    function crossLabel(h, n) {
+      var b = (h.milestones || []).find(function (m) { return m.key === 'balance'; });
+      if (!b || !b.at) return n + '개월';
+      // toISOString() 은 UTC 로 되돌려 하루 밀린다(+09:00 파싱 후 09시 이전이면 전날).
+      // 로컬 날짜 조각으로 직접 조립한다.
+      var d = new Date(Number(b.at.slice(0, 4)), Number(b.at.slice(5, 7)) - 1 + n, Number(b.at.slice(8, 10)));
+      var pad = function (x) { return String(x).padStart(2, '0'); };
+      var iso = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+      var left = L.daysBetween(today(), iso);
+      // 해가 넘어가면 연도를 붙인다 — 'MM-DD' 만으로는 7개월 뒤인지 알 수 없다.
+      var shown = iso.slice(0, 4) === String(today()).slice(0, 4) ? iso.slice(5) : iso;
+      return shown + (left >= 0 ? ' · D-' + left : ' · 이미 지남');
     }
 
     function monthsSinceBalance(h) {
@@ -693,7 +720,9 @@
         if (cross != null && cross > 0) {
           crossLab.setAttribute('x', Math.min(cx + 6, SIM.X1 - 90));
           crossLab.setAttribute('y', y - 8);
-          crossLab.textContent = '이 가격 마감 ' + cross + '개월';
+          // cross 는 '잔금일로부터'의 개월이다. 오늘 기준이 아니다.
+          // '마감 1개월'을 한 달 여유로 읽으면 실제(D-12)와 크게 어긋난다 → 날짜와 D-day 로 적는다.
+          crossLab.textContent = '이 가격 마감 ' + crossLabel(h, cross);
         } else if (cross === 0) { crossLab.textContent = '이미 본전 아래'; crossLab.setAttribute('x', SIM.X0 + 6); crossLab.setAttribute('y', y - 8); }
         else { crossLab.textContent = ''; }
         outs.forEach(function (b) {
@@ -717,17 +746,10 @@
       });
       if (!costs.length) return '<h2 class="sec-title">비용 원장</h2><div class="dim">기록된 비용 없음</div>';
 
-      // 카테고리 집계 — 도넛/파이 대신 CSS flex 스택바(세그먼트 5개, 라벨 필요)
-      var byCat = {};
-      costs.forEach(function (e) {
-        if (e.direction === 'in') return;
-        byCat[e.category] = (byCat[e.category] || 0) + (Number(e.amount) || 0);
-      });
-      var catTotal = Object.keys(byCat).reduce(function (s2, k) { return s2 + byCat[k]; }, 0);
-      var bar = Object.keys(byCat).sort(function (a, b) { return byCat[b] - byCat[a]; }).map(function (k, i) {
-        return '<i style="flex-grow:' + byCat[k] + '" class="cs' + (i % 3) + '" title="' + esc(k) + ' ' + won(byCat[k]) + '">' +
-          '<b>' + esc(k) + '</b> ' + (byCat[k] / catTotal * 100).toFixed(0) + '%</i>';
-      }).join('');
+      // 카테고리 스택바는 걷어냈다. 같은 카드 아래 「항목별 비용」 표의 '비중' 열과
+      // 분모가 달랐다 — 스택바는 costs 만(catTotal), 표는 예산·미계상까지(totals.total).
+      // 그래서 같은 카테고리가 두 값으로 보였다(취득세 58% vs 31.6%, 법무등기 15% vs 8.0% …).
+      // 중복이 아니라 모순이라 지운다. 표 쪽이 앞으로 나갈 돈까지 담아 더 완전하다.
 
       // 날짜 그룹
       var groups = [], cur = null;
@@ -766,7 +788,6 @@
       return '<h2 class="sec-title">비용 원장 ' +
           '<span class="sec-sum">집행 ' + won(split.executed) +
           (split.planned ? ' · 예정 ' + won(split.planned) : '') + '</span></h2>' +
-        (bar ? '<div class="cost-bar">' + bar + '</div>' : '') +
         body + ubHtml;
     }
 
@@ -792,7 +813,7 @@
         var hi = trades.reduce(function (a, b) { return b.price > a.price ? b : a; });
         add('실거래 최고', hi.price, hi.date, (hi.floor ? hi.floor + '층 ' : '') + (hi.type || ''));
       }
-      add('손익분기 (' + M0 + '개월)', Math.round(BE), '', '이 위로 팔아야 본전', 'be-row');
+      add('본전 매도가 (' + M0 + '개월)', Math.round(BE), '', '이 위로 팔아야 이익', 'be-row');
       add('감정가', f.appraisalPrice, '', '');
       add('실거래 중앙 (6개월)', nd.real6moMedian, nd.real6moDate || '', '');
       if (nd.lastTrade) add('최근 실거래', nd.lastTrade.price, nd.lastTrade.date,
@@ -859,14 +880,14 @@
       return '<h2 class="sec-title">매도가 현실성 — 시세·유사낙찰 대조' + fresh + '</h2>' +
         '<svg class="mk-svg" viewBox="0 0 ' + MK.W + ' ' + MK.H + '" role="img" ' +
           'aria-label="실거래·유사낙찰·호가 대비 손익분기 위치">' + svg + '</svg>' +
-        '<table class="mx mkt"><caption>' +
+        '<div class="mx-wrap"><table class="mx mkt"><caption>' +
           '「본전 대비」가 이 표의 요점이다 — 음수면 그 가격에 팔았을 때 손실이라는 뜻이다. ' +
           '왼쪽 그림에서 빨간 영역이 본전 아래, 초록이 위다. 속 빈 동그라미는 직거래(시세 노이즈), ' +
           '점선 마름모는 이상치로 분류된 유사낙찰이다.' +
         '</caption>' +
         '<thead><tr><th scope="col">근거</th><th scope="col">가격</th><th scope="col">시점</th>' +
           '<th scope="col">본전 대비</th><th scope="col">비고</th></tr></thead>' +
-        '<tbody>' + tbody + '</tbody></table>';
+        '<tbody>' + tbody + '</tbody></table></div>';
     }
 
     // ── 보유 진행 + 월별 부담 ──
@@ -939,7 +960,7 @@
             '<td class="amt">' + eok(r.breakEven) + '</td>' +
             '<td class="ev">' + (ev[r.month] || []).map(esc).join(' · ') + '</td></tr>';
         }).join('');
-        monHtml = '<table class="mx mon"><caption>' +
+        monHtml = '<div class="mx-wrap"><table class="mx mon"><caption>' +
             '잔금월부터 12개월. <b>원금상환분은 비용이 아니라 부채 감소</b>라서 이자와 나눠 놓았다 — ' +
             '「월 현금」은 통장에서 나가는 돈이고, 손익에 잡히는 건 이자뿐이다. ' +
             '「본전 매도가」는 그 달까지 보유했을 때의 본전선이다. 파란 줄이 기본 가정(' + M0 + '개월).' +
@@ -947,7 +968,7 @@
           '<thead><tr><th scope="col">월</th><th scope="col">경락 이자</th><th scope="col">경락 원금</th>' +
             '<th scope="col">기타 조달 이자</th><th scope="col">월 현금</th><th scope="col">누적 현금</th>' +
             '<th scope="col">본전 매도가</th><th scope="col">일정</th></tr></thead>' +
-          '<tbody>' + body + '</tbody></table>' +
+          '<tbody>' + body + '</tbody></table></div>' +
           '<div class="wf-note">' + M0 + '개월 누적 현금 <b>' + won(plan[Math.min(M0, plan.length - 1)].cumCash) + '</b>' +
             ' · 같은 기간 금융비용 <b>' + won(L.financeCost(h, M0)) + '</b> — 두 값은 기준이 다르다. ' +
             '누적 현금은 통장에서 나간 돈(원금상환 포함)이고, 금융비용은 손익에 잡히는 이자에 ' +
@@ -986,7 +1007,7 @@
       if (budget)    bars.push({ k: 'var',  label: '예정 변동비', v: budget, cls: 'b-plan' });
       if (unbook)    bars.push({ k: 'ub',   label: '미계상 부채', v: unbook, cls: 'b-unbook' });
       if (brokerage > 0) bars.push({ k: 'brk', label: '매도 중개수수료', sub: '매도가 비례', v: brokerage, cls: 'b-plan' });
-      bars.push({ k: 'total', label: '손익분기 매도가', v: BE, cls: 'b-total' });
+      bars.push({ k: 'total', label: '본전 매도가', v: BE, cls: 'b-total' });
       // 2바 폭포는 그냥 막대 두 개다 — 중간 항목이 하나도 없으면 섹션째 숨긴다.
       if (bars.length < 4) return '';
 
@@ -1030,7 +1051,7 @@
       });
 
       var split = window.CalLib.splitCosts(h.costs, today0);
-      return '<h2 class="sec-title">원가 브릿지 — 낙찰가에서 손익분기까지</h2>' +
+      return '<h2 class="sec-title">원가 브릿지 — 낙찰가에서 본전 매도가까지</h2>' +
         '<svg class="wf-svg" viewBox="0 0 ' + WF.W + ' ' + WF.H + '" role="img" ' +
           'aria-label="낙찰가 ' + won(f.wonPrice) + ' 에서 손익분기 매도가 ' + won(BE) +
           ' 까지 ' + won(wedge) + ' 의 구성">' + svg + '</svg>' +
@@ -1064,7 +1085,7 @@
             '<span>' + pct.toFixed(1) + '%</span></td></tr>';
       }).join('');
       return '<h2 class="sec-title">항목별 비용</h2>' +
-        '<table class="mx"><caption>' +
+        '<div class="mx-wrap"><table class="mx"><caption>' +
           '<b>집행</b> 원장에 있고 오늘까지 나간 돈 · <b>예정</b> 원장에 있으나 날짜가 미래 · ' +
           '<b>예산</b> 원장 밖 계획분 · <b>미계상</b> 확정 채무인데 원장에 아직 없음. ' +
           '네 갈래는 서로 배타적이라 합계에 이중계상이 없다.' +
@@ -1076,7 +1097,7 @@
         '<tfoot><tr><th scope="row">합계</th>' +
           '<td>' + won(m.totals.ledgerExecuted) + '</td><td>' + won(m.totals.ledgerPlanned) + '</td>' +
           '<td>' + won(m.totals.budget) + '</td><td>' + won(m.totals.unbooked) + '</td>' +
-          '<td>' + won(m.totals.total) + '</td><td>100%</td></tr></tfoot></table>';
+          '<td>' + won(m.totals.total) + '</td><td>100%</td></tr></tfoot></table></div>';
     }
 
     // ── 매도가 × 보유기간 민감도 ──
@@ -1115,21 +1136,26 @@
         return '<tr><th scope="row">' + eok(r.price) +
             labels.map(function (x) { return '<span class="tagp">' + esc(x) + '</span>'; }).join('') + '</th>' +
           r.cells.map(function (c) {
-            return '<td class="c ' + tone(c) + '">' + signed(c.profit) + '</td>';
+            // 만원으로 압축한다. 판단 단위가 수백만원이라 원 단위 정밀도는 쓰이지 않고,
+            // 9~10자가 6자로 줄면서 부호·색 대비가 살아난다. 정확한 값은 title 에 남긴다.
+            return '<td class="c ' + tone(c) + '" title="' + signed(c.profit) + '">' +
+              fmtMan(c.profit) + '</td>';
           }).join('') + '</tr>';
       }).join('');
       return '<h2 class="sec-title">매도가 × 보유기간 — 세전이익</h2>' +
-        '<table class="mx heat"><caption>' +
+        '<div class="mx-wrap"><table class="mx heat"><caption>' +
           '행은 매도가, 열은 잔금일로부터 보유 개월. 칸은 그 조합의 세전이익이다. ' +
-          '초록이 이익 · 빨강이 손실이고 농도는 금액 크기다. 맨 아래 줄은 각 기간의 본전 매도가 — ' +
-          '보유가 길수록 올라간다.' +
+          '초록이 <b>세전</b> 이익 · 빨강이 세전 손실이고 농도는 금액 크기다. ' +
+          '<b>세금은 아직 안 뺀 숫자다</b> — 매매사업자 비교과세 적용 여부가 확정되기 전까지 ' +
+          '초록 칸도 세후로는 크게 줄어들 수 있다. ' +
+          '맨 아래 줄은 각 기간의 본전 매도가 — 보유가 길수록 올라간다.' +
         '</caption>' +
         '<thead><tr><th scope="col">매도가</th>' +
           g.months.map(function (m) { return '<th scope="col">' + m + '개월</th>'; }).join('') +
         '</tr></thead><tbody>' + body + '</tbody>' +
         '<tfoot><tr><th scope="row">본전 매도가</th>' +
           g.breakEven.map(function (b) { return '<td>' + eok(b) + '</td>'; }).join('') +
-        '</tr></tfoot></table>';
+        '</tr></tfoot></table></div>';
     }
 
     function drawDetail() {
@@ -1189,19 +1215,25 @@
       var heroProfit = (realized != null)
         ? heroCard('실현 손익', signed(realized), '매도 ' + esc(h.resaleClosedAt || '') + ' · 세전',
                    realized >= 0 ? 'pos' : 'neg')
-        : heroCard((cd && cd.neutralSalePrice ? '중립가' : '감정가') + ' 매도 시', signed(profit0),
-                   eok(defaultSale) + ' · ' + M0 + '개월 · 세전<br>본전 ' + eok(BE),
+        : heroCard((cd && cd.neutralSalePrice ? '보수 시세' : '감정가') + '(' + eok(defaultSale) + ')로 팔면',
+                   signedWon(profit0),
+                   (cd && cd.neutralSalePrice
+                     ? '보수 시세 = 호가 하단·실거래 중앙 중 낮은 쪽'
+                     : '감정가 기준') + ' · ' + M0 + '개월 보유<br>' +
+                   '<b class="warn">세금 미반영</b> · 본전 ' + eok(BE),
                    profit0 >= 0 ? 'pos' : 'neg');
       var hero =
         '<div class="hero">' +
           heroCard('투입 원가', won(C),
             '낙찰 ' + eok(f.wonPrice) + ' + 부대비 ' + won(L.acquisitionCosts(h)).slice(1) + '<br>' +
             (E === 0 ? '<b class="warn">자기자본 0 · 전액 차입</b>' : '자기자본 ' + won(E))) +
-          heroCard('손익분기 매도가', won(Math.round(BE)),
+          heroCard('본전 매도가', won(Math.round(BE)),
             (f.wonPrice ? '낙찰가 +' + ((BE / f.wonPrice - 1) * 100).toFixed(2) + '%<br>' : '') +
-            '<b class="warn">매월 +' + won(Math.round(slope)).slice(1) + '</b> · ' + M0 + '개월 기준') +
+            '한 달 더 보유할 때마다 <b class="warn">본전선 +' + won(Math.round(slope)).slice(1) + '</b><br>' +
+            '이 값에 팔면 이익도 손실도 0 (세금 없음)') +
           heroCard('월 부담', won(Math.round(rr.cash)),
-            '현금 기준 · 손익 기준 ' + won(Math.round(rr.interest)).slice(1) + '<br>원금상환분은 비용이 아니라 부채 감소') +
+            '통장에서 나가는 돈 · 이 중 손익에 잡히는 이자 ' + won(Math.round(rr.interest)).slice(1) + '<br>' +
+            '차액 ' + won(Math.round(rr.cash - rr.interest)).slice(1) + ' 은 원금상환 — 비용이 아니라 부채 감소') +
           heroProfit +
         '</div>';
 
@@ -1209,10 +1241,17 @@
       var riskItems = [];
       var unbooked = L.unbookedTotal(h);
       if (unbooked > 0) {
-        riskItems.push({ t: '미계상 부채', d: '확정 채무 ' + won(unbooked) + ' 이 위 손익에 반영됐다 — 원장 costs 에는 아직 없다.' });
+        // 이건 경고가 아니라 안내다 — 이미 손익·본전선에 반영돼 있어 추가로 나빠지지 않는다.
+        // 그런데 '할 일'이 없으면 읽는 사람이 뭘 해야 할지 모른다.
+        riskItems.push({ info: true, t: '인수 체납관리비', d: '전 소유자 체납 공용관리비 ' + won(unbooked) +
+          ' 은 내가 갚아야 할 돈이다. 위 손익·본전선에는 이미 빼놨으니 추가로 나빠지지는 않는다. ' +
+          '할 일 — 명도 완료 시 관리사무소 납부 후 원장에 \'미납관리비\'로 기록.' });
       }
       (h.risks || []).forEach(function (r) { riskItems.push({ t: r.label, d: r.detail }); });
-      if (!riskItems.length && h.notes) {
+      // 구 조건은 `!riskItems.length && h.notes` 였다. 미계상 부채가 항목 하나를 채우는 순간
+      // 영원히 false 가 되어, 메모의 ⚠(비교과세 359만→1,560만 · 유동성)가 스트립에 뜬 적이 없다.
+      // 가장 눈에 띄는 박스를 가장 작은 리스크가 점거하고 있었다. 항상 스캔한다.
+      if (h.notes) {
         String(h.notes).split('\n').forEach(function (ln2) {
           var m2 = /^\s*⚠️?\s*(.{0,300})/.exec(ln2);
           if (m2 && riskItems.length < 3) {
@@ -1222,6 +1261,8 @@
           }
         });
       }
+      // 메모의 ⚠ 를 앞으로 — 결론을 뒤집을 수 있는 것이 먼저 읽혀야 한다.
+      riskItems.sort(function (a, b) { return (a.info ? 1 : 0) - (b.info ? 1 : 0); });
       var riskHtml = riskItems.length
         ? '<div class="risk-strip">' + riskItems.map(function (r) {
             return '<div class="risk-row"><b>' + esc(r.t) + '</b><span>' + esc(r.d) + '</span></div>';
@@ -1247,7 +1288,8 @@
         '<div class="fund-eq' + (E === 0 ? ' warn' : '') + '">자기자본 ' + won(E) +
           (E === 0 ? ' (100% 차입)' : '') + '</div>' +
         '<div class="fund-terms">' +
-          [ rp.type && ln.term && esc(ln.term) + ' ' + esc(rp.type),
+          // ln.term 이 이미 '40년 원리금균등상환' 이라 rp.type 을 덧붙이면 단어가 겹친다.
+          [ ln.term ? esc(ln.term) : (rp.type ? esc(rp.type) : null),
             rp.monthlyPayment && '월 ' + won(rp.monthlyPayment) + (rp.dayOfMonth ? ' (매월 ' + rp.dayOfMonth + '일)' : ''),
             ln.prepayFeeRate != null && '중도상환 ' + pctf(ln.prepayFeeRate)
           ].filter(Boolean).join(' · ') +
