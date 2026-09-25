@@ -1,14 +1,13 @@
-// 공유 상단 네비바 — 홈(루트)·calendar/·timeline/ 세 페이지에 <script ... defer>로 로드.
+// 공유 상단 네비바 — 홈(루트)·calendar/ 두 페이지에 <script ... defer>로 로드.
 // <head>에서 로드되므로 DOM 준비를 기다린 뒤 body 최상단에 주입한다.
 (function () {
   var path = location.pathname;
-  var active = path.indexOf('/timeline/') >= 0 ? 'timeline' : (path.indexOf('/calendar/') >= 0 ? 'calendar' : '');
+  var active = path.indexOf('/calendar/') >= 0 ? 'calendar' : '';
   // 홈은 루트에 있고 나머지는 한 단계 아래다. 기준 경로가 다르다.
   var base = (active === '') ? './' : '../';
   var links = [
     { key: '',         label: '홈',       href: base },
-    { key: 'calendar', label: '캘린더',   href: base + 'calendar/' },
-    { key: 'timeline', label: '타임라인', href: base + 'timeline/' }
+    { key: 'calendar', label: '캘린더',   href: base + 'calendar/' }
   ];
   var css = '.site-nav{display:flex;gap:6px;align-items:center;padding:8px 20px;background:var(--surface,#fff);' +
     'border-bottom:1px solid var(--border,#dde3f0);font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Segoe UI",Roboto,sans-serif}' +

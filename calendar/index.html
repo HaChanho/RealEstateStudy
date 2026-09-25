@@ -777,8 +777,6 @@
   .chip .my-badge.won  { background: var(--accent); color: var(--n-0); }
   .chip .my-badge.lost { background: var(--muted-bg); color: var(--text-mute);
                          border: 1px solid var(--border); }
-  .tl-link { display: inline-block; margin-top: var(--sp-2); font-size: var(--fs-md);
-             color: var(--accent); font-weight: 600; }
   .list-table .verdict-badge { font-size: var(--fs-sm); padding: 1px 6px; border-radius: var(--r-sm); }
   .list-table .list-result-flag { font-size: 10px; font-weight: 700; padding: 1px 4px;
                                   border-radius: var(--r-sm); margin-left: 4px; }
@@ -2313,16 +2311,6 @@
     numSec.appendChild(grid);
     inner.appendChild(numSec);
 
-    // L2 — 낙찰 물건이면 타임라인으로 이어준다(여정·비용·손익).
-    {
-      const tl = timelineLinkFor(c);
-      if (tl) {
-        const tlSec = section('낙찰 후 여정', { boxed: true, accent: 'report', key: 'timeline' });
-        tlSec.appendChild(tl);
-        inner.appendChild(tlSec);
-      }
-    }
-
     // 상세 분석 보고서 (deep-dive 케이스) — 같은 디렉토리의 report HTML로 링크
     if (c.reportUrl) {
       const rpSec = section('상세 분석 보고서', { boxed: true, accent: 'report', key: 'report' });
@@ -3150,18 +3138,6 @@
 
 
 
-  // L2 — 낙찰 물건은 타임라인으로 이어준다. 조인 키는 이미 완성돼 있다:
-  // results.js 의 복합키(사건번호@saleDate) = 원장의 sourceResultKey.
-  function timelineLinkFor(c) {
-    const ar = resultFor(c);
-    if (!ar || ar.myResult !== 'won') return null;
-    const a = el('a', { cls: 'tl-link', text: '이 물건의 타임라인 보기' });
-    // 원장 holdingId 는 h-<사건번호 뒷자리> 규약. 사건번호에서 숫자만 취한다.
-    const num = String(c.caseNumber || c.id || '').replace(/[^0-9]/g, '').slice(-6);
-    a.setAttribute('href', '../timeline/#h-' + num);
-    return a;
-  }
-
   // ===== 모바일 아젠다 (§6.4) =====
   // 375px 에서 4열 그리드는 칸 폭 ~80px 이라 단지명이 들어갈 수 없다(첫 화면 노출 0건).
   // 날짜별 리스트로 전환하면 사건 없는 날이 아예 사라져 첫 화면에 실제 사건이 보인다.
@@ -3243,7 +3219,6 @@
       return n;
     };
     rail.appendChild(mk('home', '홈', { href: '../' }));
-    rail.appendChild(mk('chart', '타임라인', { href: '../timeline/' }));
     rail.appendChild(el('div', { cls: 'rail-sep' }));
     rail.appendChild(mk('calendar', '달력', { active: state.view === 'calendar', onClick: () => setView('calendar') }));
     rail.appendChild(mk('list', '목록', { active: state.view === 'list', onClick: () => setView('list') }));

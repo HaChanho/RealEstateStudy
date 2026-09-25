@@ -77,21 +77,6 @@
     return Math.max(0, Math.round((b - a) / DAY_MS));
   }
 
-  // 비용 원장을 오늘 기준 집행분/예정분으로 나눈다.
-  // 부호 규약은 holdings-lib.costTotal 과 동일(direction 'in' = 환급 = 음수).
-  // occurredAt 이 없으면 집행분으로 센다 — 과대계상보다 누락이 낫다는 판단.
-  function splitCosts(costs, todayStr) {
-    let executed = 0, planned = 0;
-    for (const e of (costs || [])) {
-      const sign = (e && e.direction === 'in') ? -1 : 1;
-      const amt = sign * (Number(e && e.amount) || 0);
-      const at = e && e.occurredAt;
-      if (at && DATE_RE.test(String(at)) && String(at) > String(todayStr)) planned += amt;
-      else executed += amt;
-    }
-    return { executed: executed, planned: planned };
-  }
-
   // 칩 라벨 — 단지명만. 사건번호는 DB 키이지 스캔 단서가 아니다.
   // 실측: 사건번호가 라벨 폭의 50%(p50 65.1px / 130.4px)를 쓰고 있었다.
   // 자르지 않는다 — CSS ellipsis 가 실제 셀 폭에 맞춰 자르게 위임한다.
@@ -164,6 +149,5 @@
     monthOfCase: monthOfCase,
     sortByRating: sortByRating,
     staleDays: staleDays,
-    splitCosts: splitCosts,
   };
 });
